@@ -1,13 +1,16 @@
-package LocationGraphADT;
+package locationgraph;
 
-import Common.Direction;
-import Common.Treasure;
-import Common.MatrixPosition;
+import common.Direction;
+import common.MatrixPosition;
+import common.Treasure;
+
+import java.util.List;
 
 /**
  * Represents the union type for locations.
- * A locationNode can be a tunnel or a cave or a wall.
+ * A locationNode can be a tunnel or a cave or the wall.
  * A location might have treasure if it is a cave.
+ * There is only one wall. [Singleton]
  */
 interface LocationNode {
 
@@ -15,41 +18,35 @@ interface LocationNode {
    * Checks if a location node is a tunnel.
    * @return true if location node is a tunnel.
    */
-  default boolean isTunnel() {
-    return false;
-  }
+  boolean isTunnel();
 
   /**
    * Checks if location node is a cave.
    * @return true if location node is a cave.
    */
-  default boolean isCave() {
-    return false;
-  }
+  boolean isCave();
 
   /**
-   * Checks if location node is a wall.
-   * @return true if location node is a wall.
+   * Checks if location node is the wall.
+   * @return true if location node is the wall.
    */
-  default boolean isWall() {
-    return false;
-  }
+  boolean isWall();
 
   /**
-   * Checks if there is a wall in the given direction.
+   * Checks if there is the wall in the given direction.
    * @param direction direction to be checked.
-   * @return true if there is a wall in the given direction.
+   * @return true if there is the wall in the given direction.
+   * @throws IllegalStateException when location node is the wall.
    */
-  default boolean hasWallAt(Direction direction) {
-    return true;
-  }
+  boolean hasWallAt(Direction direction) throws IllegalStateException;
 
   /**
    * Returns location in the given direction.
    * @param direction the required location node's direction from this location node.
    * @return Location node at the given direction.
+   * @throws IllegalStateException when location node is the wall.
    */
-  LocationNode getLocationAt(Direction direction);
+  LocationNode getLocationAt(Direction direction) throws IllegalStateException;
 
   /**
    * Description of this location with the treasure it has.
@@ -61,21 +58,20 @@ interface LocationNode {
    * Returns true if this location has treasure.
    * @return true if this has treasure else false.
    */
-  default boolean hasTreasure() {
-    return false;
-  }
+  boolean hasTreasure();
 
   /**
    * Add treasure to this location.
    * @param treasure treasure to be added.
+   * @throws IllegalStateException if treasure is being added to Tunnel or Wall.
    */
-  void addTreasure(Treasure treasure);
+  void addTreasure(Treasure treasure) throws IllegalStateException;
 
   /**
    * get position of this location.
    * @return position of this location.
    */
-  MatrixPosition getPosition();
+  MatrixPosition getPosition() throws IllegalStateException;
 
   /**
    * Set neighbouring location in the given direction.
@@ -87,4 +83,12 @@ interface LocationNode {
    */
   LocationNode setNeighbour(Direction direction, LocationNode location)
       throws IllegalArgumentException, IllegalStateException;
+
+  /**
+   * Removes and returns treasure from this location node.
+   * @return Treasure from this location node.
+   * @throws IllegalStateException when trying to remove treasure from
+   *                                Location nodes that are not caves.
+   */
+  List<Treasure> removeTreasure() throws IllegalStateException;
 }

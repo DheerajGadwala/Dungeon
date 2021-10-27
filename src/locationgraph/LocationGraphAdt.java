@@ -1,22 +1,24 @@
-package LocationGraphADT;
+package locationgraph;
 
-import Common.Direction;
-import Common.MatrixPosition;
-import Common.Treasure;
+import common.Direction;
+import common.MatrixPosition;
+import common.Treasure;
 
 /**
  * This represents a graph of locations.
  * This can have more location nodes added to it.
  * This can have more connections added between its location.
  */
-public interface LocationGraphADT {
+public interface LocationGraphAdt {
   /**
    * create a Location Node in the graph with matrix position(id).
    * @param position position(id) of the node in a matrix.
-   * @throws IllegalStateException when location with given position(id) already exists in this graph.
+   * @throws IllegalStateException when location with given position(id)
+   *                                already exists in this graph.
+   * @throws IllegalArgumentException when position is null.
    */
   void createLocationNode(MatrixPosition position)
-      throws IllegalStateException;
+      throws IllegalArgumentException, IllegalStateException;
 
   /**
    * add a connect from position1(id1) to position2(id2) in the given direction.
@@ -24,10 +26,24 @@ public interface LocationGraphADT {
    * @param position1 position1(id1) of the connection
    * @param position2 position2(id2) of the connection
    * @param direction direction of the connection
-   * @throws IllegalStateException when a connection between locations of given positions already exists.
+   * @throws IllegalArgumentException when one or both positions are null or do not exist in graph
+   * @throws IllegalStateException when a connection between locations of
+   *                                given positions already exists.
    */
   void addConnection(MatrixPosition position1, MatrixPosition position2, Direction direction)
-      throws IllegalStateException;
+      throws IllegalArgumentException, IllegalStateException;
+
+  /**
+   * add a connect from position1(id1) to position2(id2) in the given direction.
+   * Bi-directionally links position2(id2) to position1(id1) in the opposite direction.
+   * @param position1 position1(id1) of the connection
+   * @param position2 position2(id2) of the connection
+   * @throws IllegalArgumentException when one or both positions are null or do not exist in graph
+   * @throws IllegalStateException when a connection between locations of
+   *                                given positions does not exist.
+   */
+  void removeConnection(MatrixPosition position1, MatrixPosition position2)
+      throws IllegalArgumentException, IllegalStateException;
 
   /**
    * Description of a location at the given position(id).
@@ -53,7 +69,8 @@ public interface LocationGraphADT {
    * @param position position(id) of the location node.
    * @return treasure at the given location.
    * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
-   * @throws IllegalStateException when given location type of given position(id) can not have treasure.
+   * @throws IllegalStateException when given location type of given position(id)
+   *                                can not have treasure.
    */
   Treasure collectTreasure(MatrixPosition position)
       throws IllegalArgumentException, IllegalStateException;
@@ -63,7 +80,8 @@ public interface LocationGraphADT {
    * @param position position(id) of the location node.
    * @param treasure treasure to be added.
    * @throws IllegalArgumentException when location of given position(id) is not in this graph.
-   * @throws IllegalStateException when given location type of given position(id) can not have treasure.
+   * @throws IllegalStateException when given location type of given position(id)
+   *                                can not have treasure.
    */
   void addTreasure(MatrixPosition position, Treasure treasure)
       throws IllegalArgumentException, IllegalStateException;
