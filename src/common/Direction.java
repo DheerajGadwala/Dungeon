@@ -8,17 +8,16 @@ public enum Direction {
 
   /**
    * Gives the opposite direction to the given direction.
-   * @param direction given direction
    * @return opposite direction
    */
-  public static Direction getOpposite(Direction direction) {
-    if (direction == NORTH) {
+  public Direction getOpposite() {
+    if (this == NORTH) {
       return SOUTH;
     }
-    else if (direction == SOUTH) {
+    else if (this == SOUTH) {
       return NORTH;
     }
-    else if (direction == EAST) {
+    else if (this == EAST) {
       return WEST;
     }
     else {

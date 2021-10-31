@@ -47,4 +47,9 @@ public class MatrixPosition {
   public int hashCode() {
     return hashcode;
   }
+
+  @Override
+  public String toString() {
+    return String.format("(%d, %d)\n", i, j);
+  }
 }

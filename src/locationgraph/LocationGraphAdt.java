@@ -44,36 +44,36 @@ public interface LocationGraphAdt {
    */
   void removeConnection(MatrixPosition position1, MatrixPosition position2)
       throws IllegalArgumentException, IllegalStateException;
+//
+//  /**
+//   * Description of a location at the given position(id).
+//   * Description involves details of treasures at the location.
+//   * @param position position(id) of the location node.
+//   * @return Description of the location as a String.
+//   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
+//   */
+//  String getDescription(MatrixPosition position)
+//      throws IllegalArgumentException;
 
-  /**
-   * Description of a location at the given position(id).
-   * Description involves details of treasures at the location.
-   * @param position position(id) of the location node.
-   * @return Description of the location as a String.
-   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
-   */
-  String getDescription(MatrixPosition position)
-      throws IllegalArgumentException;
+//  /**
+//   * Checks if the location at given position(id) in this graph has treasure.
+//   * @param position position(id) of the location node.
+//   * @return true if location has treasure else false.
+//   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
+//   */
+//  boolean hasTreasure(MatrixPosition position)
+//      throws IllegalArgumentException;
 
-  /**
-   * Checks if the location at given position(id) in this graph has treasure.
-   * @param position position(id) of the location node.
-   * @return true if location has treasure else false.
-   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
-   */
-  boolean hasTreasure(MatrixPosition position) 
-      throws IllegalArgumentException;
-
-  /**
-   * Returns treasure at the given position's(id) location.
-   * @param position position(id) of the location node.
-   * @return treasure at the given location.
-   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
-   * @throws IllegalStateException when given location type of given position(id)
-   *                                can not have treasure.
-   */
-  Treasure collectTreasure(MatrixPosition position)
-      throws IllegalArgumentException, IllegalStateException;
+//  /**
+//   * Returns treasure at the given position's(id) location.
+//   * @param position position(id) of the location node.
+//   * @return treasure at the given location.
+//   * @throws IllegalArgumentException  when location of given position(id) is not in this graph.
+//   * @throws IllegalStateException when given location type of given position(id)
+//   *                                can not have treasure.
+//   */
+//  Treasure collectTreasure(MatrixPosition position)
+//      throws IllegalArgumentException, IllegalStateException;
 
   /**
    * Adds the given treasure to the given position's(id) location.
@@ -87,30 +87,41 @@ public interface LocationGraphAdt {
       throws IllegalArgumentException, IllegalStateException;
 
   /**
-   * Checks if location of given position(id) is of type Tunnel.
-   * @param position position(id) of the location node.
-   * @return true if the location is of type tunnel else false.
-   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
+   * Returns an MST of this graph.
    */
-  boolean isTunnel(MatrixPosition position)
-      throws IllegalArgumentException;
+   LocationGraphAdt getMst();
 
   /**
-   * Checks if location of given position(id) is of type Cave.
-   * @param position position(id) of the location node.
-   * @return true if the location is of type tunnel else false.
-   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
+   * Returns the number of location nodes in the graph.
+   * @return number of location nodes.
    */
-  boolean isCave(MatrixPosition position)
-      throws IllegalArgumentException;
+   int getNumberOfNodes();
 
-  /**
-   * Checks if location of given position(id) is of type Wall.
-   * @param position position(id) of the location node.
-   * @return true if the location is of type tunnel else false.
-   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
-   */
-  boolean isWall(MatrixPosition position)
-      throws IllegalArgumentException;
+//  /**
+//   * Checks if location of given position(id) is of type Tunnel.
+//   * @param position position(id) of the location node.
+//   * @return true if the location is of type tunnel else false.
+//   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
+//   */
+//  boolean isTunnel(MatrixPosition position)
+//      throws IllegalArgumentException;
+//
+//  /**
+//   * Checks if location of given position(id) is of type Cave.
+//   * @param position position(id) of the location node.
+//   * @return true if the location is of type tunnel else false.
+//   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
+//   */
+//  boolean isCave(MatrixPosition position)
+//      throws IllegalArgumentException;
+//
+//  /**
+//   * Checks if location of given position(id) is of type Wall.
+//   * @param position position(id) of the location node.
+//   * @return true if the location is of type tunnel else false.
+//   * @throws IllegalArgumentException when location of given position(id) is not in this graph.
+//   */
+//  boolean isWall(MatrixPosition position)
+//      throws IllegalArgumentException;
 }
 

@@ -11,6 +11,7 @@ public interface Randomizer {
    * @param a left boundary
    * @param b right boundary
    * @return an integer
+   * @throws IllegalArgumentException when a > b.
    */
-  int getIntBetween(int a, int b);
+  int getIntBetween(int a, int b) throws IllegalArgumentException;
 }

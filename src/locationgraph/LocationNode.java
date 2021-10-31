@@ -61,6 +61,12 @@ interface LocationNode {
   boolean hasTreasure();
 
   /**
+   * type of this object as a string.
+   * @return type of this object.
+   */
+  String getType();
+
+  /**
    * Add treasure to this location.
    * @param treasure treasure to be added.
    * @throws IllegalStateException if treasure is being added to Tunnel or Wall.
@@ -74,14 +80,30 @@ interface LocationNode {
   MatrixPosition getPosition() throws IllegalStateException;
 
   /**
+   * return true if this location node has that as a neighbour.
+   * Returns false if this is a wall.
+   * @param that node to be checked.
+   * @return true if this and that are neighbours else false.
+   */
+  boolean hasNeighbour(LocationNode that);
+
+  /**
    * Set neighbouring location in the given direction.
    * @param direction direction whose location is to be set.
    * @param location location to be set as the neighbour.
-   * @return new location node of the correct type, depending on the number of neighbours.
    * @throws IllegalArgumentException when location or direction is null.
    * @throws IllegalStateException when this location node is wall.
    */
-  LocationNode setNeighbour(Direction direction, LocationNode location)
+  void setNeighbour(Direction direction, LocationNode location)
+      throws IllegalArgumentException, IllegalStateException;
+
+  /**
+   * Get direction of the neighbouring location.
+   * @param neighbour location whose direction is being requested.
+   * @return Direction of the given location.
+   * @throws IllegalArgumentException if given location is not a neighbour
+   */
+  Direction getNeighbourDirection(LocationNode neighbour)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
