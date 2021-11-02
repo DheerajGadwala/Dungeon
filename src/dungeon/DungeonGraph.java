@@ -1,23 +1,25 @@
-package locationgraph;
+package dungeon;
 
-import static common.Direction.EAST;
-import static common.Direction.NORTH;
-import static common.Direction.SOUTH;
-import static common.Direction.WEST;
+import static general.Direction.EAST;
+import static general.Direction.NORTH;
+import static general.Direction.SOUTH;
+import static general.Direction.WEST;
 
-import common.Direction;
-import common.MatrixPosition;
-import common.Treasure;
+import general.Direction;
+import general.MatrixPosition;
 import randomizer.Randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This is a type of Locations graph designed specifically
+ * for dungeons given in the project description.
  * This is a collection of locations and their connections.
- * This can generate Minimal Spanning Trees of itself.
+ * This can generate Minimal Spanning Trees of itself with transitivity.
+ * This can add treasure to its locations nodes which are caves.
  */
-public class DungeonGraph implements LocationGraphAdt {
+class DungeonGraph implements LocationGraph {
 
   private final List<LocationNode> locationNodes;
   private final List<Connection> connections;
@@ -105,7 +107,7 @@ public class DungeonGraph implements LocationGraphAdt {
       );
     }
     else {
-      if (i - 1 > 0) {
+      if (i - 1 > -1) {
         this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i - 1, j), NORTH);
       }
       if (j + 1 < n) {
@@ -114,7 +116,7 @@ public class DungeonGraph implements LocationGraphAdt {
       if (i + 1 < m) {
         this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i + 1, j), SOUTH);
       }
-      if (j - 1 > 0) {
+      if (j - 1 > -1) {
         this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i, j - 1), WEST);
       }
     }
@@ -142,7 +144,8 @@ public class DungeonGraph implements LocationGraphAdt {
     return false;
   }
 
-  private LocationNode getLocation(MatrixPosition position) {
+  @Override
+  public LocationNode getLocation(MatrixPosition position) {
     for (LocationNode node: locationNodes) {
       if (node.getPosition().equals(position)) {
         return node;
@@ -171,6 +174,7 @@ public class DungeonGraph implements LocationGraphAdt {
       Direction direction
   ) throws IllegalArgumentException, IllegalStateException {
     if (direction == null) {
+
       throw new IllegalArgumentException("direction can not be null!");
     }
     validateEdge(position1, position2);
@@ -215,26 +219,8 @@ public class DungeonGraph implements LocationGraphAdt {
     }
     LocationNode node1 = getLocation(position1);
     LocationNode node2 = getLocation(position2);
-    node1.setNeighbour(node1.getNeighbourDirection(node2), Wall.getInstance());
-    node2.setNeighbour(node2.getNeighbourDirection(node1), Wall.getInstance());
-  }
-
-  @Override
-  public void addTreasure(MatrixPosition position, Treasure treasure)
-      throws IllegalArgumentException, IllegalStateException {
-    if (treasure == null) {
-      throw new IllegalArgumentException("Treasure can not be null.");
-    }
-    if (position == null) {
-      throw new IllegalArgumentException("position can not be null");
-    }
-    if (!this.containsPosition(position)) {
-      throw new IllegalStateException("Position not found in graph.");
-    }
-    if (this.getLocation(position).isTunnel()) {
-      throw new IllegalStateException("Can not add treasure to a tunnel");
-    }
-    this.getLocation(position).addTreasure(treasure);
+    node1.setNeighbour(node1.getNeighbourDirection(node2), EmptyLocation.getInstance());
+    node2.setNeighbour(node2.getNeighbourDirection(node1), EmptyLocation.getInstance());
   }
 
   /**
@@ -242,13 +228,7 @@ public class DungeonGraph implements LocationGraphAdt {
    */
   private void makeSet(List<DungeonGraph> allGraphs, Connection edge) {
     DungeonGraph graph = new DungeonGraph(randomizer, m, n);
-    MatrixPosition vertexA = edge.getMatrixPositionA();
-    MatrixPosition vertexB = edge.getMatrixPositionB();
-    Direction d = edge.getDirection();
-    graph.createLocationNode(vertexA);
-    graph.createLocationNode(vertexB);
-    graph.addConnection(vertexA, vertexB, d);
-    graph.addConnection(vertexB, vertexA, d.getOpposite());
+    graph.addConnectionSoftly(edge);
     allGraphs.add(graph);
   }
 
@@ -318,6 +298,28 @@ public class DungeonGraph implements LocationGraphAdt {
   }
 
   /**
+   * Helps with Kruskal's union find.
+   * @param edge
+   */
+  private void addConnectionSoftly(Connection edge) {
+    try {
+      this.createLocationNode(edge.getMatrixPositionA());
+    }
+    catch (IllegalStateException ignored) {
+    }
+    try {
+      this.createLocationNode(edge.getMatrixPositionB());
+    }
+    catch (IllegalStateException ignored) {
+    }
+    MatrixPosition vertexA = edge.getMatrixPositionA();
+    MatrixPosition vertexB = edge.getMatrixPositionB();
+    Direction d = edge.getDirection();
+    this.addConnection(vertexA, vertexB, d);
+    this.addConnection(vertexB, vertexA, d.getOpposite());
+  }
+
+  /**
    * Helps with Kruskal's Union Find.
    */
   private List<DungeonGraph> add(List<DungeonGraph> allGraphs, Connection edge) {
@@ -325,17 +327,7 @@ public class DungeonGraph implements LocationGraphAdt {
       boolean added = false;
       for (Connection c: graph.connections) {
         if (c.isConnected(edge)) {
-          if (!c.isConnectedToA(edge)) {
-            graph.createLocationNode(edge.getMatrixPositionA());
-          }
-          else if (!c.isConnectedToB(edge)) {
-            graph.createLocationNode(edge.getMatrixPositionB());
-          }
-          MatrixPosition vertexA = edge.getMatrixPositionA();
-          MatrixPosition vertexB = edge.getMatrixPositionB();
-          Direction d = edge.getDirection();
-          graph.addConnection(vertexA, vertexB, d);
-          graph.addConnection(vertexB, vertexA, d.getOpposite());
+          graph.addConnectionSoftly(edge);
           added = true;
           break;
         }
@@ -349,21 +341,76 @@ public class DungeonGraph implements LocationGraphAdt {
   }
 
   @Override
-  public LocationGraphAdt getMst() {
+  public LocationGraph getMst() {
+    return getMst(0);
+  }
+
+  /**
+   * Removes connection c and it's opposite from a given list of connections.
+   * @param connections list from which connections are to be removed.
+   * @param c connection which is to be removed.
+   * @return connections that are removed.
+   */
+  private List<Connection> removeBiConnections(List<Connection> connections, Connection c) {
+    int i = 0;
+    List<Connection> ret = new ArrayList<>();
+    while (i < connections.size()) {
+      Connection t = connections.get(i);
+      if (
+          (
+              c.getMatrixPositionA().equals(t.getMatrixPositionA())
+              && c.getMatrixPositionB().equals(t.getMatrixPositionB())
+          )
+              ||
+          (
+              c.getMatrixPositionA().equals(t.getMatrixPositionB())
+              && c.getMatrixPositionB().equals(t.getMatrixPositionA())
+          )
+      ) {
+        ret.add(connections.remove(i));
+        i-=1;
+      }
+      i++;
+    }
+    return ret;
+  }
+
+  @Override
+  public LocationGraph getMst(int interconnectivity) throws IllegalArgumentException {
     List<DungeonGraph> allGraphs = new ArrayList<>();
+    List<Connection> notAdded = new ArrayList<>();
     List<Connection> connections = new ArrayList<>(this.connections);
     while (!(
-            allGraphs.size() == 1
-        &&  allGraphs.get(0).getNumberOfNodes() == this.getNumberOfNodes()
-        ) && connections.size() > 0) {
+        allGraphs.size() == 1
+            &&  allGraphs.get(0).getNumberOfNodes() == this.getNumberOfNodes()
+    ) && connections.size() > 0) {
       int x = randomizer.getIntBetween(0, connections.size() - 1);
-      Connection c = connections.remove(x);
+      Connection c = connections.get(x);
+      List<Connection> removed = removeBiConnections(connections, c);
       if (isAddable(allGraphs, c)) {
         allGraphs = add(allGraphs, c);
         allGraphs = unify(allGraphs, c.getMatrixPositionA(), c.getMatrixPositionB());
       }
+      else {
+        notAdded.addAll(removed);
+      }
     }
-    return allGraphs.get(0);
+    DungeonGraph ret = allGraphs.get(0);
+    notAdded.addAll(connections);
+    if(interconnectivity < 0) {
+      throw new IllegalArgumentException("interconnectivity can not be less than 0.");
+    }
+    if(interconnectivity > notAdded.size()/2) {
+      throw new IllegalArgumentException("interconnectivity too high");
+    }
+    while (interconnectivity > 0) {
+      int x = randomizer.getIntBetween(0, notAdded.size() - 1);
+      Connection c = notAdded.get(x);
+      removeBiConnections(notAdded, c);
+      ret.addConnectionSoftly(c);
+      interconnectivity--;
+    }
+    return ret;
   }
 
   @Override
@@ -372,33 +419,46 @@ public class DungeonGraph implements LocationGraphAdt {
   }
 
   @Override
+  public List<LocationNode> getCaves() {
+    List<LocationNode> caves = new ArrayList<>();
+    for(LocationNode l: locationNodes) {
+      if (l.isCave()) {
+        caves.add(l);
+      }
+    }
+    return caves;
+  }
+
+  @Override
   public String toString() {
     StringBuilder ret = new StringBuilder();
-    String topBorder = "[*]";
-    String sideBorder = "[*]";
-    ret.append(topBorder.repeat(7 + 2));
+    String topBorder = "[***]";
+    String sideBorder = "[***]";
+    ret.append(topBorder.repeat(n + 2));
     ret.append("\n");
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < m; i++) {
       for (int k = 0; k < 3; k++) {
         ret.append(sideBorder);
-        for (int j = 0; j < 7; j++) {
+        for (int j = 0; j < n; j++) {
           LocationNode n = this.getLocation(new MatrixPosition(i, j));
           if (k == 0) {
-            ret.append(n.hasWallAt(NORTH) ? "   " : " | ");
+            ret.append(n.hasEmptyNodeAt(NORTH) ? "     " : "  |  ");
           }
           else if (k == 1) {
             ret.append(
-                n.hasWallAt(WEST) ? " " : "-").append("O").append(n.hasWallAt(EAST) ? " " : "-"
-            );
+                n.hasEmptyNodeAt(WEST) ? "  " : "--")
+                .append("O")
+                .append(n.hasEmptyNodeAt(EAST) ? "  " : "--"
+                );
           }
           else {
-            ret.append(n.hasWallAt(SOUTH) ? "   " : " | ");
+            ret.append(n.hasEmptyNodeAt(SOUTH) ? "     " : "  |  ");
           }
         }
         ret.append(sideBorder).append("\n");
       }
     }
-    ret.append(topBorder.repeat(7 + 2));
+    ret.append(topBorder.repeat(n + 2));
     ret.append("\n");
     return ret.toString();
   }

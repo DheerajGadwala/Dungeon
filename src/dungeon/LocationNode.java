@@ -1,16 +1,18 @@
-package locationgraph;
+package dungeon;
 
-import common.Direction;
-import common.MatrixPosition;
-import common.Treasure;
+import general.Direction;
+import general.MatrixPosition;
+import general.Treasure;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents the union type for locations.
- * A locationNode can be a tunnel or a cave or the wall.
+ * A locationNode can be a tunnel or a cave or the empty node.
  * A location might have treasure if it is a cave.
- * There is only one wall. [Singleton]
+ * There is only one empty node. [Singleton]
  */
 interface LocationNode {
 
@@ -27,24 +29,24 @@ interface LocationNode {
   boolean isCave();
 
   /**
-   * Checks if location node is the wall.
-   * @return true if location node is the wall.
+   * Checks if location node is the empty node.
+   * @return true if location node is the empty node.
    */
-  boolean isWall();
+  boolean isEmptyNode();
 
   /**
-   * Checks if there is the wall in the given direction.
+   * Checks if there is the empty node in the given direction.
    * @param direction direction to be checked.
-   * @return true if there is the wall in the given direction.
-   * @throws IllegalStateException when location node is the wall.
+   * @return true if there is the empty node in the given direction.
+   * @throws IllegalStateException when location node is the empty node.
    */
-  boolean hasWallAt(Direction direction) throws IllegalStateException;
+  boolean hasEmptyNodeAt(Direction direction) throws IllegalStateException;
 
   /**
    * Returns location in the given direction.
    * @param direction the required location node's direction from this location node.
    * @return Location node at the given direction.
-   * @throws IllegalStateException when location node is the wall.
+   * @throws IllegalStateException when location node is the empty node.
    */
   LocationNode getLocationAt(Direction direction) throws IllegalStateException;
 
@@ -69,9 +71,9 @@ interface LocationNode {
   /**
    * Add treasure to this location.
    * @param treasure treasure to be added.
-   * @throws IllegalStateException if treasure is being added to Tunnel or Wall.
+   * @throws IllegalStateException if treasure is being added to a Tunnel or Empty node.
    */
-  void addTreasure(Treasure treasure) throws IllegalStateException;
+  void addTreasure(Map<Treasure, Integer> treasure) throws IllegalStateException;
 
   /**
    * get position of this location.
@@ -81,7 +83,7 @@ interface LocationNode {
 
   /**
    * return true if this location node has that as a neighbour.
-   * Returns false if this is a wall.
+   * Returns false if this is a empty node.
    * @param that node to be checked.
    * @return true if this and that are neighbours else false.
    */
@@ -92,7 +94,7 @@ interface LocationNode {
    * @param direction direction whose location is to be set.
    * @param location location to be set as the neighbour.
    * @throws IllegalArgumentException when location or direction is null.
-   * @throws IllegalStateException when this location node is wall.
+   * @throws IllegalStateException when this location node is empty node.
    */
   void setNeighbour(Direction direction, LocationNode location)
       throws IllegalArgumentException, IllegalStateException;
@@ -112,5 +114,27 @@ interface LocationNode {
    * @throws IllegalStateException when trying to remove treasure from
    *                                Location nodes that are not caves.
    */
-  List<Treasure> removeTreasure() throws IllegalStateException;
+  HashMap<Treasure, Integer> removeTreasure() throws IllegalStateException;
+
+  /**
+   * We perform BFS here.
+   * Helper method for getDistantNodes.
+   * @param visited already visited nodes
+   * @param queue queue of visiting
+   * @param queueD queue of distance from initial node
+   * @return list of nodes at distance greater than or equal to d from this.
+   */
+  List<LocationNode> getDistantNodesHelper(
+      List<LocationNode> visited,
+      List<LocationNode> queue,
+      List<Integer> queueD
+  );
+
+  /**
+   * Returns nodes at distance greater than or equal to d.
+   * @param d distance from this node.
+   * @return list of nodes at distance greater than or equal to d from this.
+   * If d is less than or equal to 0, we return all nodes including this.
+   */
+  List<LocationNode> getDistantNodes(int d);
 }

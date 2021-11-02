@@ -1,7 +1,7 @@
-package locationgraph;
+package dungeon;
 
-import common.Direction;
-import common.MatrixPosition;
+import general.Direction;
+import general.MatrixPosition;
 
 /**
  * Represents an edge in the Location graph.
@@ -55,6 +55,6 @@ class Connection {
 
   @Override
   public String toString() {
-    return "A: " + A.toString() + "B: " + B.toString();
+    return "A: " + A.getPosition() + "B: " + B.getPosition();
   }
 }

@@ -1,4 +1,4 @@
-package common;
+package general;
 
 import static java.util.Objects.hash;
 
@@ -21,11 +21,11 @@ public class MatrixPosition {
     this.hashcode = hash(i) + hash(j);
   }
 
-  private int getI() {
+  public int getI() {
     return i;
   }
 
-  private int getJ() {
+  public int getJ() {
     return j;
   }
 
@@ -50,6 +50,6 @@ public class MatrixPosition {
 
   @Override
   public String toString() {
-    return String.format("(%d, %d)\n", i, j);
+    return String.format("(%d, %d)", i, j);
   }
 }
