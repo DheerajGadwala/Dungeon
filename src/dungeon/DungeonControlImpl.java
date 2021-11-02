@@ -1,7 +1,7 @@
 package dungeon;
 
-import static general.Direction.NORTH;
 import static general.Direction.EAST;
+import static general.Direction.NORTH;
 import static general.Direction.SOUTH;
 import static general.Direction.WEST;
 
@@ -43,6 +43,15 @@ public class DungeonControlImpl implements DungeonControl {
     }
   }
 
+  /**
+   * This is a constructor for Dungeon control class.
+   * @param m dimension of the dungeon
+   * @param n dimension of the dungeon
+   * @param enableWrap tells if the dungeon should be wrapped or not
+   * @param interconnectivity interconnectivity of the dungeon
+   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
+   *                                  or when interconnectivity is too high.
+   */
   public DungeonControlImpl(int m, int n, boolean enableWrap, int interconnectivity)
       throws IllegalArgumentException {
     validateMN(m, n);
@@ -52,6 +61,16 @@ public class DungeonControlImpl implements DungeonControl {
     generateValidDungeon(m, n, enableWrap, interconnectivity);
   }
 
+  /**
+   * This is a constructor for Dungeon control class with pseudo random generation of dungeon.
+   * @param m dimension of the dungeon
+   * @param n dimension of the dungeon
+   * @param enableWrap tells if the dungeon should be wrapped or not
+   * @param interconnectivity interconnectivity of the dungeon
+   * @param random numbers to be used in the generation of this dungeon.
+   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
+   *                                  or when interconnectivity is too high.
+   */
   public DungeonControlImpl(int m, int n, boolean enableWrap, int interconnectivity, int ...random)
       throws IllegalArgumentException {
     if (random == null) {
@@ -64,7 +83,7 @@ public class DungeonControlImpl implements DungeonControl {
     generateValidDungeon(m, n, enableWrap, interconnectivity);
   }
 
-  private List<MatrixPosition> getAllPositions () {
+  private List<MatrixPosition> getAllPositions() {
     List<MatrixPosition> allPositions = new ArrayList<>();
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
@@ -81,13 +100,13 @@ public class DungeonControlImpl implements DungeonControl {
       LocationNode start = null;
       LocationNode end = null;
       while (possibleStarts.size() > 0) {
-        int x = randomizer.getIntBetween(0, possibleStarts.size()-1);
+        int x = randomizer.getIntBetween(0, possibleStarts.size() - 1);
         start = dungeon.getLocation(possibleStarts.remove(x));
         List<LocationNode> possibleEndpoints = start.getDistantNodes(5);
         if (possibleEndpoints.size() == 0) {
           continue;
         }
-        int y = randomizer.getIntBetween(0, possibleEndpoints.size()-1);
+        int y = randomizer.getIntBetween(0, possibleEndpoints.size() - 1);
         end = possibleEndpoints.get(y);
         break;
       }
@@ -125,9 +144,9 @@ public class DungeonControlImpl implements DungeonControl {
       throw new IllegalArgumentException("Invalid percentage");
     }
     List<LocationNode> allCaves = dungeon.getCaves();
-    int toBeAddedIn = allCaves.size()*percentage/100;
+    int toBeAddedIn = allCaves.size() * percentage / 100;
     while (toBeAddedIn > 0) {
-      int x = randomizer.getIntBetween(0, allCaves.size()-1);
+      int x = randomizer.getIntBetween(0, allCaves.size() - 1);
       allCaves.remove(x).addTreasure(generateRandomTreasure());
       toBeAddedIn--;
     }
@@ -183,14 +202,15 @@ public class DungeonControlImpl implements DungeonControl {
   }
 
   @Override
-  public String movePlayer(Direction direction) throws IllegalArgumentException, IllegalStateException {
+  public String movePlayer(Direction direction)
+      throws IllegalArgumentException, IllegalStateException {
     try {
       player.movePlayer(direction);
     }
     catch (IllegalStateException e) {
-      return displayMap()+" \nMove not possible.";
+      return displayMap() + " \nMove not possible.";
     }
-    return displayMap()+" \nPlayer moved.";
+    return displayMap() + " \nPlayer moved.";
   }
 
   @Override

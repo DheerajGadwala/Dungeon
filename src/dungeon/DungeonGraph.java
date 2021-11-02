@@ -299,7 +299,8 @@ class DungeonGraph implements LocationGraph {
 
   /**
    * Helps with Kruskal's union find.
-   * @param edge
+   * Adds nodes if they are not present.
+   * @param edge edge to be added
    */
   private void addConnectionSoftly(Connection edge) {
     try {
@@ -340,11 +341,6 @@ class DungeonGraph implements LocationGraph {
     return allGraphs;
   }
 
-  @Override
-  public LocationGraph getMst() {
-    return getMst(0);
-  }
-
   /**
    * Removes connection c and it's opposite from a given list of connections.
    * @param connections list from which connections are to be removed.
@@ -359,20 +355,25 @@ class DungeonGraph implements LocationGraph {
       if (
           (
               c.getMatrixPositionA().equals(t.getMatrixPositionA())
-              && c.getMatrixPositionB().equals(t.getMatrixPositionB())
+                  && c.getMatrixPositionB().equals(t.getMatrixPositionB())
           )
               ||
-          (
-              c.getMatrixPositionA().equals(t.getMatrixPositionB())
-              && c.getMatrixPositionB().equals(t.getMatrixPositionA())
-          )
+              (
+                  c.getMatrixPositionA().equals(t.getMatrixPositionB())
+                      && c.getMatrixPositionB().equals(t.getMatrixPositionA())
+              )
       ) {
         ret.add(connections.remove(i));
-        i-=1;
+        i -= 1;
       }
       i++;
     }
     return ret;
+  }
+
+  @Override
+  public LocationGraph getMst() {
+    return getMst(0);
   }
 
   @Override
@@ -383,7 +384,8 @@ class DungeonGraph implements LocationGraph {
     while (!(
         allGraphs.size() == 1
             &&  allGraphs.get(0).getNumberOfNodes() == this.getNumberOfNodes()
-    ) && connections.size() > 0) {
+      ) && connections.size() > 0) {
+
       int x = randomizer.getIntBetween(0, connections.size() - 1);
       Connection c = connections.get(x);
       List<Connection> removed = removeBiConnections(connections, c);
@@ -397,10 +399,10 @@ class DungeonGraph implements LocationGraph {
     }
     DungeonGraph ret = allGraphs.get(0);
     notAdded.addAll(connections);
-    if(interconnectivity < 0) {
+    if (interconnectivity < 0) {
       throw new IllegalArgumentException("interconnectivity can not be less than 0.");
     }
-    if(interconnectivity > notAdded.size()/2) {
+    if (interconnectivity > notAdded.size() / 2) {
       throw new IllegalArgumentException("interconnectivity too high");
     }
     while (interconnectivity > 0) {
@@ -421,7 +423,7 @@ class DungeonGraph implements LocationGraph {
   @Override
   public List<LocationNode> getCaves() {
     List<LocationNode> caves = new ArrayList<>();
-    for(LocationNode l: locationNodes) {
+    for (LocationNode l: locationNodes) {
       if (l.isCave()) {
         caves.add(l);
       }

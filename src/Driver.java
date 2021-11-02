@@ -1,11 +1,21 @@
+import static general.Direction.EAST;
+import static general.Direction.NORTH;
+import static general.Direction.SOUTH;
+import static general.Direction.WEST;
+
 import dungeon.DungeonControl;
 import dungeon.DungeonControlImpl;
 
 import java.util.Scanner;
 
-import static general.Direction.*;
-
+/**
+ * This is the driver class.
+ */
 public class Driver {
+  /**
+   * Main method.
+   * @param args command line args/
+   */
   public static void main(String[] args) {
     DungeonControl sample;
     sample = new DungeonControlImpl(

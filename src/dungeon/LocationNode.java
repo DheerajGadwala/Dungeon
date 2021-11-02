@@ -4,8 +4,8 @@ import general.Direction;
 import general.MatrixPosition;
 import general.Treasure;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -132,9 +132,9 @@ interface LocationNode {
 
   /**
    * Returns nodes at distance greater than or equal to d.
+   * If d is less than or equal to 0, we return all nodes including this.
    * @param d distance from this node.
    * @return list of nodes at distance greater than or equal to d from this.
-   * If d is less than or equal to 0, we return all nodes including this.
    */
   List<LocationNode> getDistantNodes(int d);
 }

@@ -5,14 +5,17 @@ import static general.Direction.NORTH;
 import static general.Direction.SOUTH;
 import static general.Direction.WEST;
 import static general.Treasure.DIAMOND;
-import static general.Treasure.SAPPHIRE;
 import static general.Treasure.RUBY;
+import static general.Treasure.SAPPHIRE;
 
 import general.Direction;
 import general.MatrixPosition;
 import general.Treasure;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class Location implements LocationNode {
 
@@ -172,7 +175,7 @@ class Location implements LocationNode {
     }
     LocationNode current = queue.remove(0);
     int d = queueD.remove(0);
-    if(visited.contains(current)) {
+    if (visited.contains(current)) {
       return new ArrayList<>();
     }
     visited.add(current);
@@ -183,10 +186,10 @@ class Location implements LocationNode {
     for (Direction direction: Direction.values()) {
       if (
           !current.getLocationAt(direction).isEmptyNode()
-       && !visited.contains(current.getLocationAt(direction))
+          && !visited.contains(current.getLocationAt(direction))
       ) {
         queue.add(current.getLocationAt(direction));
-        queueD.add(d-1);
+        queueD.add(d - 1);
       }
     }
     ret.addAll(getDistantNodesHelper(visited, queue, queueD));
@@ -199,7 +202,7 @@ class Location implements LocationNode {
     visited.add(this);
     List<Integer> queue = new ArrayList<>();
     queue.add(d);
-    List <LocationNode> ret = getDistantNodesHelper(new ArrayList<>(), visited, queue);
+    List<LocationNode> ret = getDistantNodesHelper(new ArrayList<>(), visited, queue);
     return ret;
   }
 

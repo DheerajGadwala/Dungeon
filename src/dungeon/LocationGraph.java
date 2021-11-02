@@ -2,9 +2,8 @@ package dungeon;
 
 import general.Direction;
 import general.MatrixPosition;
-import general.Treasure;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * This represents a graph ADT of locations.

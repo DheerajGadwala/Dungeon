@@ -46,7 +46,11 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public List<LocationNode> getDistantNodesHelper(List<LocationNode> visited, List<LocationNode> queue, List<Integer> queueD) {
+  public List<LocationNode> getDistantNodesHelper(
+      List<LocationNode> visited,
+      List<LocationNode> queue,
+      List<Integer> queueD
+  ) {
     return new ArrayList<>();
   }
 

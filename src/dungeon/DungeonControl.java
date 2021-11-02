@@ -26,6 +26,10 @@ public interface DungeonControl {
    */
   void generateTreasure(int percentage) throws IllegalArgumentException;
 
+  /**
+   * Displays map along with player position and start and end locations.
+   * @return a string representation of the map.
+   */
   String displayMap();
 
   /**
