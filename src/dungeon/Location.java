@@ -94,9 +94,11 @@ class Location implements LocationNode {
         neighbours.get(WEST).getType()
     ));
     if (this.isCave()) {
+      ret.append(" Treasure at this location-> ");
       for (Treasure t: Treasure.values()) {
-        ret.append(t.toString()).append(": ").append(treasures.get(t)).append("\n");
+        ret.append(t.toString()).append(": ").append(treasures.get(t)).append(" ");
       }
+      ret.append('\n');
     }
     return ret.toString();
   }
@@ -118,7 +120,11 @@ class Location implements LocationNode {
 
   @Override
   public boolean hasTreasure() {
-    return treasures.size() != 0;
+    int sum = 0;
+    for (Treasure t: treasures.keySet()) {
+      sum += treasures.get(t);
+    }
+    return sum != 0;
   }
 
   @Override

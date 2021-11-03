@@ -323,7 +323,7 @@ class DungeonGraph implements LocationGraph {
   /**
    * Helps with Kruskal's Union Find.
    */
-  private List<DungeonGraph> add(List<DungeonGraph> allGraphs, Connection edge) {
+  private List<DungeonGraph> addEdgeToSet(List<DungeonGraph> allGraphs, Connection edge) {
     for (DungeonGraph graph: allGraphs) {
       boolean added = false;
       for (Connection c: graph.connections) {
@@ -390,7 +390,7 @@ class DungeonGraph implements LocationGraph {
       Connection c = connections.get(x);
       List<Connection> removed = removeBiConnections(connections, c);
       if (isAddable(allGraphs, c)) {
-        allGraphs = add(allGraphs, c);
+        allGraphs = addEdgeToSet(allGraphs, c);
         allGraphs = unify(allGraphs, c.getMatrixPositionA(), c.getMatrixPositionB());
       }
       else {
@@ -432,6 +432,11 @@ class DungeonGraph implements LocationGraph {
   }
 
   @Override
+  public List<Connection> getAllConnections() {
+    return new ArrayList<>(connections);
+  }
+
+  @Override
   public String toString() {
     StringBuilder ret = new StringBuilder();
     String topBorder = "[***]";
@@ -449,7 +454,7 @@ class DungeonGraph implements LocationGraph {
           else if (k == 1) {
             ret.append(
                 n.hasEmptyNodeAt(WEST) ? "  " : "--")
-                .append("O")
+                .append(n.isCave() ? "O" : "+")
                 .append(n.hasEmptyNodeAt(EAST) ? "  " : "--"
                 );
           }

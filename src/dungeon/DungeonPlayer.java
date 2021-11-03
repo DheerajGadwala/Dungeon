@@ -15,10 +15,10 @@ import java.util.List;
 /**
  * Represents a player at location inside the dungeon.
  */
-public class DungeonPlayer implements Player {
+class DungeonPlayer implements Player {
 
   private final String name;
-  private final HashMap<Treasure, Integer> treasure;
+  private final HashMap<Treasure, Integer> treasures;
   private LocationNode location;
 
   /**
@@ -35,10 +35,10 @@ public class DungeonPlayer implements Player {
       throw new IllegalArgumentException("Location can not be null or empty node.");
     }
     this.name = name;
-    treasure = new HashMap<>();
-    treasure.put(DIAMOND, 0);
-    treasure.put(SAPPHIRE, 0);
-    treasure.put(RUBY, 0);
+    treasures = new HashMap<>();
+    treasures.put(DIAMOND, 0);
+    treasures.put(SAPPHIRE, 0);
+    treasures.put(RUBY, 0);
     this.location = location;
   }
 
@@ -56,7 +56,7 @@ public class DungeonPlayer implements Player {
   public void collectTreasure() {
     HashMap<Treasure, Integer> temp = location.removeTreasure();
     for (Treasure t: Treasure.values()) {
-      treasure.replace(t, treasure.get(t) + temp.get(t));
+      treasures.replace(t, treasures.get(t) + temp.get(t));
     }
   }
 
@@ -71,9 +71,11 @@ public class DungeonPlayer implements Player {
   @Override
   public String getTreasureDescription() {
     StringBuilder ret = new StringBuilder();
+    ret.append("Player treasure: \n ");
     for (Treasure t: Treasure.values()) {
-      ret.append(t.toString()).append(": ").append(treasure.get(t)).append("\n");
+      ret.append(t.toString()).append(": ").append(treasures.get(t)).append(" ");
     }
+    ret.append('\n');
     return ret.toString();
   }
 
@@ -108,5 +110,10 @@ public class DungeonPlayer implements Player {
   @Override
   public MatrixPosition getPosition() {
     return location.getPosition();
+  }
+
+  @Override
+  public String getDescription() {
+    return "Name: " + name + getLocationDescription() + getTreasureDescription();
   }
 }

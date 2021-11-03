@@ -24,7 +24,7 @@ import java.util.Map;
  * This decides the start and end locations.
  * The player can be moved through this on request.
  */
-public class DungeonControlImpl implements DungeonControl {
+public class DungeonGame implements Game {
 
   private final int m;
   private final int n;
@@ -33,6 +33,7 @@ public class DungeonControlImpl implements DungeonControl {
   private LocationNode start;
   private LocationNode end;
   private Player player;
+  private boolean gameOver;
 
   private void validateMN(int m, int n) {
     if (m < 0 || n < 0) {
@@ -52,7 +53,7 @@ public class DungeonControlImpl implements DungeonControl {
    * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
    *                                  or when interconnectivity is too high.
    */
-  public DungeonControlImpl(int m, int n, boolean enableWrap, int interconnectivity)
+  public DungeonGame(int m, int n, boolean enableWrap, int interconnectivity)
       throws IllegalArgumentException {
     validateMN(m, n);
     this.randomizer = new ActualRandomizer();
@@ -71,7 +72,7 @@ public class DungeonControlImpl implements DungeonControl {
    * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
    *                                  or when interconnectivity is too high.
    */
-  public DungeonControlImpl(int m, int n, boolean enableWrap, int interconnectivity, int ...random)
+  public DungeonGame(int m, int n, boolean enableWrap, int interconnectivity, int ...random)
       throws IllegalArgumentException {
     if (random == null) {
       throw new IllegalArgumentException("Random numbers can not be null");
@@ -83,7 +84,8 @@ public class DungeonControlImpl implements DungeonControl {
     generateValidDungeon(m, n, enableWrap, interconnectivity);
   }
 
-  private List<MatrixPosition> getAllPositions() {
+  @Override
+  public List<MatrixPosition> getAllPositions() {
     List<MatrixPosition> allPositions = new ArrayList<>();
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
@@ -91,6 +93,35 @@ public class DungeonControlImpl implements DungeonControl {
       }
     }
     return allPositions;
+  }
+
+  private void validatePosition(MatrixPosition position) throws IllegalArgumentException {
+    if (
+        position.getI() < 0
+        || position.getI() >= m
+        || position.getJ() < 0
+        || position.getJ() >= n
+    ) {
+      throw new IllegalArgumentException("Position not in this dungeon.");
+    }
+  }
+
+  @Override
+  public boolean caveAtPosition(MatrixPosition position) throws IllegalArgumentException {
+    validatePosition(position);
+    return dungeon.getLocation(position).isCave();
+  }
+
+  @Override
+  public boolean tunnelAtPosition(MatrixPosition position) throws IllegalArgumentException {
+    validatePosition(position);
+    return dungeon.getLocation(position).isTunnel();
+  }
+
+  @Override
+  public boolean treasureAtPosition(MatrixPosition position) throws IllegalArgumentException {
+    validatePosition(position);
+    return dungeon.getLocation(position).hasTreasure();
   }
 
   private void generateValidDungeon(int m, int n, boolean enableWrap, int interconnectivity) {
@@ -102,12 +133,20 @@ public class DungeonControlImpl implements DungeonControl {
       while (possibleStarts.size() > 0) {
         int x = randomizer.getIntBetween(0, possibleStarts.size() - 1);
         start = dungeon.getLocation(possibleStarts.remove(x));
+        if (start.isTunnel()) {
+          start = null;
+          continue;
+        }
         List<LocationNode> possibleEndpoints = start.getDistantNodes(5);
         if (possibleEndpoints.size() == 0) {
           continue;
         }
         int y = randomizer.getIntBetween(0, possibleEndpoints.size() - 1);
         end = possibleEndpoints.get(y);
+        if (end.isTunnel()) {
+          end = null;
+          continue;
+        }
         break;
       }
       if (start == null || end == null) {
@@ -127,13 +166,12 @@ public class DungeonControlImpl implements DungeonControl {
       throw new IllegalArgumentException("Name can not be null or empty.");
     }
     player = new DungeonPlayer(name, start);
-    System.out.println(displayMap());
   }
 
   private Map<Treasure, Integer> generateRandomTreasure() {
     Map<Treasure, Integer> ret = new HashMap<>();
     for (Treasure t: Treasure.values()) {
-      ret.put(t, randomizer.getIntBetween(0, 3));
+      ret.put(t, randomizer.getIntBetween(1, 3));
     }
     return ret;
   }
@@ -144,8 +182,8 @@ public class DungeonControlImpl implements DungeonControl {
       throw new IllegalArgumentException("Invalid percentage");
     }
     List<LocationNode> allCaves = dungeon.getCaves();
-    int toBeAddedIn = allCaves.size() * percentage / 100;
-    while (toBeAddedIn > 0) {
+    double toBeAddedIn = allCaves.size() * percentage / 100.0;
+    while (toBeAddedIn > 1) {
       int x = randomizer.getIntBetween(0, allCaves.size() - 1);
       allCaves.remove(x).addTreasure(generateRandomTreasure());
       toBeAddedIn--;
@@ -153,7 +191,8 @@ public class DungeonControlImpl implements DungeonControl {
   }
 
   @Override
-  public String displayMap() {
+  public String displayMap() throws IllegalStateException {
+    validatePlayer();
     StringBuilder ret = new StringBuilder();
     String topBorder = "[***]";
     String sideBorder = "[***]";
@@ -180,6 +219,8 @@ public class DungeonControlImpl implements DungeonControl {
                       i == playerI && j == playerJ ? "P"
                     : i == endI && j == endJ ? "E"
                     : i == startI && j == startJ ? "S"
+                    : n.isTunnel() ? "+"
+                    : n.hasTreasure() ? "T"
                     : "O"
                 ).append(n.hasEmptyNodeAt(EAST) ? "  " : "--"
                 );
@@ -197,24 +238,130 @@ public class DungeonControlImpl implements DungeonControl {
   }
 
   @Override
+  public String displayStaticMap() {
+    return dungeon.toString();
+  }
+
+  @Override
   public List<Direction> getPossibleMoves() throws IllegalStateException {
     return player.getPossibleDirections();
   }
 
   @Override
   public String movePlayer(Direction direction)
-      throws IllegalArgumentException, IllegalStateException {
+      throws IllegalStateException {
+    validatePlayer();
+    if (isGameOver()) {
+      return "Player has already reached the end, no more moves possible.";
+    }
     try {
       player.movePlayer(direction);
+      if (getPlayerPosition().equals(getEndPosition())) {
+        gameOver = true;
+        return "Player has reached the end location!";
+      }
+      return "Player moved.";
     }
     catch (IllegalStateException e) {
-      return displayMap() + " \nMove not possible.";
+      return "Move not possible.";
     }
-    return displayMap() + " \nPlayer moved.";
+  }
+
+  private LocationNode getPlayerLocation() {
+    return dungeon.getLocation(player.getPosition());
+  }
+
+  private void validatePlayer() throws IllegalStateException {
+    if (player == null) {
+      throw new IllegalStateException("Player has not been created yet.");
+    }
   }
 
   @Override
   public String cedeTreasure() throws IllegalStateException {
-    return null;
+    LocationNode loc = getPlayerLocation();
+    if (loc.hasTreasure()) {
+      player.collectTreasure();
+      return "Player has collected the treasure from this cave.";
+    }
+    else if (loc.isTunnel()) {
+      return "Player is in a tunnel.";
+    }
+    else {
+      return "No treasure found in this cave.";
+    }
+  }
+
+  @Override
+  public MatrixPosition getPlayerPosition() throws IllegalStateException {
+    validatePlayer();
+    return player.getPosition();
+  }
+
+  @Override
+  public boolean playerLocationHasTreasure() throws IllegalStateException {
+    return dungeon.getLocation(player.getPosition()).hasTreasure();
+  }
+
+  @Override
+  public MatrixPosition getStartPosition() {
+    return start.getPosition();
+  }
+
+  @Override
+  public MatrixPosition getEndPosition() {
+    return end.getPosition();
+  }
+
+  @Override
+  public boolean isGameOver() {
+    return gameOver;
+  }
+
+  @Override
+  public String getPlayerDescription() throws IllegalStateException {
+    validatePlayer();
+    return player.getDescription();
+  }
+
+  @Override
+  public String getPlayerLocationDescription() throws IllegalStateException {
+    validatePlayer();
+    return getPlayerLocation().getDescription();
+  }
+
+  @Override
+  public String getPlayerTreasureDescription() throws IllegalStateException {
+    validatePlayer();
+    return player.getTreasureDescription();
+  }
+
+  @Override
+  public String gameStatus() throws IllegalStateException {
+    if (player == null) {
+      return "Game has not started yet, player is yet to be added.";
+    }
+    if (getPlayerPosition().equals(getStartPosition())) {
+      return "Game has started";
+    }
+    else if (isGameOver()) {
+      return "Game has ended!";
+    }
+    else {
+      return "Player is still searching for the end location";
+    }
+  }
+
+  @Override
+  public List<List<MatrixPosition>> getAllConnections() {
+    List<Connection> connections = dungeon.getAllConnections();
+    List<List<MatrixPosition>> ret = new ArrayList<>();
+    for (Connection connection: connections) {
+      List<MatrixPosition> temp = new ArrayList<>();
+      temp.add(connection.getMatrixPositionA());
+      temp.add(connection.getMatrixPositionB());
+      ret.add(temp);
+    }
+    return ret;
   }
 }

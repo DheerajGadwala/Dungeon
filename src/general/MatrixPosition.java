@@ -21,10 +21,18 @@ public class MatrixPosition {
     this.hashcode = hash(i) + hash(j);
   }
 
+  /**
+   * returns i of this matrix position.
+   * @return i.
+   */
   public int getI() {
     return i;
   }
 
+  /**
+   * returns j of this matrix position.
+   * @return j.
+   */
   public int getJ() {
     return j;
   }

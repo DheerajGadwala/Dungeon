@@ -11,7 +11,8 @@ import java.util.List;
  * A player has a location.
  * A player can look for and move to the neighbouring locations as well.
  */
-public interface Player {
+interface Player {
+
   /**
    * get name of the player.
    * @return name of the player
@@ -67,5 +68,12 @@ public interface Player {
    * @return a matrix position object representing the player's location.
    */
   MatrixPosition getPosition();
+
+  /**
+   * Returns description of the player.
+   * Includes player name, player location details and player treasure details.
+   * @return description of the player.
+   */
+  String getDescription();
 
 }
