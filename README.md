@@ -94,7 +94,7 @@ both these classes extended an interface and had the same methods. This helps wi
 
 ### 7. Assumptions:
 ###### That the percentage of caves that have treasure should be around the given percentage and not extactly the given percentage.
-###### Minimum size of the dungeon m*n follows the condition m*n-2>5
+###### Minimum size of the dungeon m\*n follows the condition m\*n-2>5
 
 ### 8. Limitations:
 ###### Did not test if connectivity of non-deterministically generated dungeon is as expected.
