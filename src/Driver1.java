@@ -82,6 +82,7 @@ public class Driver1 {
     }
     while (!game.isGameOver());
     System.out.println(game.displayMap());
+    System.out.println("Final Player Description: \n" + game.getPlayerDescription());
     System.out.println(game.gameStatus());
   }
 }

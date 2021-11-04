@@ -452,11 +452,9 @@ class DungeonGraph implements LocationGraph {
             ret.append(n.hasEmptyNodeAt(NORTH) ? "     " : "  |  ");
           }
           else if (k == 1) {
-            ret.append(
-                n.hasEmptyNodeAt(WEST) ? "  " : "--")
+            ret.append(n.hasEmptyNodeAt(WEST) ? "  " : "--")
                 .append(n.isCave() ? "O" : "+")
-                .append(n.hasEmptyNodeAt(EAST) ? "  " : "--"
-                );
+                .append(n.hasEmptyNodeAt(EAST) ? "  " : "--");
           }
           else {
             ret.append(n.hasEmptyNodeAt(SOUTH) ? "     " : "  |  ");

@@ -183,7 +183,7 @@ public class DungeonGame implements Game {
     }
     List<LocationNode> allCaves = dungeon.getCaves();
     double toBeAddedIn = allCaves.size() * percentage / 100.0;
-    while (toBeAddedIn > 1) {
+    while (toBeAddedIn - 1 >= 0) {
       int x = randomizer.getIntBetween(0, allCaves.size() - 1);
       allCaves.remove(x).addTreasure(generateRandomTreasure());
       toBeAddedIn--;
@@ -222,8 +222,7 @@ public class DungeonGame implements Game {
                     : n.isTunnel() ? "+"
                     : n.hasTreasure() ? "T"
                     : "O"
-                ).append(n.hasEmptyNodeAt(EAST) ? "  " : "--"
-                );
+                ).append(n.hasEmptyNodeAt(EAST) ? "  " : "--");
           }
           else {
             ret.append(n.hasEmptyNodeAt(SOUTH) ? "     " : "  |  ");
