@@ -5,7 +5,7 @@ In this project we use the principles of object oriented programming to implemen
 I used the Kruskal's Union Find Algorithm to generate an MST and added more edges depending on the interconnectivity to generate the dungeon.
 The Game type has a dungeon map generated at the start of the game. A player is created on command. The Game type can be used to move this player in the dungeon.
 The difficult part of this project was testing the various classess ans methods. This was solved by the use of a wrapper class around Java.util.Random, 
-along with another pseudoRandom class which takes integer varargs as parameters ans allows simulation of random number generation, 
+along with another pseudoRandom class which takes integer varargs as parameters and allows simulation of random number generation, 
 both these classes extended an interface and had the same methods. This helps with testing the various classes of this module.
 
 
