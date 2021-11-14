@@ -23,7 +23,6 @@ class Location implements LocationNode {
   private final HashMap<Direction, LocationNode> neighbours;
   private final MatrixPosition position;
   private HashMap<Treasure, Integer> treasures;
-  private Monster monster;
 
   public Location(
       MatrixPosition position,
@@ -127,25 +126,6 @@ class Location implements LocationNode {
       sum += treasures.get(t);
     }
     return sum != 0;
-  }
-
-  @Override
-  public void setMonster(Monster monster) throws IllegalArgumentException {
-    if (monster == null) {
-      throw new IllegalArgumentException("Monster can not be null");
-    }
-    else if (!this.isCave()) {
-      throw new IllegalArgumentException("Can add monsters to caves only.");
-    }
-    else if (this.hasMonster()) {
-      throw new IllegalArgumentException("This cave already has a monster.");
-    }
-    this.monster = monster;
-  }
-
-  @Override
-  public boolean hasMonster() {
-    return monster != null;
   }
 
   @Override

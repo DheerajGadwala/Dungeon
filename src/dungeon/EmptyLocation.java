@@ -17,7 +17,7 @@ class EmptyLocation implements LocationNode {
 
   private static final EmptyLocation instance = new EmptyLocation();
 
-  private EmptyLocation() {
+  EmptyLocation() {
   }
 
   static EmptyLocation getInstance() {
@@ -93,16 +93,6 @@ class EmptyLocation implements LocationNode {
 
   @Override
   public boolean hasTreasure() {
-    return false;
-  }
-
-  @Override
-  public void setMonster(Monster monster) throws IllegalArgumentException {
-    throw new IllegalStateException("Can not add monster to sentinel.");
-  }
-
-  @Override
-  public boolean hasMonster() {
     return false;
   }
 
