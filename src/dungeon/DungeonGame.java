@@ -28,12 +28,14 @@ public class DungeonGame implements Game {
 
   private final int m;
   private final int n;
+  private final int percentage;
   private final Randomizer randomizer;
   private LocationGraph dungeon;
   private LocationNode start;
   private LocationNode end;
   private Player player;
   private boolean gameOver;
+  private static final int MIN_SE_DISTANCE = 5;
 
   private void validateMN(int m, int n) {
     if (m < 0 || n < 0) {
@@ -42,6 +44,25 @@ public class DungeonGame implements Game {
     else if (m + n - 2 <= 5) {
       throw new IllegalArgumentException("m+n-2 needs be greater than 5.");
     }
+  }
+
+  private DungeonGame(
+      int m, int n, int percentage, boolean enableWrap,
+      int interconnectivity, Randomizer randomizer
+  ) throws IllegalArgumentException {
+    validateMN(m, n);
+    if (randomizer == null){
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    if (percentage < 0 || percentage > 100) {
+      throw new IllegalArgumentException("Invalid percentage");
+    }
+    this.randomizer = randomizer;
+    this.m = m;
+    this.n = n;
+    this.percentage = percentage;
+    generateValidDungeon(m, n, enableWrap, interconnectivity);
+    generateTreasure(percentage);
   }
 
   /**
@@ -53,13 +74,9 @@ public class DungeonGame implements Game {
    * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
    *                                  or when interconnectivity is too high.
    */
-  public DungeonGame(int m, int n, boolean enableWrap, int interconnectivity)
+  public DungeonGame(int m, int n, int percentage, boolean enableWrap, int interconnectivity)
       throws IllegalArgumentException {
-    validateMN(m, n);
-    this.randomizer = new ActualRandomizer();
-    this.m = m;
-    this.n = n;
-    generateValidDungeon(m, n, enableWrap, interconnectivity);
+    this(m, n, percentage, enableWrap, interconnectivity, new ActualRandomizer());
   }
 
   /**
@@ -69,19 +86,12 @@ public class DungeonGame implements Game {
    * @param enableWrap tells if the dungeon should be wrapped or not
    * @param interconnectivity interconnectivity of the dungeon
    * @param random numbers to be used in the generation of this dungeon.
-   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
-   *                                  or when interconnectivity is too high.
+   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation or
+   *                                  when interconnectivity is too high or when random is null.
    */
-  public DungeonGame(int m, int n, boolean enableWrap, int interconnectivity, int ...random)
+  public DungeonGame(int m, int n, int percentage, boolean enableWrap, int interconnectivity, int ...random)
       throws IllegalArgumentException {
-    if (random == null) {
-      throw new IllegalArgumentException("Random numbers can not be null");
-    }
-    validateMN(m, n);
-    this.randomizer = new PseudoRandomizer(random);
-    this.m = m;
-    this.n = n;
-    generateValidDungeon(m, n, enableWrap, interconnectivity);
+    this(m, n, percentage, enableWrap, interconnectivity, new PseudoRandomizer(random));
   }
 
   @Override
@@ -95,7 +105,8 @@ public class DungeonGame implements Game {
     return allPositions;
   }
 
-  private void validatePosition(MatrixPosition position) throws IllegalArgumentException {
+  private void validatePosition(MatrixPosition position)
+      throws IllegalArgumentException {
     if (
         position.getI() < 0
         || position.getI() >= m
@@ -107,19 +118,22 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public boolean caveAtPosition(MatrixPosition position) throws IllegalArgumentException {
+  public boolean caveAtPosition(MatrixPosition position)
+      throws IllegalArgumentException {
     validatePosition(position);
     return dungeon.getLocation(position).isCave();
   }
 
   @Override
-  public boolean tunnelAtPosition(MatrixPosition position) throws IllegalArgumentException {
+  public boolean tunnelAtPosition(MatrixPosition position)
+      throws IllegalArgumentException {
     validatePosition(position);
     return dungeon.getLocation(position).isTunnel();
   }
 
   @Override
-  public boolean treasureAtPosition(MatrixPosition position) throws IllegalArgumentException {
+  public boolean treasureAtPosition(MatrixPosition position)
+      throws IllegalArgumentException {
     validatePosition(position);
     return dungeon.getLocation(position).hasTreasure();
   }
@@ -137,7 +151,10 @@ public class DungeonGame implements Game {
           start = null;
           continue;
         }
-        List<LocationNode> possibleEndpoints = start.getDistantNodes(5);
+        List<LocationNode> possibleEndpoints = start.getRequiredNodes(
+            (d) -> d > MIN_SE_DISTANCE,
+            (node) -> true
+        );
         if (possibleEndpoints.size() == 0) {
           continue;
         }
@@ -158,7 +175,8 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public void createPlayer(String name) throws IllegalArgumentException, IllegalStateException {
+  public void createPlayer(String name)
+      throws IllegalArgumentException, IllegalStateException {
     if (player != null) {
       throw new IllegalStateException("Dungeon already has a player.");
     }
@@ -176,11 +194,8 @@ public class DungeonGame implements Game {
     return ret;
   }
 
-  @Override
-  public void generateTreasure(int percentage) throws IllegalArgumentException {
-    if (percentage < 0 || percentage > 100) {
-      throw new IllegalArgumentException("Invalid percentage");
-    }
+  private void generateTreasure(int percentage)
+      throws IllegalArgumentException {
     List<LocationNode> allCaves = dungeon.getCaves();
     double toBeAddedIn = allCaves.size() * percentage / 100.0;
     while (toBeAddedIn - 1 >= 0) {
@@ -191,7 +206,8 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public String displayMap() throws IllegalStateException {
+  public String displayMap()
+      throws IllegalStateException {
     validatePlayer();
     StringBuilder ret = new StringBuilder();
     String topBorder = "[***]";
@@ -242,7 +258,8 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public List<Direction> getPossibleMoves() throws IllegalStateException {
+  public List<Direction> getPossibleMoves()
+      throws IllegalStateException {
     return player.getPossibleDirections();
   }
 
@@ -270,14 +287,16 @@ public class DungeonGame implements Game {
     return dungeon.getLocation(player.getPosition());
   }
 
-  private void validatePlayer() throws IllegalStateException {
+  private void validatePlayer()
+      throws IllegalStateException {
     if (player == null) {
       throw new IllegalStateException("Player has not been created yet.");
     }
   }
 
   @Override
-  public String cedeTreasure() throws IllegalStateException {
+  public String cedeTreasure()
+      throws IllegalStateException {
     LocationNode loc = getPlayerLocation();
     if (loc.hasTreasure()) {
       player.collectTreasure();
@@ -292,13 +311,15 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public MatrixPosition getPlayerPosition() throws IllegalStateException {
+  public MatrixPosition getPlayerPosition()
+      throws IllegalStateException {
     validatePlayer();
     return player.getPosition();
   }
 
   @Override
-  public boolean playerLocationHasTreasure() throws IllegalStateException {
+  public boolean playerLocationHasTreasure()
+      throws IllegalStateException {
     return dungeon.getLocation(player.getPosition()).hasTreasure();
   }
 
@@ -336,7 +357,8 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public String gameStatus() throws IllegalStateException {
+  public String gameStatus()
+      throws IllegalStateException {
     if (player == null) {
       return "Game has not started yet, player is yet to be added.";
     }
@@ -349,6 +371,11 @@ public class DungeonGame implements Game {
     else {
       return "Player is still searching for the end location";
     }
+  }
+
+  @Override
+  public int getTreasurePercentage() {
+    return percentage;
   }
 
   @Override

@@ -28,7 +28,7 @@ class DungeonGraph implements LocationGraph {
   private final int n;
 
   /**
-   * Creates a en empty locations graph.
+   * Creates an empty locations graph.
    * This constructor is used for mst generation.
    * @param randomizer used for randomization during mst generation
    * @param m dimension of the matrix [maximum]

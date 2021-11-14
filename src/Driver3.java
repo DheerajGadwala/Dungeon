@@ -23,11 +23,11 @@ public class Driver3 {
     game = new DungeonGame(
         Integer.parseInt(args[0]),
         Integer.parseInt(args[1]),
+        Integer.parseInt(args[4]),
         Boolean.parseBoolean(args[2]),
         Integer.parseInt(args[3])
     );
     game.createPlayer("Dheeraj");
-    game.generateTreasure(Integer.parseInt(args[4]));
     Scanner inp = new Scanner(System.in);
     StringBuilder ret = new StringBuilder(game.gameStatus());
     do {

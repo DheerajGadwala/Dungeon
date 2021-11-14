@@ -16,12 +16,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 class Location implements LocationNode {
 
   private final HashMap<Direction, LocationNode> neighbours;
   private final MatrixPosition position;
   private HashMap<Treasure, Integer> treasures;
+  private Monster monster;
 
   public Location(
       MatrixPosition position,
@@ -128,6 +130,25 @@ class Location implements LocationNode {
   }
 
   @Override
+  public void setMonster(Monster monster) throws IllegalArgumentException {
+    if (monster == null) {
+      throw new IllegalArgumentException("Monster can not be null");
+    }
+    else if (!this.isCave()) {
+      throw new IllegalArgumentException("Can add monsters to caves only.");
+    }
+    else if (this.hasMonster()) {
+      throw new IllegalArgumentException("This cave already has a monster.");
+    }
+    this.monster = monster;
+  }
+
+  @Override
+  public boolean hasMonster() {
+    return monster != null;
+  }
+
+  @Override
   public LocationNode getLocationAt(Direction direction) {
     return neighbours.get(direction);
   }
@@ -141,7 +162,7 @@ class Location implements LocationNode {
   public void setNeighbour(Direction direction, LocationNode location)
       throws IllegalArgumentException {
     if (direction == null || location == null) {
-      throw new IllegalArgumentException("direction/ location can not be null");
+      throw new IllegalArgumentException("direction/ location can not be null.");
     }
     neighbours.put(direction, location);
   }
@@ -171,10 +192,12 @@ class Location implements LocationNode {
   }
 
   @Override
-  public List<LocationNode> getDistantNodesHelper(
+  public List<LocationNode> getRequiredNodesHelper(
       List<LocationNode> visited,
       List<LocationNode> queue,
-      List<Integer> queueD
+      List<Integer> queueD,
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
   ) {
     if (queue.size() == 0) {
       return new ArrayList<>();
@@ -186,7 +209,7 @@ class Location implements LocationNode {
     }
     visited.add(current);
     List<LocationNode> ret = new ArrayList<>();
-    if (d < 0) {
+    if (distanceRequirement.test(d) && nodeRequirement.test(current)) {
       ret.add(current);
     }
     for (Direction direction: Direction.values()) {
@@ -195,21 +218,31 @@ class Location implements LocationNode {
           && !visited.contains(current.getLocationAt(direction))
       ) {
         queue.add(current.getLocationAt(direction));
-        queueD.add(d - 1);
+        queueD.add(d + 1);
       }
     }
-    ret.addAll(getDistantNodesHelper(visited, queue, queueD));
+    ret.addAll(
+        getRequiredNodesHelper(
+            visited, queue, queueD,
+            distanceRequirement, nodeRequirement
+        )
+    );
     return ret;
   }
 
   @Override
-  public List<LocationNode> getDistantNodes(int d) {
+  public List<LocationNode> getRequiredNodes(
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
+  ) {
     List<LocationNode> visited = new ArrayList<>();
     visited.add(this);
     List<Integer> queue = new ArrayList<>();
-    queue.add(d);
-    List<LocationNode> ret = getDistantNodesHelper(new ArrayList<>(), visited, queue);
-    return ret;
+    queue.add(0);
+    return getRequiredNodesHelper(
+        new ArrayList<>(), visited, queue,
+        distanceRequirement, nodeRequirement
+    );
   }
 
   @Override

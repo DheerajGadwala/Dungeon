@@ -16,7 +16,7 @@ public class PseudoRandomizer implements Randomizer {
    */
   public PseudoRandomizer(int... random) {
     if (random == null) {
-      throw new IllegalArgumentException("This can not be null.");
+      throw new IllegalArgumentException("Invalid random numbers");
     }
     this.fakeRandom = random;
     this.pointer = 0;
@@ -24,6 +24,9 @@ public class PseudoRandomizer implements Randomizer {
 
   @Override
   public int getIntBetween(int a, int b) {
+    if (a > b) {
+      throw new IllegalArgumentException("Invalid range of numbers.");
+    }
     return fakeRandom[pointer++];
   }
 }

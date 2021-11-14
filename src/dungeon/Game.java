@@ -10,6 +10,7 @@ import java.util.List;
  * One player can be created in this.
  * A locationGraph is created on construction.
  * The player can be operated from this on the location graph.
+ * A game is created with treasure in given percentage of caves.
  */
 public interface Game {
 
@@ -20,13 +21,6 @@ public interface Game {
    * @throws IllegalStateException if a player already exists in the dungeon.
    */
   void createPlayer(String name) throws IllegalArgumentException, IllegalStateException;
-
-  /**
-   * Generates random treasure in the given percentage of location nodes.
-   * @param percentage percentage of locations which are supposed to have treasure.
-   * @throws IllegalArgumentException if the percentage is not between 0-100.
-   */
-  void generateTreasure(int percentage) throws IllegalArgumentException;
 
   /**
    * Displays map along with player position and start and end locations.
@@ -136,6 +130,12 @@ public interface Game {
    * @return status of the game.
    */
   String gameStatus();
+
+  /**
+   * returns percentage of caves that have treasure.
+   * @return percentage of caves that have treasure.
+   */
+  int getTreasurePercentage();
 
   /**
    * Returns all connections between nodes.

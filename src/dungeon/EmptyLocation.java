@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Singleton Pattern.
@@ -46,16 +47,21 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public List<LocationNode> getDistantNodesHelper(
+  public List<LocationNode> getRequiredNodesHelper(
       List<LocationNode> visited,
       List<LocationNode> queue,
-      List<Integer> queueD
+      List<Integer> queueD,
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
   ) {
     return new ArrayList<>();
   }
 
   @Override
-  public List<LocationNode> getDistantNodes(int d) {
+  public List<LocationNode> getRequiredNodes(
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
+  ) {
     throw new IllegalStateException("Can not perform this operation from empty node.");
   }
 
@@ -87,6 +93,16 @@ class EmptyLocation implements LocationNode {
 
   @Override
   public boolean hasTreasure() {
+    return false;
+  }
+
+  @Override
+  public void setMonster(Monster monster) throws IllegalArgumentException {
+    throw new IllegalStateException("Can not add monster to sentinel.");
+  }
+
+  @Override
+  public boolean hasMonster() {
     return false;
   }
 

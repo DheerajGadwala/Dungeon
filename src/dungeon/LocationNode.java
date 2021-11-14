@@ -7,6 +7,7 @@ import general.Treasure;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Represents the union type for locations.
@@ -61,6 +62,19 @@ interface LocationNode {
    * @return true if this has treasure else false.
    */
   boolean hasTreasure();
+
+  /**
+   * sets a monster at this location.
+   * @param monster monster to be set
+   * @throws IllegalArgumentException if monster is null.
+   */
+  void setMonster(Monster monster) throws IllegalArgumentException;
+
+  /**
+   * checks if location has a monster.
+   * @return true if location has monster else false.
+   */
+  boolean hasMonster();
 
   /**
    * type of this object as a string.
@@ -118,23 +132,30 @@ interface LocationNode {
 
   /**
    * We perform BFS here.
-   * Helper method for getDistantNodes.
+   * Helper method for getRequiredNodes.
    * @param visited already visited nodes
    * @param queue queue of visiting
    * @param queueD queue of distance from initial node
+   * @param distanceRequirement requirement of distance from.
+   * @param nodeRequirement requirement from the node.
    * @return list of nodes at distance greater than or equal to d from this.
    */
-  List<LocationNode> getDistantNodesHelper(
+  List<LocationNode> getRequiredNodesHelper(
       List<LocationNode> visited,
       List<LocationNode> queue,
-      List<Integer> queueD
+      List<Integer> queueD,
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
   );
 
   /**
-   * Returns nodes at distance greater than or equal to d.
-   * If d is less than or equal to 0, we return all nodes including this.
-   * @param d distance from this node.
-   * @return list of nodes at distance greater than or equal to d from this.
+   * Returns nodes which satisfy the given predicates.
+   * @param distanceRequirement requirement of distance from this node.
+   * @param nodeRequirement requirement from the node.
+   * @return list of nodes that meet both requirements.
    */
-  List<LocationNode> getDistantNodes(int d);
+  List<LocationNode> getRequiredNodes(
+      Predicate<Integer> distanceRequirement,
+      Predicate<LocationNode> nodeRequirement
+  );
 }

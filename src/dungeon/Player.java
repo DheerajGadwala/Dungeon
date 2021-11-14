@@ -76,4 +76,14 @@ interface Player {
    */
   String getDescription();
 
+  /**
+   * kills the player.
+   */
+  void die();
+
+  /**
+   * Returns true if the player is eaten.
+   * @return true if player is eaten.
+   */
+  boolean isAlive();
 }

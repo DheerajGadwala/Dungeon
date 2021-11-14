@@ -20,6 +20,7 @@ class DungeonPlayer implements Player {
   private final String name;
   private final HashMap<Treasure, Integer> treasures;
   private LocationNode location;
+  private boolean isAlive;
 
   /**
    * Creates an instance of the dungeon player.
@@ -40,6 +41,7 @@ class DungeonPlayer implements Player {
     treasures.put(SAPPHIRE, 0);
     treasures.put(RUBY, 0);
     this.location = location;
+    this.isAlive = true;
   }
 
   @Override
@@ -115,5 +117,15 @@ class DungeonPlayer implements Player {
   @Override
   public String getDescription() {
     return "Name: " + name + getLocationDescription() + getTreasureDescription();
+  }
+
+  @Override
+  public void die() {
+    this.isAlive = false;
+  }
+
+  @Override
+  public boolean isAlive() {
+    return isAlive;
   }
 }

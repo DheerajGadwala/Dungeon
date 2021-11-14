@@ -19,13 +19,12 @@ public class Driver2 {
    */
   public static void main(String[] args) {
     Game game;
-    game = new DungeonGame(5, 5, true, 4,
+    game = new DungeonGame(5, 5, 70, true, 4,
         40,60,27,38,24,50,16,52,11,78,38,29,51,9,47,8,
         50,23,57,44,15,22,20,46,3,31,46,8,23,0,0,16,2,11,15,17,
         11,3,8,3,1,3,0,3,3,2,6,2,2,3,3,3,1,2,3,3,3,3,3,1,3,2
         );
     game.createPlayer("Dheeraj");
-    game.generateTreasure(70);
     Scanner inp = new Scanner(System.in);
     String ret = game.gameStatus();
     do {

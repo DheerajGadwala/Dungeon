@@ -14,18 +14,18 @@ import java.util.Scanner;
 public class Driver1 {
   /**
    * Main method.
-   * @param args command line args/
+   * @param args command line args
    */
   public static void main(String[] args) {
     Game game;
     game = new DungeonGame(
         Integer.parseInt(args[0]),
         Integer.parseInt(args[1]),
+        Integer.parseInt(args[4]),
         Boolean.parseBoolean(args[2]),
         Integer.parseInt(args[3])
     );
     game.createPlayer("Dheeraj");
-    game.generateTreasure(Integer.parseInt(args[4]));
     Scanner inp = new Scanner(System.in);
     String ret = game.gameStatus();
     do {
