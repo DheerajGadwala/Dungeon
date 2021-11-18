@@ -30,6 +30,11 @@ class Otyugh implements Monster {
   }
 
   @Override
+  public boolean isInjured() {
+    return health == 1;
+  }
+
+  @Override
   public void attack(Player player) {
     if (!player.isAlive()) {
       throw new IllegalArgumentException("Player is already dead");

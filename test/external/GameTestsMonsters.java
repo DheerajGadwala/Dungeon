@@ -13,7 +13,7 @@ import static general.ShotResult.*;
 import static junit.framework.Assert.*;
 
 
-public class GameTestForMonster {
+public class GameTestsMonsters {
 
   private Game nonWrappingSampleForSmell;
   private Game wrappingSampleForSmell;
@@ -93,12 +93,12 @@ public class GameTestForMonster {
     game2.createPlayer();
     // Same games with different future.
     assertEquals(game1.toString(), game2.toString());
-    // Player dies in game 1, last vararg: 1.
+    // Player dies in game 1, future given by varargs.
     game1.shootArrow(NORTH, 1); //to reduce monster's health.
     game1.movePlayer(NORTH);
     assertTrue(game1.isGameOver());
     assertFalse(game1.hasPlayerWon());
-    // Player survives in game 2, last vararg: 2.
+    // Player survives in game 2, future given by varargs.
     game2.shootArrow(NORTH, 1); //to reduce monster's health.
     game2.movePlayer(NORTH);
     assertFalse(game2.isGameOver());
@@ -731,7 +731,7 @@ public class GameTestForMonster {
    * 2 monsters 1 distance away.
    */
   @Test
-  public void testNoSlightlyPungentWrapping() {
+  public void testSlightlyPungentWrapping() {
     wrappingSampleForSmell.movePlayer(WEST);
     wrappingSampleForSmell.shootArrow(WEST, 1);
     wrappingSampleForSmell.shootArrow(WEST, 1);
@@ -822,7 +822,7 @@ public class GameTestForMonster {
    * 2 monsters 1 distance away.
    */
   @Test
-  public void testVeryPungentWrapping1Monsters() {
+  public void testVeryPungentWrapping1Monster() {
     wrappingSampleForSmell.movePlayer(WEST);
     wrappingSampleForSmell.shootArrow(WEST, 1);
     wrappingSampleForSmell.shootArrow(WEST, 1);
@@ -860,4 +860,69 @@ public class GameTestForMonster {
     assertEquals(MORE_PUNGENT, smell);
   }
 
+  /**
+   * Check that player smells more pungent when with an injured monster.
+   */
+  @Test
+  public void testSmellWhenPlayerWithInjuredMonster() {
+    //Monster to the north of start location.
+    int[] varargs = new int[]{14, 7, 7, 1, 45, 33, 36, 52, 61, 33, 18, 15, 43, 14, 27, 12, 22, 6, 31, 7, 11, 4, 10, 18, 3, 18, 13, 25,
+        23, 17, 21, 26, 25, 23, 17, 19, 1, 0, 1, 8, 10, 3, 0, 8, 8, 12, 7, 3, 10, 3, 1, 2, 6, 5, 3, 1, 2, 1, 4, 0, 0, 75, 28, 63,
+        39, 3, 65, 25, 1, 47, 36, 45, 56, 51, 53, 38, 46, 17, 40, 2, 26, 7, 3, 29, 5, 13, 8, 26, 16, 22, 13, 1, 2, 13, 22, 3,
+        21, 16, 5, 1, 5, 1, 2, 1, 1, 3, 2, 3, 0, 1, 3, 1, 6, 2, 3, 3, 3, 2, 2, 3, 6, 2, 2, 2, 13, 2, 3, 3, 18, 3, 14, 4, 5, 2, 5, 5, 5,
+        1, 10, 2, 7, 2, 6, 3, 3, 4, 6, 2, 9, 3, 1, 2, 2};
+    Game game = new DungeonGame(5, 5, 50, 5, false, 3,
+        varargs
+    );
+    game.createPlayer();
+    // // Player survives in game, future given by varargs.
+    game.shootArrow(NORTH, 1); //to reduce monster's health.
+    game.movePlayer(NORTH);
+    Odour smell = game.getSmellAtPlayerLocation();
+    assertEquals(MORE_PUNGENT, smell);
+  }
+
+  /**
+   * Test that there are n monsters as expected.
+   * We assert that the map of the dungeons is as expected.
+   * The map will have n 'M's which represent monsters.
+   */
+  @Test
+  public void nMonsters() {
+    Game game = new DungeonGame(5, 5, 50, 7, false, 3,
+        55,39,49,38,30,20,3,38,37,16,24,29,51,21,34,18,12,17,41,15,
+        29,27,9,8,11,9,11,2,13,16,19,17,9,15,21,5,14,16,22,0,0,18,11,3,1,7,
+        4,8,4,10,1,5,1,3,3,1,1,1,1,7,1,2,3,3,2,3,2,1,1,2,2,6,3,3,1,8,3,3,2,4,
+        1,2,1,6,2,20,2,2,4,20,2,5,5,1,5,13,4,0,2,13,5,6,4,4,5,4,4,1,0,1,5,5,0
+        );
+    game.createPlayer();
+    assertEquals("Dungeon map not as expected! It should have 7 'M's",
+        "[************][************][************][************][************][************][************]\n"
+        + "[************]                                                                      [************]\n"
+        + "[************]                                                                      [************]\n"
+        + "[************]   ~~~~I~~O      ~~M~I~~O      ~~M~I~TO      ~~~~~+~~ ---- ~~~~~+~~   [************]\n"
+        + "[************]      ||            ||            ||            ||            ||      [************]\n"
+        + "[************]      ||            ||            ||            ||            ||      [************]\n"
+        + "[************]      ||            ||            ||            ||            ||      [************]\n"
+        + "[************]      ||            ||            ||            ||            ||      [************]\n"
+        + "[************]   ~~~~~~~O ---- ~~~~I~TO ---- ~~~~I~TO ---- E~M~~~~O ---- ~~~~I+~~   [************]\n"
+        + "[************]      ||                                        ||                    [************]\n"
+        + "[************]      ||                                        ||                    [************]\n"
+        + "[************]      ||                                        ||                    [************]\n"
+        + "[************]      ||                                        ||                    [************]\n"
+        + "[************]   ~~~~I+~~      ~~M~I~~O      ~~~~~+~~ ---- ~~M~~~TO ---- ~~~~~~TO   [************]\n"
+        + "[************]      ||            ||            ||            ||                    [************]\n"
+        + "[************]      ||            ||            ||            ||                    [************]\n"
+        + "[************]      ||            ||            ||            ||                    [************]\n"
+        + "[************]      ||            ||            ||            ||                    [************]\n"
+        + "[************]   ~~M~~~TO ---- ~~M~~~TO ---- ~~~~I+~~      ~~~~~~~O ---- ~~~~I+~~   [************]\n"
+        + "[************]      ||                                        ||            ||      [************]\n"
+        + "[************]      ||                                        ||            ||      [************]\n"
+        + "[************]      ||                                        ||            ||      [************]\n"
+        + "[************]      ||                                        ||            ||      [************]\n"
+        + "[************]   ~S~P~~~O      ~~~~I~TO ---- ~~~~~+~~ ---- ~~~~I~~O ---- ~~~~~+~~   [************]\n"
+        + "[************]                                                                      [************]\n"
+        + "[************]                                                                      [************]\n"
+        + "[************][************][************][************][************][************][************]\n", game.toString());
+  }
 }

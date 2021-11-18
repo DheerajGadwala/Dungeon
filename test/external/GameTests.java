@@ -1,7 +1,9 @@
 package external;
 
 import static general.Direction.*;
+import static general.Item.BOW;
 import static general.Item.CROOKED_ARROW;
+import static general.Odour.MORE_PUNGENT;
 import static general.Treasure.DIAMOND;
 import static general.Treasure.RUBY;
 import static general.Treasure.SAPPHIRE;
@@ -11,26 +13,21 @@ import static junit.framework.TestCase.assertFalse;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import general.MatrixPosition;
-import junit.framework.Assert;
+import general.Odour;
 import org.junit.Before;
 import org.junit.Test;
 import randomizer.ActualRandomizer;
 import randomizer.Randomizer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This is the test suite for the dungeon game.
  */
-public class DungeonGameTest {
+public class GameTests {
 
+  private Randomizer randomizer;
   private Game sampleGame1;
   private Game sampleGame3;
-  private Randomizer randomizer;
+  private Game monsterAtNorthSample;
 
   /**
    * Setup for this test suite.
@@ -47,6 +44,172 @@ public class DungeonGameTest {
         2,9,5,10,4,1,3
     );
     sampleGame3.createPlayer();
+    monsterAtNorthSample = new DungeonGame(5, 5, 50, 5, false, 3,
+        14,7,7,1,45,33,36,52,61,33,18,15,43,14,27,12,22,6,31,7,11,4,10,18,3,18,13,25,
+        23,17,21,26,25,23,17,19,1,0,1,8,10,3,0,8,8,12,7,3,10,3,1,2,6,5,3,1,2,1,4,0,0,75,28,63,
+        39,3,65,25,1,47,36,45,56,51,53,38,46,17,40,2,26,7,3,29,5,13,8,26,16,22,13,1,2,13,22,3,
+        21,16,5,1,5,1,2,1,1,3,2,3,0,1,3,1,6,2,3,3,3,2,2,3,6,2,2,2,13,2,3,3,18,3,14,4,5,2,5,5,5,
+        1,10,2,7,2,6,3,3,4,6,2,9,3,1,2
+    );
+    monsterAtNorthSample.createPlayer();
+  }
+
+
+  /**
+   * When interconnectivity is too high.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidInterconnectivity() {
+    new DungeonGame(6, 8, 0, 1, true, 200);
+  }
+
+  /**
+   * Test invalid dimensions in dungeon generation.
+   * m<0.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidDungeonGameArguments1() {
+    new DungeonGame(-5, 8, 0, 1, true, 200);
+  }
+
+  /**
+   * Test invalid dimensions in dungeon generation.
+   * n<0.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidDungeonGameArguments2() {
+    new DungeonGame(6, -8, 0, 1, true, 200);
+  }
+
+  /**
+   * Test invalid dimensions in dungeon generation.
+   * m+n-2<=5.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidDungeonGameArguments3() {
+    new DungeonGame(3, 3, 0, 1, true, 200);
+  }
+
+  /**
+   * Test if negative percentage throws an exception as expected.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddTreasureException1() {
+    new DungeonGame(10, 10, -20, 1, true, 3);
+  }
+
+  /**
+   * Test if percentage greater than 100 on throws an exception as expected.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testAddTreasureException2() {
+    new DungeonGame(10, 10, 120, 1, true, 3);
+  }
+
+
+  /**
+   * Pass null to Move throws Illegal Argument exception.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForMove() {
+    sampleGame3.movePlayer(null);
+  }
+
+  /**
+   * Pass direction with no neighbour to movePlayer throws exception.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForMoveNonExistentNeighbour() {
+    sampleGame3.movePlayer(SOUTH);
+  }
+
+  /**
+   * Passing null to cede item.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForCedeItem() {
+    sampleGame3.cedeItem(null);
+  }
+
+  /**
+   * Passing item which does not exist in the location.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForCedeItemNonExistentItem() {
+    sampleGame3.cedeItem(BOW);
+  }
+
+  /**
+   * When location has no items at all.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testIllegalInputForCedeItemNonExistentItems() {
+    try {
+      sampleGame3.movePlayer(NORTH);
+      sampleGame3.movePlayer(EAST);
+    }
+    catch (IllegalArgumentException ignore) {
+    }
+    sampleGame3.cedeItem(CROOKED_ARROW);
+  }
+
+  /**
+   *  Passing null to cede treasure.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForCedeTreasure() {
+    sampleGame3.cedeTreasure(null);
+  }
+
+  /**
+   *  When location has no treasure at all.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testIllegalInputForCedeTreasureNoTreasure() {
+    sampleGame3.cedeTreasure(DIAMOND);
+  }
+
+  /**
+   *  When location has no treasure of given type.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testIllegalInputForCedeTreasureNoTreasureOfThisType() {
+    try {
+      sampleGame3.movePlayer(NORTH);
+      //collecting all 3 diamonds at player location.
+      sampleGame3.cedeTreasure(DIAMOND);
+      sampleGame3.cedeTreasure(DIAMOND);
+      sampleGame3.cedeTreasure(DIAMOND);
+      //player location still has other type of treasure.
+    }
+    catch (IllegalArgumentException ignore) {
+    }
+    //This throws illegal argument exception.
+    sampleGame3.cedeTreasure(DIAMOND);
+  }
+
+  /**
+   * pass null as direction.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testShootIllegalInput(){
+    sampleGame3.shootArrow(null, 1);
+  }
+
+  /**
+   * pass null as direction.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testShootNegativeDistance(){
+    sampleGame3.shootArrow(NORTH, -3);
+  }
+
+  /**
+   * pass null as direction.
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void testShootZeroDistance(){
+    sampleGame3.shootArrow(NORTH, 0);
   }
 
   /**
@@ -63,12 +226,110 @@ public class DungeonGameTest {
   }
 
   /**
+   * Test if error is thrown when getPlayerDescription is called before creating player.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPlayerDescriptionException() {
+    Game game =  new DungeonGame(10, 10, 20, 1, true, 3);
+    game.getPlayerDescription();
+  }
+
+  /**
+   * Test if error is thrown when getPlayerLocationDescription is called before creating player.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPlayerLocationDescriptionException() {
+    Game game = new DungeonGame(10, 10, 20, 1, true, 3);
+    game.getPlayerLocationDescription();
+  }
+
+  /**
+   * Test if error is thrown when getPlayerTreasureDescription is called before creating player.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPlayerTreasureDescriptionException() {
+    Game game = new DungeonGame(10, 10, 20, 1, true, 3);
+    game.getPlayerDescription();
+  }
+
+  /**
    * Test if exception is thrown when movePlayer is called but player has not yet been created.
    */
   @Test(expected = IllegalStateException.class)
-  public void testMovePlayerException() {
+  public void testMoveBeforePlayerCreation() {
     Game game = new DungeonGame(10, 10, 0, 1, false, 0);
     game.movePlayer(NORTH);
+  }
+
+  /**
+   * Test shoot before creating player throws exception.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testShootBeforePlayerCreation() {
+    Game game = new DungeonGame(10, 10, 0, 1, false, 0);
+    game.shootArrow(NORTH, 3);
+  }
+
+  /**
+   * Test cedeTreasure before creating player throws exception.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPickUpTreasureBeforePlayerCreation() {
+    Game game = new DungeonGame(10, 10, 0, 1, false, 0);
+    game.cedeTreasure(RUBY);
+  }
+
+  /**
+   * Test cedeItem before creating player throws exception.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPickUpItemBeforePlayerCreation() {
+    Game game = new DungeonGame(10, 10, 0, 1, false, 0);
+    game.cedeItem(CROOKED_ARROW);
+  }
+
+  /**
+   * Test if exception is thrown when movePlayer is called after game is over.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testMoveAfterGameOver() {
+    assertFalse(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.movePlayer(NORTH);
+    assertTrue(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.movePlayer(SOUTH); // This throws exception.
+  }
+
+  /**
+   * Test if shoot throws an exception when called after game is over.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testShootAfterGameOver() {
+    assertFalse(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.movePlayer(NORTH);
+    assertTrue(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.shootArrow(NORTH, 1); // This throws exception.
+  }
+
+  /**
+   * Test cedeTreasure throws an exception when called after game is over.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPickUpTreasureAfterGameOver() {
+    assertFalse(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.movePlayer(NORTH);
+    assertTrue(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.cedeTreasure(RUBY);
+  }
+
+  /**
+   * Test cedeItem throws an exception when called after game is over.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testPickUpItemAfterGameOver() {
+    assertFalse(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.movePlayer(NORTH);
+    assertTrue(monsterAtNorthSample.isGameOver());
+    monsterAtNorthSample.cedeItem(CROOKED_ARROW);
   }
 
   /**
@@ -259,41 +520,6 @@ public class DungeonGameTest {
   }
 
   /**
-   * When interconnectivity is too high.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidInterconnectivity() {
-    new DungeonGame(6, 8, 0, 1, true, 200);
-  }
-
-  /**
-   * Test invalid dimensions in dungeon generation.
-   * m<0.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidDungeonGameArguments1() {
-    new DungeonGame(-5, 8, 0, 1, true, 200);
-  }
-
-  /**
-   * Test invalid dimensions in dungeon generation.
-   * n<0.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidDungeonGameArguments2() {
-    new DungeonGame(6, -8, 0, 1, true, 200);
-  }
-
-  /**
-   * Test invalid dimensions in dungeon generation.
-   * m+n-2<=5.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testInvalidDungeonGameArguments3() {
-    new DungeonGame(3, 3, 0, 1, true, 200);
-  }
-
-  /**
    * Test location of the player when he is created.
    * Asserting on the map, because S and P are on the same location.
    * The map also shows that there is no monster at the start location
@@ -418,6 +644,56 @@ public class DungeonGameTest {
   }
 
   /**
+   * Test that player does not win when at end but is dead.
+   */
+  @Test
+  public void testPlayerDoesNotWinWhenInEndButIsDead() {
+    Game game = new DungeonGame(
+        5, 5, 0, 1, false, 2,
+        40,4,17,20,59,29,45,53,12,56,53,2,48,50,
+        10,11,9,10,40,39,20,29,27,25,27,21,6,16,22,2,5,1
+    );
+    game.createPlayer();
+    assertEquals(
+        "[************][************][************][************][************][************][************]\n"
+            + "[************]                                                                      [************]\n"
+            + "[************]                                                                      [************]\n"
+            + "[************]   ~~~~~~~O ---- ~~~~~+~~      ~~~~~~~O ---- ~~~~~~~O ---- ~~~~~~~O   [************]\n"
+            + "[************]                    ||                          ||                    [************]\n"
+            + "[************]                    ||                          ||                    [************]\n"
+            + "[************]                    ||                          ||                    [************]\n"
+            + "[************]                    ||                          ||                    [************]\n"
+            + "[************]   ~S~P~~~O ---- ~~~~~~~O ---- ~~~~~+~~ ---- ~~~~~+~~      ~~~~~~~O   [************]\n"
+            + "[************]                    ||                                        ||      [************]\n"
+            + "[************]                    ||                                        ||      [************]\n"
+            + "[************]                    ||                                        ||      [************]\n"
+            + "[************]                    ||                                        ||      [************]\n"
+            + "[************]   ~~~~~+~~ ---- ~~~~~~~O ---- ~~~~~~~O ---- ~~~~~+~~ ---- ~~~~~+~~   [************]\n"
+            + "[************]      ||                          ||                                  [************]\n"
+            + "[************]      ||                          ||                                  [************]\n"
+            + "[************]      ||                          ||                                  [************]\n"
+            + "[************]      ||                          ||                                  [************]\n"
+            + "[************]   ~~~~~~~O ---- ~~~~~+~~      ~~~~~~~O ---- ~~~~~+~~ ---- E~M~~~~O   [************]\n"
+            + "[************]      ||            ||            ||                                  [************]\n"
+            + "[************]      ||            ||            ||                                  [************]\n"
+            + "[************]      ||            ||            ||                                  [************]\n"
+            + "[************]      ||            ||            ||                                  [************]\n"
+            + "[************]   ~~~~~+~~ ---- ~~~~~~~O ---- ~~~~~~~O ---- ~~~~~+~~ ---- ~~~~~~~O   [************]\n"
+            + "[************]                                                                      [************]\n"
+            + "[************]                                                                      [************]\n"
+            + "[************][************][************][************][************][************][************]\n",
+        game.toString());
+    game.movePlayer(EAST);
+    game.movePlayer(SOUTH);
+    game.movePlayer(EAST);
+    game.movePlayer(SOUTH);
+    game.movePlayer(EAST);
+    game.movePlayer(EAST);
+    assertTrue(game.isGameOver());
+    assertFalse(game.hasPlayerWon());
+  }
+
+  /**
    * Test isGameOver at every step until player dies.
    * game is over when player dies.
    * also asserting that player does not win when dies
@@ -524,7 +800,8 @@ public class DungeonGameTest {
     sampleGame3.movePlayer(EAST);
     assertEquals(
         "This is a tunnel\n"
-            + "You see paths in the following directions: S W \n",
+            + "Coordinates: (0, 2)\n"
+            + "Possible routes: S W \n",
         sampleGame3.getPlayerLocationDescription()
     );
   }
@@ -540,7 +817,8 @@ public class DungeonGameTest {
     sampleGame3.movePlayer(SOUTH);
     assertEquals(
         "This is a tunnel\n"
-            + "You see paths in the following directions: N S \n"
+            + "Coordinates: (1, 0)\n"
+            + "Possible routes: N S \n"
             + "There are some items in this cave: 5 crooked arrows \n",
         sampleGame3.getPlayerLocationDescription()
     );
@@ -562,8 +840,9 @@ public class DungeonGameTest {
     sampleGame3.movePlayer(SOUTH);
     assertEquals(
         "This is a cave\n"
-            + "You see paths in the following directions: N E W \n"
-            + "Looks like there's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+            + "Coordinates: (2, 2)\n"
+            + "Possible routes: N E W \n"
+            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
         sampleGame3.getPlayerLocationDescription()
     );
   }
@@ -579,8 +858,36 @@ public class DungeonGameTest {
     sampleGame3.movePlayer(SOUTH);
     assertEquals(
         "This is a cave\n"
-            + "You see paths in the following directions: N E S \n",
+            + "Coordinates: (1, 2)\n"
+            + "Possible routes: N E S \n",
         sampleGame3.getPlayerLocationDescription()
+    );
+  }
+
+  /**
+   * Test location description with injured monster.
+   */
+  @Test
+  public void testSmellWhenPlayerWithInjuredMonster() {
+    //Monster to the north of start location.
+    int[] varargs = new int[]{14, 7, 7, 1, 45, 33, 36, 52, 61, 33, 18, 15, 43, 14, 27, 12, 22, 6, 31, 7, 11, 4, 10, 18, 3, 18, 13, 25,
+        23, 17, 21, 26, 25, 23, 17, 19, 1, 0, 1, 8, 10, 3, 0, 8, 8, 12, 7, 3, 10, 3, 1, 2, 6, 5, 3, 1, 2, 1, 4, 0, 0, 75, 28, 63,
+        39, 3, 65, 25, 1, 47, 36, 45, 56, 51, 53, 38, 46, 17, 40, 2, 26, 7, 3, 29, 5, 13, 8, 26, 16, 22, 13, 1, 2, 13, 22, 3,
+        21, 16, 5, 1, 5, 1, 2, 1, 1, 3, 2, 3, 0, 1, 3, 1, 6, 2, 3, 3, 3, 2, 2, 3, 6, 2, 2, 2, 13, 2, 3, 3, 18, 3, 14, 4, 5, 2, 5, 5, 5,
+        1, 10, 2, 7, 2, 6, 3, 3, 4, 6, 2, 9, 3, 1, 2, 2};
+    Game game = new DungeonGame(5, 5, 50, 5, false, 3,
+        varargs
+    );
+    game.createPlayer();
+    // Player survives in game, future given by varargs.
+    game.shootArrow(NORTH, 1); //to reduce monster's health.
+    game.movePlayer(NORTH);
+    assertEquals(
+        "This is a cave\n"
+            + "Coordinates: (0, 1)\n"
+            + "Possible routes: E S W \n"
+            + "There is an injured monster here.\n",
+        game.getPlayerLocationDescription()
     );
   }
 
@@ -607,9 +914,10 @@ public class DungeonGameTest {
     );
     assertEquals(
         "This is a cave\n"
-        + "You see paths in the following directions: E S W \n"
-        + "Looks like there's some treasure in this cave: 3 diamonds 2 rubies 3 sapphires \n"
-        + "There are some items in this cave: 3 crooked arrows \n",
+            + "Coordinates: (0, 1)\n"
+            + "Possible routes: E S W \n"
+            + "There's some treasure in this cave: 3 diamonds 2 rubies 3 sapphires \n"
+            + "There are some items in this cave: 3 crooked arrows \n",
         sampleGame3.getPlayerLocationDescription()
     );
     sampleGame3.cedeTreasure(SAPPHIRE);
@@ -628,8 +936,9 @@ public class DungeonGameTest {
     );
     assertEquals(
         "This is a cave\n"
-            + "You see paths in the following directions: E S W \n"
-            + "Looks like there's some treasure in this cave: 2 diamonds 2 rubies 1 sapphire \n"
+            + "Coordinates: (0, 1)\n"
+            + "Possible routes: E S W \n"
+            + "There's some treasure in this cave: 2 diamonds 2 rubies 1 sapphire \n"
             + "There are some items in this cave: 3 crooked arrows \n",
         sampleGame3.getPlayerLocationDescription()
     );
@@ -646,7 +955,8 @@ public class DungeonGameTest {
   public void testPlayerCollectingItems() {
     assertEquals(
         "This is a cave\n"
-            + "You see paths in the following directions: N \n"
+            + "Coordinates: (1, 1)\n"
+            + "Possible routes: N \n"
             + "There are some items in this cave: 3 crooked arrows \n",
         sampleGame3.getPlayerLocationDescription()
     );
@@ -665,8 +975,10 @@ public class DungeonGameTest {
     sampleGame3.cedeItem(CROOKED_ARROW);
     assertEquals(
         "This is a cave\n"
-            + "You see paths in the following directions: N \n"
-            + "There are some items in this cave: 1 crooked arrow \n",
+            + "Coordinates: (1, 1)\n"
+            + "Possible routes: N \n"
+            + "There are some items in this cave: 1 crooked arrow \n"
+        ,
         sampleGame3.getPlayerLocationDescription()
     );
     assertEquals(
@@ -680,73 +992,6 @@ public class DungeonGameTest {
             + " crooked arrow - 5\n",
         sampleGame3.getPlayerDescription()
     );
-  }
-
-  /**
-   * Test that only the given percentage of caves get treasure.
-   * Total number of caves that get the treasure should be equal to
-   * the total number of caves multiplied by the given percentage.
-   */
-  @Test
-  public void testTreasurePercentage() {
-    Game game = generateRandomDungeon();
-    List<MatrixPosition> nodes = game.getAllPositions();
-    int countCaves = 0;
-    int countTreasureCaves = 0;
-    for (MatrixPosition node: nodes) {
-      if (game.caveAtPosition(node)) {
-        countCaves++;
-      }
-      if (game.treasureAtPosition(node)) {
-        countTreasureCaves++;
-      }
-    }
-    Assert.assertEquals(
-        (int) (countCaves * game.getPercentage() / 100.0),
-        countTreasureCaves, 1);
-  }
-
-  /**
-   * Test if negative percentage on generateTreasure method throws an exception as expected.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testAddTreasureException1() {
-    new DungeonGame(10, 10, -20, 1, true, 3);
-  }
-
-  /**
-   * Test if percentage greater than 100 on generateTreasure method throws an exception as expected.
-   */
-  @Test(expected = IllegalArgumentException.class)
-  public void testAddTreasureException2() {
-    new DungeonGame(10, 10, 120, 1, true, 3);
-  }
-
-  /**
-   * Test if error is thrown when getPlayerDescription is called before creating player.
-   */
-  @Test(expected = IllegalStateException.class)
-  public void testPlayerDescriptionException() {
-    Game game = generateRandomDungeon();
-    game.getPlayerDescription();
-  }
-
-  /**
-   * Test if error is thrown when getPlayerLocationDescription is called before creating player.
-   */
-  @Test(expected = IllegalStateException.class)
-  public void testPlayerLocationDescriptionException() {
-    Game game = generateRandomDungeon();
-    game.getPlayerLocationDescription();
-  }
-
-  /**
-   * Test if error is thrown when getPlayerTreasureDescription is called before creating player.
-   */
-  @Test(expected = IllegalStateException.class)
-  public void testPlayerTreasureDescriptionException() {
-    Game game = generateRandomDungeon();
-    game.getPlayerDescription();
   }
 
   /**
@@ -915,98 +1160,162 @@ public class DungeonGameTest {
   }
 
   /**
-   * Any randomly generated dungeon will pass this test.
-   * Every node can be visited from every other node.
-   * Since this is a bi directional graph, if we visit all nodes
-   * in a single bfs, our dungeon graph is strongly connected.
-   * We start the bfs with a random node.
+   * Test that only the given percentage of caves get treasure.
+   * Total number of caves that get the treasure should be equal to
+   * the total number of caves multiplied by the given percentage.
+   * We get the count from the toString of the game.
    */
   @Test
-  public void testAllLocationsReachable() {
-    Game game = generateRandomDungeon();
-    List<MatrixPosition> nodes = game.getAllPositions();
-    Map<MatrixPosition, List<MatrixPosition>> adjacencyList = generateAdjacencyList(
-        nodes,
-        game.getAllConnections()
-    );
-    Map<MatrixPosition, Boolean> visited = new HashMap<>();
-    for (MatrixPosition node: nodes) {
-      visited.put(node, false);
-    }
-    List<MatrixPosition> queue = new ArrayList<>();
-    queue.add(nodes.get(randomizer.getIntBetween(0, nodes.size() - 1)));
-    while (queue.size() > 0) {
-      MatrixPosition curr = queue.remove(0);
-      if (visited.get(curr)) {
-        continue;
+  public void testTreasurePercentage() {
+    int percent = randomizer.getIntBetween(0, 100);
+    Game game = generateRandomDungeonPercentGiven(percent);
+    String str = game.toString();
+    int countCaves = 0;
+    int countTreasureCaves = 0;
+    for(int i = 0; i < str.length(); i++) {
+      if (str.charAt(i) == 'O') {
+        countCaves++;
       }
-      visited.replace(curr, true);
-      queue.addAll(adjacencyList.get(curr));
+      else if(str.charAt(i) == 'T') {
+        countTreasureCaves++;
+      }
     }
-    boolean allVisited = true;
-    for (MatrixPosition node: nodes) {
-      allVisited &= visited.get(node);
+    assertEquals(
+        (int) (countCaves * percent / 100.0),
+        countTreasureCaves, 1);
+  }
+
+
+  /**
+   * Test that only the given percentage of caves get treasure.
+   * Total number of caves that get the treasure should be equal to
+   * the total number of caves multiplied by the given percentage.
+   * We get the count from the toString of the game.
+   */
+  @Test
+  public void testArrowPercentage() {
+    int percent = randomizer.getIntBetween(0, 100);
+    Game game = generateRandomDungeonPercentGiven(percent);
+    String str = game.toString();
+    int countLocations = 0;
+    int countArrowCaves = 0;
+    for(int i = 0; i < str.length(); i++) {
+      if (str.charAt(i) == 'O' || str.charAt(i) == '+') {
+        countLocations++;
+      }
+      else if(str.charAt(i) == 'I') {
+        countArrowCaves++;
+      }
     }
-    Assert.assertTrue(allVisited);
+    assertEquals(
+        (int) (countLocations * percent / 100.0),
+        countArrowCaves, 1);
+  }
+
+  @Test
+  public void nMonsters() {
+    int givenMonsters = randomizer.getIntBetween(0, 10);
+    Game game = generateRandomDungeonDifficultyGiven(givenMonsters);
+    String str = game.toString();
+    int countMonsters = 0;
+    for(int i = 0; i < str.length(); i++) {
+      if (str.charAt(i) == 'M') {
+        countMonsters++;
+      }
+    }
+    assertEquals(givenMonsters, countMonsters);
   }
 
   /**
-   * Any randomly generated dungeon will pass this test.
-   * We find the shortest distance from the start node
-   * to the other nodes using a bfs.
-   * We assert that the distance to the end node is greater than 5.
+   * Visit all nodes in a deterministic dungeon.
    */
   @Test
-  public void startEndDistance() {
-    Game game = generateRandomDungeon();
-    List<MatrixPosition> nodes = game.getAllPositions();
-    Map<MatrixPosition, List<MatrixPosition>> adjacencyList = generateAdjacencyList(
-        nodes,
-        game.getAllConnections()
+  public void allLocationsAreReachable() {
+    Game game = new DungeonGame(
+        5, 4, 0, 1, false, 2,
+        32,0,3,48,2,50,32,26,21,24,17,15,10,3,
+        11,22,20,23,25,2,13,23,13,18,11,5,12,14,11,3,1
     );
-    Map<MatrixPosition, Boolean> visited = new HashMap<>();
-    for (MatrixPosition node: nodes) {
-      visited.put(node, false);
-    }
-    Map<MatrixPosition, Integer> distance = new HashMap<>();
-    for (MatrixPosition node: nodes) {
-      distance.put(node, 0);
-    }
-    List<MatrixPosition> queue = new ArrayList<>();
-    queue.add(game.getStartPosition());
-    while (queue.size() > 0) {
-      MatrixPosition curr = queue.remove(0);
-      if (visited.get(curr)) {
-        continue;
-      }
-      visited.replace(curr, true);
-      for (MatrixPosition neighbour : adjacencyList.get(curr)) {
-        queue.add(neighbour);
-        distance.replace(neighbour, distance.get(curr) + 1);
-      }
-    }
-    Assert.assertTrue(distance.get(game.getEndPosition()) > 5);
+    game.createPlayer();
+    assertEquals(
+        "[************][************][************][************][************][************]\n"
+            + "[************]                                                        [************]\n"
+            + "[************]                                                        [************]\n"
+            + "[************]   ~~~~~~~O ---- ~~~~~~~O ---- ~~~~~+~~ ---- ~S~P~~~O   [************]\n"
+            + "[************]                    ||                                  [************]\n"
+            + "[************]                    ||                                  [************]\n"
+            + "[************]                    ||                                  [************]\n"
+            + "[************]                    ||                                  [************]\n"
+            + "[************]   ~~~~~~~O      ~~~~~+~~      ~~~~~+~~ ---- ~~~~~~~O   [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]   ~~~~~~~O ---- ~~~~~~~O ---- ~~~~~~~O ---- E~M~~~~O   [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]      ||            ||            ||                    [************]\n"
+            + "[************]   ~~~~~+~~      ~~~~~~~O ---- ~~~~~~~O      ~~~~~~~O   [************]\n"
+            + "[************]      ||            ||            ||            ||      [************]\n"
+            + "[************]      ||            ||            ||            ||      [************]\n"
+            + "[************]      ||            ||            ||            ||      [************]\n"
+            + "[************]      ||            ||            ||            ||      [************]\n"
+            + "[************]   ~~~~~+~~ ---- ~~~~~+~~      ~~~~~+~~ ---- ~~~~~+~~   [************]\n"
+            + "[************]                                                        [************]\n"
+            + "[************]                                                        [************]\n"
+            + "[************][************][************][************][************][************]\n",
+        game.toString()
+    );
+    game.movePlayer(WEST);
+    game.movePlayer(WEST);
+    game.movePlayer(WEST);
+    game.movePlayer(EAST);
+    game.movePlayer(SOUTH);
+    game.movePlayer(SOUTH);
+    game.movePlayer(WEST);
+    game.movePlayer(NORTH);
+    game.movePlayer(SOUTH);
+    game.movePlayer(SOUTH);
+    game.movePlayer(SOUTH);
+    game.movePlayer(EAST);
+    game.movePlayer(NORTH);
+    game.movePlayer(EAST);
+    game.movePlayer(SOUTH);
+    game.movePlayer(EAST);
+    game.movePlayer(NORTH);
+    game.movePlayer(SOUTH);
+    game.movePlayer(WEST);
+    game.movePlayer(NORTH);
+    game.movePlayer(NORTH);
+    game.movePlayer(NORTH);
+    game.movePlayer(EAST);
+    game.movePlayer(WEST);
+    game.movePlayer(SOUTH);
+    game.shootArrow(EAST, 1);
+    game.shootArrow(EAST, 1);
+    game.movePlayer(EAST);
+    assertTrue(game.isGameOver());
   }
 
-  private Game generateRandomDungeon() {
-    int m = randomizer.getIntBetween(4, 30);
-    int n = randomizer.getIntBetween(4, 30);
+  private Game generateRandomDungeonPercentGiven(int percent) {
+    int m = randomizer.getIntBetween(5, 30);
+    int n = randomizer.getIntBetween(5, 30);
     boolean wrap = randomizer.getIntBetween(1, 2) == 1;
     int interconnectivity = randomizer.getIntBetween(0, m * n / 2 - 1);
-    int percentage = randomizer.getIntBetween(0, 100);
-    return new DungeonGame(m, n, percentage, 1, wrap, interconnectivity);
+    Game game = new DungeonGame(m, n, percent, 5, wrap, interconnectivity);
+    game.createPlayer();
+    return game;
   }
 
-  private Map<MatrixPosition, List<MatrixPosition>> generateAdjacencyList(
-      List<MatrixPosition> nodes, List<List<MatrixPosition>> connections
-  ) {
-    Map<MatrixPosition, List<MatrixPosition>> adjacencyList = new HashMap<>();
-    for (MatrixPosition node: nodes) {
-      adjacencyList.put(node, new ArrayList<>());
-    }
-    for (List<MatrixPosition> edge: connections) {
-      adjacencyList.get(edge.get(0)).add(edge.get(1));
-    }
-    return adjacencyList;
+  private Game generateRandomDungeonDifficultyGiven(int difficulty) {
+    int m = randomizer.getIntBetween(5, 30);
+    int n = randomizer.getIntBetween(5, 30);
+    int percent = randomizer.getIntBetween(0, 100);
+    boolean wrap = randomizer.getIntBetween(1, 2) == 1;
+    int interconnectivity = randomizer.getIntBetween(0, m * n / 2 - 1);
+    Game game = new DungeonGame(m, n, percent, difficulty, wrap, interconnectivity);
+    game.createPlayer();
+    return game;
   }
 }

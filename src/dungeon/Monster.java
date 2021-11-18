@@ -12,8 +12,14 @@ interface Monster {
   /**
    * Returns true if the monster is alive.
    * @return true if monster's health is not zero.
-   */
+      */
   boolean isAlive();
+
+  /**
+   * Returns true if monster is injured.
+   * @return true if monster is injured else false.
+   */
+  boolean isInjured();
 
   /**
    * This monster tries to kill the player.

@@ -2,12 +2,9 @@ package dungeon;
 
 import general.Direction;
 import general.Item;
-import general.MatrixPosition;
 import general.Odour;
 import general.ShotResult;
 import general.Treasure;
-
-import java.util.List;
 
 /**
  * This acts as a control over the dungeon graph and the player.
@@ -68,40 +65,6 @@ public interface Game {
    */
   void cedeItem(Item i) throws IllegalStateException, IllegalArgumentException;
 
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Get current position of player.
-   * @return current matrix position of player.
-   * @throws IllegalStateException if the player has not been created yet.
-   */
-  MatrixPosition getPlayerPosition() throws IllegalStateException;
-
-  /**
-   * Returns true if the player has at least one arrow.
-    * @return true if player has at least one arrow else false.
-   */
-  boolean playerHasArrow();
-
-  /**
-   * Get start position.
-   * @return matrix position of start location.
-   */
-  MatrixPosition getStartPosition();
-
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Get end position.
-   * @return matrix position of end location.
-   */
-  MatrixPosition getEndPosition();
-
-  /**
-   * Returns true if player has reached end.
-   * Disables further moves.
-   * @return true is game is over.
-   */
-  boolean isGameOver();
-
   /**
    * Returns description of the player, along with
    * his current treasure and location details.
@@ -118,48 +81,6 @@ public interface Game {
    */
   String getPlayerLocationDescription() throws IllegalStateException;
 
-  // TODO: Make this package private and write internal tests.
-  /**
-   * returns input percentage.
-   * @return returns input percentage.
-   */
-  int getPercentage();
-
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Returns all connections between nodes.
-   * These are uni directional.
-   * @return list of all connections.
-   */
-  List<List<MatrixPosition>> getAllConnections();
-
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Returns positions of all location nodes.
-   * @return positions of all locations.
-   */
-  List<MatrixPosition> getAllPositions();
-
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Checks if there is a cave at the given position.
-   * @param position position to be checked.
-   * @return true if the position has a cave.
-   * @throws IllegalArgumentException if given position that is not in the dungeon graph
-   *                                  or if it is null.
-   */
-  boolean caveAtPosition(MatrixPosition position) throws IllegalArgumentException;
-
-  // TODO: Make this package private and write internal tests.
-  /**
-   * Checks if there is treasure at the location on the given position.
-   * @param position position to be checked.
-   * @return true if the location has treasure.
-   * @throws IllegalArgumentException if given position that is not in the dungeon graph
-   *                                  or if it is null.
-   */
-  boolean treasureAtPosition(MatrixPosition position) throws IllegalArgumentException;
-
   /**
    * Game's player shoots an arrow in the given direction and distance.
    * @param direction direction of the shot.
@@ -171,6 +92,18 @@ public interface Game {
   ShotResult shootArrow(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException;
 
+  /**
+   * Returns true if the player has at least one arrow.
+   * @return true if player has at least one arrow else false.
+   */
+  boolean playerHasArrow();
+
+  /**
+   * Returns true if player has reached end.
+   * Disables further moves.
+   * @return true is game is over.
+   */
+  boolean isGameOver();
   /**
    * returns true if the player has won the game else false.
    * @return true if player has won else false.

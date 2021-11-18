@@ -28,7 +28,7 @@ class Location implements LocationNode {
   private final MatrixPosition position;
   private HashMap<Treasure, Integer> treasures;
   private Monster monster;
-  private HashMap<Item, Integer> items;
+  private final HashMap<Item, Integer> items;
 
   public Location(
       MatrixPosition position,
@@ -36,6 +36,8 @@ class Location implements LocationNode {
   ) {
     this.position = position;
     this.neighbours = neighbours;
+    this.items = new HashMap<>();
+    initializeItems();
   }
 
   public Location(
@@ -52,6 +54,10 @@ class Location implements LocationNode {
       treasures.put(t, 0);
     }
     this.items = new HashMap<>();
+    initializeItems();
+  }
+
+  private void initializeItems(){
     for (Item i: Item.values()) {
       items.put(i, 0);
     }
@@ -154,6 +160,9 @@ class Location implements LocationNode {
 
   @Override
   public void decreaseTreasureCount(Treasure t) throws IllegalStateException {
+    if (t == null) {
+      throw new IllegalArgumentException("treasure can not be null");
+    }
     if (isTunnel()) {
       throw new IllegalStateException("This is a tunnel. Tunnels do not have treasure.");
     }
@@ -294,6 +303,9 @@ class Location implements LocationNode {
 
   @Override
   public void decreaseItemCount(Item item) throws IllegalArgumentException, IllegalStateException {
+    if (item == null) {
+      throw new IllegalArgumentException("item can not be null.");
+    }
     if (!hasItems()) {
       throw new IllegalStateException("This location has no items.");
     }
@@ -397,18 +409,26 @@ class Location implements LocationNode {
   public String toString() {
     String type = isCave() ? "cave" : "tunnel";
     StringBuilder stb = new StringBuilder("This is a " + type + "\n");
-    stb.append("You see paths in the following directions: ");
+    stb.append("Coordinates: ").append(position.toString()).append("\n");
+    stb.append("Possible routes: ");
     for (Direction d: getPossibleRoutes()) {
       stb.append(d.toString()).append(" ");
     }
     stb.append("\n");
     if (hasTreasure()) {
-      stb.append("Looks like there's some treasure in this cave: ");
+      stb.append("There's some treasure in this cave: ");
       stb.append(new TreasureList(treasures).toString()).append("\n");
     }
     if (hasItems()) {
       stb.append("There are some items in this cave: ");
       stb.append(new ItemList(items).toString()).append("\n");
+    }
+    if (hasAliveMonster()) {
+      stb.append(
+          monster.isInjured()
+              ? "There is an injured monster here.\n"
+              : "There is a monster here.\n"
+      );
     }
     return stb.toString();
   }

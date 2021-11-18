@@ -32,7 +32,6 @@ public class DungeonGame implements Game {
 
   private final int m;
   private final int n;
-  private final int percentage;
   private final Randomizer randomizer;
   private LocationGraph dungeon;
   private LocationNode start;
@@ -58,7 +57,6 @@ public class DungeonGame implements Game {
     this.randomizer = randomizer;
     this.m = m;
     this.n = n;
-    this.percentage = percentage;
     generateValidDungeon(m, n, enableWrap, interconnectivity, numberOfMonsters);
     generateTreasure(percentage);
     generateItems(percentage);
@@ -146,18 +144,6 @@ public class DungeonGame implements Game {
     );
   }
 
-  private void validatePosition(MatrixPosition position)
-      throws IllegalArgumentException {
-    if (
-        position.getI() < 0
-        || position.getI() >= m
-        || position.getJ() < 0
-        || position.getJ() >= n
-    ) {
-      throw new IllegalArgumentException("Position not in this dungeon.");
-    }
-  }
-
   @Override
   public ShotResult shootArrow(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
@@ -174,7 +160,6 @@ public class DungeonGame implements Game {
   private void generateValidDungeon(int m, int n, boolean enableWrap, int interconnectivity, int numberOfMonsters) {
     int monsterFailureCount = 0;
     while (this.start == null || this.end == null) {
-      //System.out.println("Here");
       if (monsterFailureCount == 100) {
         throw new IllegalArgumentException("Number of monsters is too high!");
       }
@@ -321,8 +306,12 @@ public class DungeonGame implements Game {
     player.pickItem(i);
   }
 
-  @Override
-  public MatrixPosition getPlayerPosition()
+  /**
+   * Get current position of player.
+   * @return current matrix position of player.
+   * @throws IllegalStateException if the player has not been created yet.
+   */
+  MatrixPosition getPlayerPosition()
       throws IllegalStateException {
     validatePlayer();
     return player.getPosition();
@@ -333,13 +322,19 @@ public class DungeonGame implements Game {
     return player.hasArrow();
   }
 
-  @Override
-  public MatrixPosition getStartPosition() {
+  /**
+   * Get start position.
+   * @return matrix position of start location.
+   */
+  MatrixPosition getStartPosition() {
     return start.getPosition();
   }
 
-  @Override
-  public MatrixPosition getEndPosition() {
+  /**
+   * Get end position.
+   * @return matrix position of end location.
+   */
+  MatrixPosition getEndPosition() {
     return end.getPosition();
   }
 
@@ -360,13 +355,12 @@ public class DungeonGame implements Game {
     return player.getLocationDescription();
   }
 
-  @Override
-  public int getPercentage() {
-    return percentage;
-  }
-
-  @Override
-  public List<List<MatrixPosition>> getAllConnections() {
+  /**
+   * Returns all connections between nodes.
+   * These are uni-directional.
+   * @return list of all connections.
+   */
+  List<List<MatrixPosition>> getAllConnections() {
     List<Connection> connections = dungeon.getAllConnections();
     List<List<MatrixPosition>> ret = new ArrayList<>();
     for (Connection connection: connections) {
@@ -378,8 +372,11 @@ public class DungeonGame implements Game {
     return ret;
   }
 
-  @Override
-  public List<MatrixPosition> getAllPositions() {
+  /**
+   * Returns positions of all location nodes.
+   * @return positions of all locations.
+   */
+  List<MatrixPosition> getAllPositions() {
     List<MatrixPosition> allPositions = new ArrayList<>();
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
@@ -387,27 +384,6 @@ public class DungeonGame implements Game {
       }
     }
     return allPositions;
-  }
-
-  @Override
-  public boolean caveAtPosition(MatrixPosition position)
-      throws IllegalArgumentException {
-    validatePosition(position);
-    return dungeon.getLocation(position).isCave();
-  }
-
-  @Override
-  public boolean tunnelAtPosition(MatrixPosition position)
-      throws IllegalArgumentException {
-    validatePosition(position);
-    return dungeon.getLocation(position).isTunnel();
-  }
-
-  @Override
-  public boolean treasureAtPosition(MatrixPosition position)
-      throws IllegalArgumentException {
-    validatePosition(position);
-    return dungeon.getLocation(position).hasTreasure();
   }
 
   @Override
