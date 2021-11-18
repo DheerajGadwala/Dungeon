@@ -12,6 +12,8 @@ import java.util.List;
  */
 interface LocationGraph {
 
+  int getCaveCount();
+
   /**
    * Returns location node at the position.
    * @param position position of the location to be returned.

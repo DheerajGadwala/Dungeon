@@ -4,13 +4,17 @@ import static general.Direction.EAST;
 import static general.Direction.NORTH;
 import static general.Direction.SOUTH;
 import static general.Direction.WEST;
-import static general.Treasure.DIAMOND;
-import static general.Treasure.RUBY;
-import static general.Treasure.SAPPHIRE;
+import static general.Odour.LESS_PUNGENT;
+import static general.Odour.MORE_PUNGENT;
+import static general.Odour.ODOURLESS;
 
 import general.Direction;
+import general.Item;
+import general.ItemList;
 import general.MatrixPosition;
+import general.Odour;
 import general.Treasure;
+import general.TreasureList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +27,8 @@ class Location implements LocationNode {
   private final HashMap<Direction, LocationNode> neighbours;
   private final MatrixPosition position;
   private HashMap<Treasure, Integer> treasures;
+  private Monster monster;
+  private HashMap<Item, Integer> items;
 
   public Location(
       MatrixPosition position,
@@ -42,9 +48,13 @@ class Location implements LocationNode {
     neighbours.put(SOUTH, EmptyLocation.getInstance());
     neighbours.put(WEST, EmptyLocation.getInstance());
     this.treasures = new HashMap<>();
-    treasures.put(DIAMOND, 0);
-    treasures.put(SAPPHIRE, 0);
-    treasures.put(RUBY, 0);
+    for (Treasure t: Treasure.values()) {
+      treasures.put(t, 0);
+    }
+    this.items = new HashMap<>();
+    for (Item i: Item.values()) {
+      items.put(i, 0);
+    }
   }
 
   private int getNeighbourCount() {
@@ -84,24 +94,17 @@ class Location implements LocationNode {
   }
 
   @Override
-  public String getDescription() {
-    StringBuilder ret = new StringBuilder(String.format(
-        "\n%s:\n Coordinates -> %s Neighbours {N, E, S, W}: -> {%s, %s, %s, %s}\n",
-        getType(),
-        position.toString(),
-        neighbours.get(NORTH).getType(),
-        neighbours.get(EAST).getType(),
-        neighbours.get(SOUTH).getType(),
-        neighbours.get(WEST).getType()
-    ));
-    if (this.isCave()) {
-      ret.append(" Treasure at this location-> ");
-      for (Treasure t: Treasure.values()) {
-        ret.append(t.toString()).append(": ").append(treasures.get(t)).append(" ");
-      }
-      ret.append('\n');
+  public boolean hasTreasure(Treasure t) {
+    return treasures.get(t) > 0;
+  }
+
+  @Override
+  public boolean hasTreasure() {
+    int sum = 0;
+    for (Treasure t: Treasure.values()) {
+      sum += treasures.get(t);
     }
-    return ret.toString();
+    return sum > 0;
   }
 
   @Override
@@ -117,15 +120,6 @@ class Location implements LocationNode {
   @Override
   public boolean isEmptyNode() {
     return false;
-  }
-
-  @Override
-  public boolean hasTreasure() {
-    int sum = 0;
-    for (Treasure t: treasures.keySet()) {
-      sum += treasures.get(t);
-    }
-    return sum != 0;
   }
 
   @Override
@@ -159,16 +153,17 @@ class Location implements LocationNode {
   }
 
   @Override
-  public HashMap<Treasure, Integer> removeTreasure() throws IllegalStateException {
+  public void decreaseTreasureCount(Treasure t) throws IllegalStateException {
     if (isTunnel()) {
       throw new IllegalStateException("This is a tunnel. Tunnels do not have treasure.");
     }
-    HashMap<Treasure, Integer> temp = new HashMap<>();
-    for (Treasure t: Treasure.values()) {
-      temp.put(t, treasures.get(t));
-      treasures.put(t, 0);
+    if (!hasTreasure()) {
+      throw new IllegalStateException("This location has no treasure.");
     }
-    return temp;
+    else if (treasures.get(t) == 0) {
+      throw new IllegalArgumentException("No treasure of this type.");
+    }
+    treasures.replace(t, treasures.get(t) - 1);
   }
 
   @Override
@@ -231,6 +226,17 @@ class Location implements LocationNode {
   }
 
   @Override
+  public List<Direction> getPossibleRoutes() {
+    List<Direction> possibilities = new ArrayList<>();
+    for (Direction d: Direction.values()) {
+      if (!this.hasEmptyNodeAt(d)) {
+        possibilities.add(d);
+      }
+    }
+    return possibilities;
+  }
+
+  @Override
   public boolean hasNeighbour(LocationNode that) {
     return that.equals(this.getLocationAt(NORTH))
         || that.equals(this.getLocationAt(EAST))
@@ -239,7 +245,171 @@ class Location implements LocationNode {
   }
 
   @Override
+  public void setMonster(Monster monster) throws IllegalArgumentException {
+    if (monster == null) {
+      throw new IllegalArgumentException("Monster can not be null");
+    }
+    else if (!this.isCave()) {
+      throw new IllegalArgumentException("Can add monsters to caves only.");
+    }
+    else if (this.hasAliveMonster()) {
+      throw new IllegalArgumentException("This cave already has a monster.");
+    }
+    this.monster = monster;
+  }
+
+  @Override
+  public Map<Treasure, Integer> getTreasures() {
+    Map<Treasure, Integer> map = new HashMap<>();
+    for (Treasure t: Treasure.values()) {
+      map.put(t, treasures.get(t));
+    }
+    return map;
+  }
+
+  @Override
+  public Map<Item, Integer> getItems() {
+    Map<Item, Integer> map = new HashMap<>();
+    for (Item i: Item.values()) {
+      map.put(i, items.get(i));
+    }
+    return map;
+  }
+
+  @Override
+  public boolean hasAliveMonster() {
+    if (monster == null) {
+      return false;
+    }
+    else return monster.isAlive();
+  }
+
+  @Override
+  public void setItemCount(Item item, int n) throws IllegalArgumentException {
+    if (n <= 0) {
+      throw new IllegalArgumentException("Can not set number of items to a non positive number.");
+    }
+    items.put(item, n);
+  }
+
+  @Override
+  public void decreaseItemCount(Item item) throws IllegalArgumentException, IllegalStateException {
+    if (!hasItems()) {
+      throw new IllegalStateException("This location has no items.");
+    }
+    if (items.get(item) == 0) {
+      throw new IllegalArgumentException(
+          "This location does not have any "
+          + item.getPlural() + "."
+      );
+    }
+    items.replace(item, items.get(item) - 1);
+  }
+
+  @Override
+  public boolean hasItem(Item item) {
+    return items.get(item) > 0;
+  }
+
+  @Override
+  public Odour getOdour() {
+    if (this.hasAliveMonster()) {
+      return MORE_PUNGENT;
+    }
+    int n = getRequiredNodes(
+        (distance) -> distance == 1,
+        LocationNode::hasAliveMonster
+    ).size();
+    if (n > 0) {
+      return MORE_PUNGENT;
+    }
+    n = getRequiredNodes(
+        (distance) -> distance == 2,
+        LocationNode::hasAliveMonster
+    ).size();
+    if (n > 1) {
+      return MORE_PUNGENT;
+    }
+    else if (n == 1) {
+      return LESS_PUNGENT;
+    }
+    else {
+      return ODOURLESS;
+    }
+  }
+
+  @Override
+  public Monster getMonster() throws IllegalStateException {
+    if (monster == null) {
+      throw new IllegalStateException("No monster at this location.");
+    }
+    return monster;
+  }
+
+  @Override
+  public Monster getMonsterAtEnd(Direction direction, int distance)
+      throws IllegalArgumentException, IllegalStateException {
+    if (distance < 0 || direction == null) {
+      throw new IllegalArgumentException("Invalid Distance/ Direction.");
+    }
+    if (distance == 0) {
+      return this.monster;
+    }
+    else if (isTunnel()) {
+      for (Direction d: Direction.values()) {
+        LocationNode neighbour = neighbours.get(d);
+        if (d == direction.getOpposite()) {
+          continue;
+        }
+        if (neighbour.isCave()) {
+          return neighbour.getMonsterAtEnd(d, distance - 1);
+        }
+        else if (neighbour.isTunnel()) {
+          return neighbour.getMonsterAtEnd(d, distance);
+        }
+      }
+      throw new IllegalStateException("Invalid tunnel");
+    }
+    else {
+      LocationNode neighbour = neighbours.get(direction);
+      if (neighbour.isEmptyNode()) {
+        return null;
+      }
+      else if (neighbour.isCave()) {
+        return neighbour.getMonsterAtEnd(direction, distance - 1);
+      }
+      else {
+        return neighbour.getMonsterAtEnd(direction, distance);
+      }
+    }
+  }
+
+  @Override
+  public boolean hasItems() {
+    boolean hasItems = false;
+    for (Item i: Item.values()) {
+      hasItems |= hasItem(i);
+    }
+    return hasItems;
+  }
+
+  @Override
   public String toString() {
-    return getDescription();
+    String type = isCave() ? "cave" : "tunnel";
+    StringBuilder stb = new StringBuilder("This is a " + type + "\n");
+    stb.append("You see paths in the following directions: ");
+    for (Direction d: getPossibleRoutes()) {
+      stb.append(d.toString()).append(" ");
+    }
+    stb.append("\n");
+    if (hasTreasure()) {
+      stb.append("Looks like there's some treasure in this cave: ");
+      stb.append(new TreasureList(treasures).toString()).append("\n");
+    }
+    if (hasItems()) {
+      stb.append("There are some items in this cave: ");
+      stb.append(new ItemList(items).toString()).append("\n");
+    }
+    return stb.toString();
   }
 }

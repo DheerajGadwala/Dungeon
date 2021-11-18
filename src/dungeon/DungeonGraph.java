@@ -145,6 +145,15 @@ class DungeonGraph implements LocationGraph {
   }
 
   @Override
+  public int getCaveCount() {
+    int count = 0;
+    for(LocationNode node: locationNodes) {
+      count += node.isCave() ? 1 : 0;
+    }
+    return count;
+  }
+
+  @Override
   public LocationNode getLocation(MatrixPosition position) {
     for (LocationNode node: locationNodes) {
       if (node.getPosition().equals(position)) {

@@ -1,11 +1,14 @@
 package dungeon;
 
+import static general.Odour.ODOURLESS;
+
 import general.Direction;
+import general.Item;
 import general.MatrixPosition;
+import general.Odour;
 import general.Treasure;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -42,7 +45,7 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public HashMap<Treasure, Integer> removeTreasure() throws IllegalStateException {
+  public void decreaseTreasureCount(Treasure t) throws IllegalStateException {
     throw new IllegalStateException("Can not remove treasure from the empty node.");
   }
 
@@ -87,8 +90,8 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public String getDescription() {
-    return toString();
+  public boolean hasTreasure(Treasure t) {
+    return false;
   }
 
   @Override
@@ -113,7 +116,68 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
+  public List<Direction> getPossibleRoutes() {
+    return new ArrayList<>();
+  }
+
+  @Override
   public boolean hasNeighbour(LocationNode that) {
+    return false;
+  }
+
+  @Override
+  public void setMonster(Monster monster) throws IllegalArgumentException {
+    throw new IllegalStateException("Can not add monster to sentinel.");
+  }
+
+  @Override
+  public Map<Treasure, Integer> getTreasures() {
+    return null;
+  }
+
+  @Override
+  public Map<Item, Integer> getItems() {
+    return null;
+  }
+
+  @Override
+  public boolean hasAliveMonster() {
+    return false;
+  }
+
+  @Override
+  public void setItemCount(Item item, int n) {
+    throw new IllegalStateException("Can not set arrows here.");
+  }
+
+  @Override
+  public void decreaseItemCount(Item item) {
+    throw new IllegalStateException("Can not decrease arrows here.");
+  }
+
+  @Override
+  public boolean hasItem(Item item) {
+    return false;
+  }
+
+  @Override
+  public Odour getOdour() {
+    return ODOURLESS;
+  }
+
+  @Override
+  public Monster getMonster() throws IllegalStateException {
+    return null;
+  }
+
+  @Override
+  public Monster getMonsterAtEnd(Direction direction, int distance)
+      throws IllegalArgumentException, IllegalStateException {
+    return null;
+  }
+
+  @Override
+  public boolean hasItems() {
     return false;
   }
 

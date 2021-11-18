@@ -2,12 +2,20 @@ package dungeon;
 
 import randomizer.Randomizer;
 
+/**
+ * Otyugh is a type of monster.
+ */
 class Otyugh implements Monster {
 
   private int health;
   private final Randomizer randomizer;
   private static final int DEFAULT_HEALTH = 2;
 
+  /**
+   * Otyugh constructor.
+   * @param randomizer randomizer object to determine attacks by otyughs.
+   * @throws IllegalArgumentException when randomizer is null.
+   */
   Otyugh(Randomizer randomizer) throws IllegalArgumentException {
     if (randomizer == null) {
       throw new IllegalArgumentException("randomizer can not be null");
@@ -24,12 +32,12 @@ class Otyugh implements Monster {
   @Override
   public void attack(Player player) {
     if (!player.isAlive()) {
-      throw new IllegalStateException("Player is already dead");
+      throw new IllegalArgumentException("Player is already dead");
     }
     else if (!this.isAlive()) {
       throw new IllegalStateException("Otyugh is dead.");
     }
-    else if (this.health == 2 || randomizer.getIntBetween(1, 2) == 1){
+    else if (this.health == 2 || randomizer.getIntBetween(1, 2) == 1) {
       player.die();
     }
   }

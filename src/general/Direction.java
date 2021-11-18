@@ -4,7 +4,13 @@ package general;
  * Represents all directions.
  */
 public enum Direction {
-  NORTH, EAST, SOUTH, WEST;
+  NORTH("N"), EAST("E"), SOUTH("S"), WEST("W");
+
+  private final String shortForm;
+
+  Direction(String shortForm) {
+    this.shortForm = shortForm;
+  }
 
   /**
    * Gives the opposite direction to the given direction.
@@ -23,5 +29,11 @@ public enum Direction {
     else {
       return EAST;
     }
+  }
+
+  @Override
+  public String toString() {
+    return this.shortForm;
+
   }
 }

@@ -1,10 +1,11 @@
 package dungeon;
 
 import general.Direction;
+import general.Item;
 import general.MatrixPosition;
+import general.Odour;
 import general.Treasure;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -52,13 +53,14 @@ interface LocationNode {
   LocationNode getLocationAt(Direction direction) throws IllegalStateException;
 
   /**
-   * Description of this location with the treasure it has.
-   * @return description of this location as a string.
+   * Returns true if this location has the given treasure.
+   * @param t treasure to be checked.
+   * @return true if this has treasure else false.
    */
-  String getDescription();
+  boolean hasTreasure(Treasure t);
 
   /**
-   * Returns true if this location has treasure.
+   * Returns true if this location has any treasure.
    * @return true if this has treasure else false.
    */
   boolean hasTreasure();
@@ -81,6 +83,8 @@ interface LocationNode {
    * @return position of this location.
    */
   MatrixPosition getPosition() throws IllegalStateException;
+
+  List<Direction> getPossibleRoutes();
 
   /**
    * return true if this location node has that as a neighbour.
@@ -110,12 +114,14 @@ interface LocationNode {
       throws IllegalArgumentException, IllegalStateException;
 
   /**
-   * Removes and returns treasure from this location node.
-   * @return Treasure from this location node.
+   * removes one treasure of given type.
+   * @param t Treasure whose count will be reduced by 1.
    * @throws IllegalStateException when trying to remove treasure from
-   *                                Location nodes that are not caves.
+   *                                Location nodes that are not caves or when
+   *                                this the cave has no treasure at all.
+   * @throws IllegalArgumentException when treasure of given type does not exists in this cave.
    */
-  HashMap<Treasure, Integer> removeTreasure() throws IllegalStateException;
+  void decreaseTreasureCount(Treasure t) throws IllegalStateException, IllegalArgumentException;
 
   /**
    * We perform BFS here.
@@ -145,4 +151,82 @@ interface LocationNode {
       Predicate<Integer> distanceRequirement,
       Predicate<LocationNode> nodeRequirement
   );
+
+  /**
+   * sets a monster at this location.
+   * @param monster monster to be set
+   * @throws IllegalArgumentException if monster is null.
+   */
+  void setMonster(Monster monster) throws IllegalArgumentException;
+
+  /**
+   * returns treasure at this location.
+   * @return treasure at this location
+   */
+  Map<Treasure, Integer> getTreasures();
+
+  /**
+   * returns items at this location.
+   * @return items at this location
+   */
+  Map<Item, Integer> getItems();
+
+  /**
+   * checks if location an alive monster in this location.
+   * @return true if location has monster else false.
+   */
+  boolean hasAliveMonster();
+
+  /**
+   * sets the number of arrows at this location number of arrows.
+   * @param n number of arrows
+   * @throws IllegalArgumentException when n is less than or equal to 0.
+   */
+  void setItemCount(Item item, int n) throws IllegalArgumentException;
+
+  /**
+   * Decreases arrow count by one.
+   * @throws IllegalArgumentException when this location has no arrows.
+   * @throws IllegalStateException when this location has no items.
+   */
+  void decreaseItemCount(Item item) throws IllegalArgumentException, IllegalStateException;
+
+  /**
+   * Checks if there is at least one arrow in this location.
+   * @return true there is at least one arrow in this location else false.
+   */
+  boolean hasItem(Item item);
+
+  /**
+   * Get odour at this location.
+   * @return odour at this locatiom.
+   */
+  Odour getOdour();
+
+  /**
+   * returns the monster in this location.
+   * @return the monster in this location.
+   * @throws IllegalStateException when there is no monster in this location.
+   */
+  Monster getMonster() throws IllegalStateException;
+
+  /**
+   * Travel continues through tunnels regardless of directions.
+   * Gets monster at the end of the path.
+   * @param direction direction of travel.
+   * @param distance distance of travel.
+   * @return monster at the end of the path.
+   * @throws IllegalArgumentException if direction is null or distance is negative.
+   * @throws IllegalStateException if path is not completable, or monster does not
+   *                                exists at the end of the path or if the monster
+   *                                at the end is already dead.
+   */
+  Monster getMonsterAtEnd(Direction direction, int distance)
+      throws IllegalArgumentException, IllegalStateException;
+
+  /**
+   * returns true if this location has at least one item.
+   * @return true if this location has at least one item else false.
+   */
+  boolean hasItems();
 }

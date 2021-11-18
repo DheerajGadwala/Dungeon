@@ -1,9 +1,14 @@
 package dungeon;
 
 import general.Direction;
+import general.Item;
 import general.MatrixPosition;
+import general.Odour;
+import general.ShotResult;
+import general.Treasure;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a player. A player has a name.
@@ -12,36 +17,29 @@ import java.util.List;
  * A player can look for and move to the neighbouring locations as well.
  */
 interface Player {
+  /**
+   * returns treasure of the player.
+   * @return treasure of the player as a map to numbers[count].
+   */
+  Map<Treasure, Integer> getTreasures();
 
   /**
-   * get name of the player.
-   * @return name of the player
+   * Returns a deep copy of the map of all items.
+   * @return Returns a copy of the map of all items.
    */
-  String getName();
-
-  /**
-   * Returns true if location has treasure else returns false.
-   * @return true if location has treasure else false.
-   */
-  boolean scoutForTreasure();
+  Map<Item, Integer> getItems();
 
   /**
    * Collect treasure from the player's current location.
+   * @param t treasure to be collected.
    */
-  void collectTreasure();
+  void collectTreasure(Treasure t);
 
   /**
-   * Checks if player is at the given position.
-   * @return true if player's location has the given coordinates.
-   * @throws IllegalArgumentException if position is null.
+   * Picks given item from player's current location.
+   * @param i type of item to be picked.
    */
-  boolean atPosition(MatrixPosition position) throws IllegalArgumentException;
-
-  /**
-   * get the description of the treasure that the player has.
-   * @return description of the treasure the player has.
-   */
-  String getTreasureDescription();
+  void pickItem(Item i);
 
   /**
    * get Description of the location of the player.
@@ -53,13 +51,13 @@ interface Player {
    * get neighbouring location directions from player's current location.
    * @return list of directions which lead to other locations.
    */
-  List<Direction> getPossibleDirections();
+  List<Direction> getPossibleRoutes();
 
   /**
    * move player in the given direction.
    * @param direction direction in which the player is to be moved.
-   * @throws  IllegalArgumentException if the given direction is null.
-   * @throws IllegalStateException if the current location has no neighbour in the given direction.
+   * @throws  IllegalArgumentException if the given direction is null or if
+   *                                  there is no neighbour in the given direction.
    */
   void movePlayer(Direction direction) throws IllegalArgumentException, IllegalStateException;
 
@@ -68,13 +66,6 @@ interface Player {
    * @return a matrix position object representing the player's location.
    */
   MatrixPosition getPosition();
-
-  /**
-   * Returns description of the player.
-   * Includes player name, player location details and player treasure details.
-   * @return description of the player.
-   */
-  String getDescription();
 
   /**
    * kills the player.
@@ -86,4 +77,26 @@ interface Player {
    * @return true if player is eaten.
    */
   boolean isAlive();
+
+  /**
+   * Shoots a crooked arrow in the given direction and distance.
+   * @param direction direction of the arrow.
+   * @param distance distance of the arrow needs to cover.
+   * @return Returns result of the shot.
+   * @throws IllegalArgumentException when direction is null or distance is not positive.
+   */
+  ShotResult shoot(Direction direction, int distance)
+      throws IllegalArgumentException;
+
+  /**
+   * Returns the odour the player smells at their location.
+   * @return odour smelled by the player.
+   */
+  Odour smell();
+
+  /**
+   * Returns true if player has at least one arrow.
+   * @return true if player has at least one arrow else false.
+   */
+  boolean hasArrow();
 }

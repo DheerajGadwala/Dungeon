@@ -1,15 +1,15 @@
 package general;
 
 /**
- * Represents all types of treasures.
+ * Represents an item in the game.
  */
-public enum Treasure {
-  DIAMOND("diamond", "diamonds"), RUBY("ruby", "rubies"), SAPPHIRE("sapphire", "sapphires");
+public enum Item {
+  BOW("bow", "bows"), CROOKED_ARROW("crooked arrow", "crooked arrows");
 
   private final String singular;
   private final String plural;
 
-  Treasure(String singular, String plural) {
+  Item(String singular, String plural) {
     this.singular = singular;
     this.plural = plural;
   }
@@ -32,6 +32,6 @@ public enum Treasure {
 
   @Override
   public String toString() {
-    return this.singular;
+    return singular;
   }
 }

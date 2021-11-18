@@ -27,6 +27,7 @@ public class PseudoRandomizer implements Randomizer {
     if (a > b) {
       throw new IllegalArgumentException("Invalid range of numbers.");
     }
+    //System.out.println(fakeRandom[pointer]);
     return fakeRandom[pointer++];
   }
 }
