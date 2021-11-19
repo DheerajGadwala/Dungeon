@@ -1,8 +1,8 @@
 package dungeoncontroller;
 
 import dungeon.Game;
-import general.Direction;
-import general.ShotResult;
+import dungeongeneral.Direction;
+import dungeongeneral.ShotResult;
 
 import java.io.IOException;
 
@@ -10,11 +10,10 @@ import java.io.IOException;
  * Shoot command, makes the player of the game shoot an arrow in the given direction and distance.
  * This command also appends the result of the execution to the output.
  */
-class Shoot implements Command {
+class Shoot extends AbstractCommand {
 
   private final Direction direction;
   private final int distance;
-  private final Appendable out;
 
   /**
    * Constructor of the command.
@@ -23,9 +22,9 @@ class Shoot implements Command {
    * @param out appendable.
    */
   Shoot(Direction direction, int distance, Appendable out) {
+    super(out);
     this.direction = direction;
     this.distance = distance;
-    this.out = out;
   }
 
   @Override

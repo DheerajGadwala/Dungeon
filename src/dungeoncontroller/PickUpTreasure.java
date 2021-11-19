@@ -1,12 +1,14 @@
 package dungeoncontroller;
 
 import dungeon.Game;
-import general.Treasure;
+import dungeongeneral.Treasure;
+
+import java.io.IOException;
 
 /**
  * Player picks up given treasure on this command.
  */
-class PickUpTreasure implements Command {
+class PickUpTreasure extends AbstractCommand {
 
   private final Treasure pick;
 
@@ -14,12 +16,20 @@ class PickUpTreasure implements Command {
    * Constructor of this command.
    * @param pick Treasure to be picked by the treasure.
    */
-  PickUpTreasure(Treasure pick) {
+  PickUpTreasure(Treasure pick, Appendable out) {
+    super(out);
     this.pick = pick;
   }
 
   @Override
   public void execute(Game game) {
+    if (game == null) {
+      throw new IllegalArgumentException("game can not be null");
+    }
     game.cedeTreasure(pick);
+    try {
+      out.append("You picked 1 ").append(pick.toString()).append("\n");
+    } catch (IOException ignored) {
+    }
   }
 }

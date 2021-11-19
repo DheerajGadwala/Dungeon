@@ -1,14 +1,13 @@
 package dungeon;
 
-import general.Direction;
-import general.Item;
-import general.MatrixPosition;
-import general.Odour;
-import general.ShotResult;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.ShotResult;
+import dungeongeneral.Treasure;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is a player. A player has a name.
@@ -17,29 +16,18 @@ import java.util.Map;
  * A player can look for and move to the neighbouring locations as well.
  */
 interface Player {
-  /**
-   * returns treasure of the player.
-   * @return treasure of the player as a map to numbers[count].
-   */
-  Map<Treasure, Integer> getTreasures();
-
-  /**
-   * Returns a deep copy of the map of all items.
-   * @return Returns a copy of the map of all items.
-   */
-  Map<Item, Integer> getItems();
 
   /**
    * Collect treasure from the player's current location.
-   * @param t treasure to be collected.
+   * @param treasure treasure to be collected.
    */
-  void collectTreasure(Treasure t);
+  void collectTreasure(Treasure treasure);
 
   /**
    * Picks given item from player's current location.
-   * @param i type of item to be picked.
+   * @param item type of item to be picked.
    */
-  void pickItem(Item i);
+  void pickItem(Item item);
 
   /**
    * get Description of the location of the player.

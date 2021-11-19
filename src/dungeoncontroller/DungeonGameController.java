@@ -1,23 +1,24 @@
 package dungeoncontroller;
 
-import static general.Direction.EAST;
-import static general.Direction.NORTH;
-import static general.Direction.SOUTH;
-import static general.Direction.WEST;
-import static general.Item.BOW;
-import static general.Item.CROOKED_ARROW;
-import static general.Treasure.DIAMOND;
-import static general.Treasure.RUBY;
-import static general.Treasure.SAPPHIRE;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
+import static dungeongeneral.Item.BOW;
+import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.Treasure.DIAMOND;
+import static dungeongeneral.Treasure.RUBY;
+import static dungeongeneral.Treasure.SAPPHIRE;
 
 import dungeon.Game;
-import general.Direction;
-import general.Item;
-import general.Odour;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.Odour;
+import dungeongeneral.Treasure;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -51,11 +52,8 @@ public class DungeonGameController implements GameController {
   @Override
   public void playGame(Game game) {
     try {
-      if (!game.isPlayerCreated()) {
-        game.createPlayer();
-      }
       while (!game.isGameOver()) {
-        out.append(game.getPlayerLocationDescription());
+        out.append(game.getLocationDescription());
         Odour smell = game.getSmellAtPlayerLocation();
         out.append(smell.getImplication());
         out.append("\n");
@@ -69,7 +67,7 @@ public class DungeonGameController implements GameController {
               case 'M':
                 out.append("Direction? [N E S W]\n");
                 direction = directionMap.get(getValidInput("[NESWnesw]"));
-                new Move(direction).execute(game);
+                new Move(direction, out).execute(game);
                 break;
               case 's':
               case 'S':
@@ -83,13 +81,13 @@ public class DungeonGameController implements GameController {
               case 'I':
                 out.append("What Item? [Arrow[a/A] Bow[b/B]]\n");
                 Item item = itemMap.get(getValidInput("[AaBb]"));
-                new PickUpItem(item).execute(game);
+                new PickUpItem(item, out).execute(game);
                 break;
               case 't':
               case 'T':
                 out.append("What Treasure? [Diamond[d/D] Ruby[r/R] Sapphire[s/S]]\n");
                 Treasure treasure = treasureMap.get(getValidInput("[RrDdSs]"));
-                new PickUpTreasure(treasure).execute(game);
+                new PickUpTreasure(treasure, out).execute(game);
                 break;
               default:
                 break;
@@ -104,18 +102,19 @@ public class DungeonGameController implements GameController {
             out.append("\n");
           }
         }
-        out.append("#########################################################\n");
+        out.append("##################################################################\n");
       }
       if (game.hasPlayerWon()) {
         out.append("You have escaped from the dungeon! You lucky dog!\n");
-      }
-      else {
+      } else {
         out.append("The Otyugh is feeding on your body!\n");
       }
       out.append("Final player description:\n");
       out.append(game.getPlayerDescription());
+    } catch (IOException ioe) {
+      throw new IllegalStateException("IO problem.");
     }
-    catch (IOException ignored) {
+    catch (NoSuchElementException ignored) {
     }
   }
 

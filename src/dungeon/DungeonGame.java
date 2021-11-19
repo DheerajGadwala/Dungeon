@@ -1,17 +1,17 @@
 package dungeon;
 
-import static general.Direction.EAST;
-import static general.Direction.NORTH;
-import static general.Direction.SOUTH;
-import static general.Direction.WEST;
-import static general.Item.CROOKED_ARROW;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
+import static dungeongeneral.Item.CROOKED_ARROW;
 
-import general.Direction;
-import general.Item;
-import general.MatrixPosition;
-import general.Odour;
-import general.ShotResult;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.ShotResult;
+import dungeongeneral.Treasure;
 import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
@@ -30,21 +30,21 @@ import java.util.Map;
  */
 public class DungeonGame implements Game {
 
-  private final int m;
-  private final int n;
+  private final int row;
+  private final int column;
   private final Randomizer randomizer;
   private LocationGraph dungeon;
   private LocationNode start;
   private LocationNode end;
-  private Player player;
+  private final Player player;
   private boolean gameOver;
   private static final int MIN_SE_DISTANCE = 5;
 
   private DungeonGame(
-      int m, int n, int percentage, int numberOfMonsters, boolean enableWrap,
-      int interconnectivity, Randomizer randomizer
+      int row, int column, int percentage, int numberOfMonsters,
+      boolean enableWrap, int interconnectivity, Randomizer randomizer
   ) throws IllegalArgumentException {
-    validateMN(m, n);
+    validateMN(row, column);
     if (randomizer == null) {
       throw new IllegalArgumentException("randomizer can not be null");
     }
@@ -55,20 +55,21 @@ public class DungeonGame implements Game {
       throw new IllegalArgumentException("Number of monsters should be at least one.");
     }
     this.randomizer = randomizer;
-    this.m = m;
-    this.n = n;
-    generateValidDungeon(m, n, enableWrap, interconnectivity, numberOfMonsters);
+    this.row = row;
+    this.column = column;
+    generateValidDungeon(row, column, enableWrap, interconnectivity, numberOfMonsters);
     generateTreasure(percentage);
     generateItems(percentage);
     generateMonsters(numberOfMonsters);
+    this.player = new DungeonPlayer(this.start);
   }
 
-  private void validateMN(int m, int n) {
-    if (m < 0 || n < 0) {
+  private void validateMN(int row, int column) {
+    if (row < 0 || column < 0) {
       throw new IllegalArgumentException("Invalid size of grid.");
     }
-    else if (m + n - 2 <= 5) {
-      throw new IllegalArgumentException("m+n-2 needs be greater than 5.");
+    else if (row + column - 2 <= 5) {
+      throw new IllegalArgumentException("row+column-2 needs be greater than 5.");
     }
   }
 
@@ -109,37 +110,37 @@ public class DungeonGame implements Game {
 
   /**
    * This is a constructor for Dungeon control class.
-   * @param m dimension of the dungeon
-   * @param n dimension of the dungeon
+   * @param row dimension of the dungeon
+   * @param column dimension of the dungeon
    * @param enableWrap tells if the dungeon should be wrapped or not
    * @param interconnectivity interconnectivity of the dungeon
-   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation
+   * @throws IllegalArgumentException when given row and column lead to invalid dungeon generation
    *                                  or when interconnectivity is too high or when number of
    *                                  monsters is not at least one.
    */
-  public DungeonGame(int m, int n, int percentage, int numberOfMonsters,
+  public DungeonGame(int row, int column, int percentage, int numberOfMonsters,
                      boolean enableWrap, int interconnectivity
   ) throws IllegalArgumentException {
-    this(m, n, percentage, numberOfMonsters, enableWrap,
+    this(row, column, percentage, numberOfMonsters, enableWrap,
         interconnectivity, new ActualRandomizer()
     );
   }
 
   /**
    * This is a constructor for Dungeon control class with pseudo random generation of dungeon.
-   * @param m dimension of the dungeon
-   * @param n dimension of the dungeon
+   * @param row dimension of the dungeon
+   * @param column dimension of the dungeon
    * @param enableWrap tells if the dungeon should be wrapped or not
    * @param interconnectivity interconnectivity of the dungeon
    * @param random numbers to be used in the generation of this dungeon.
-   * @throws IllegalArgumentException when given m and n lead to invalid dungeon generation or
-   *                                  when interconnectivity is too high or when random is null
+   * @throws IllegalArgumentException when given row and column lead to invalid dungeon generation
+   *                                  or when interconnectivity is too high or when random is null
    *                                  or when number of monster is not at least one.
    */
-  public DungeonGame(int m, int n, int percentage, int numberOfMonsters,
+  public DungeonGame(int row, int column, int percentage, int numberOfMonsters,
                      boolean enableWrap, int interconnectivity, int ...random
   ) throws IllegalArgumentException {
-    this(m, n, percentage, numberOfMonsters, enableWrap,
+    this(row, column, percentage, numberOfMonsters, enableWrap,
         interconnectivity, new PseudoRandomizer(random)
     );
   }
@@ -147,7 +148,6 @@ public class DungeonGame implements Game {
   @Override
   public ShotResult shootArrow(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
-    validatePlayer();
     validateGameOver();
     return player.shoot(direction, distance);
   }
@@ -157,13 +157,18 @@ public class DungeonGame implements Game {
     return isGameOver() && player.isAlive();
   }
 
-  private void generateValidDungeon(int m, int n, boolean enableWrap, int interconnectivity, int numberOfMonsters) {
+  private void generateValidDungeon(
+      int row, int column, boolean enableWrap,
+      int interconnectivity, int numberOfMonsters) {
     int monsterFailureCount = 0;
     while (this.start == null || this.end == null) {
+      System.out.println("here");
       if (monsterFailureCount == 100) {
         throw new IllegalArgumentException("Number of monsters is too high!");
       }
-      this.dungeon = new DungeonGraph(randomizer, m, n, enableWrap).getMst(interconnectivity);
+      this.dungeon = new DungeonGraph(
+          randomizer, row, column, enableWrap
+      ).getMst(interconnectivity);
       List<MatrixPosition> possibleStarts = getAllPositions();
       LocationNode start = null;
       LocationNode end = null;
@@ -189,7 +194,7 @@ public class DungeonGame implements Game {
         }
         break;
       }
-      if (start == null || end == null || dungeon.getCaveCount()-2 < numberOfMonsters) {
+      if (start == null || end == null || dungeon.getCaveCount() - 2 < numberOfMonsters) {
         if (start != null && end != null) {
           monsterFailureCount++;
         }
@@ -199,21 +204,7 @@ public class DungeonGame implements Game {
       this.end = end;
     }
   }
-
-  @Override
-  public void createPlayer()
-      throws IllegalArgumentException, IllegalStateException {
-    if (isPlayerCreated()) {
-      throw new IllegalStateException("Dungeon already has a player.");
-    }
-    player = new DungeonPlayer(start);
-  }
-
-  @Override
-  public boolean isPlayerCreated() {
-    return player != null;
-  }
-
+  
   private Map<Treasure, Integer> generateRandomTreasure() {
     Map<Treasure, Integer> ret = new HashMap<>();
     for (Treasure t: Treasure.values()) {
@@ -225,7 +216,6 @@ public class DungeonGame implements Game {
   @Override
   public void movePlayer(Direction direction)
       throws IllegalStateException, IllegalArgumentException {
-    validatePlayer();
     validateGameOver();
     player.movePlayer(direction);
     if (getPlayerLocation().hasAliveMonster()) {
@@ -244,8 +234,7 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public Odour getSmellAtPlayerLocation() throws IllegalStateException {
-    validatePlayer();
+  public Odour getSmellAtPlayerLocation() {
     return player.smell();
   }
 
@@ -253,81 +242,42 @@ public class DungeonGame implements Game {
     return dungeon.getLocation(player.getPosition());
   }
 
-  LocationNode getLocation(MatrixPosition position) {
+  private LocationNode getLocation(MatrixPosition position) {
     return dungeon.getLocation(position);
   }
-
-  private void validatePlayer()
-      throws IllegalStateException {
-    if (player == null) {
-      throw new IllegalStateException("Player has not been created yet.");
-    }
-  }
+  
   private void validateGameOver()
-    throws IllegalStateException {
+      throws IllegalStateException {
     if (isGameOver()) {
       throw new IllegalStateException("Action not possible after game is over!");
     }
   }
-
-  Player getPlayer() {
-    return player;
-  }
-
-  int getN() {
-    return n;
-  }
-
-  int getM() {
-    return m;
-  }
-
-  LocationNode getStartNode() {
-    return start;
-  }
-
-  LocationNode getEndNode() {
-    return end;
+  
+  @Override
+  public void cedeTreasure(Treasure treasure)
+      throws IllegalStateException, IllegalArgumentException {
+    validateGameOver();
+    player.collectTreasure(treasure);
   }
 
   @Override
-  public void cedeTreasure(Treasure t)
+  public void cedeItem(Item item)
       throws IllegalStateException, IllegalArgumentException {
-    validatePlayer();
     validateGameOver();
-    player.collectTreasure(t);
-  }
-
-  @Override
-  public void cedeItem(Item i)
-      throws IllegalStateException, IllegalArgumentException {
-    validatePlayer();
-    validateGameOver();
-    player.pickItem(i);
+    player.pickItem(item);
   }
 
   /**
    * Get current position of player.
    * @return current matrix position of player.
-   * @throws IllegalStateException if the player has not been created yet.
    */
-  MatrixPosition getPlayerPosition()
-      throws IllegalStateException {
-    validatePlayer();
+  private MatrixPosition getPlayerPosition() {
     return player.getPosition();
   }
 
   @Override
   public boolean playerHasArrow() {
     return player.hasArrow();
-  }
-
-  /**
-   * Get start position.
-   * @return matrix position of start location.
-   */
-  MatrixPosition getStartPosition() {
-    return start.getPosition();
   }
 
   /**
@@ -344,32 +294,13 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public String getPlayerDescription() throws IllegalStateException {
-    validatePlayer();
+  public String getPlayerDescription() {
     return player.toString();
   }
 
   @Override
-  public String getPlayerLocationDescription() throws IllegalStateException {
-    validatePlayer();
+  public String getLocationDescription() {
     return player.getLocationDescription();
-  }
-
-  /**
-   * Returns all connections between nodes.
-   * These are uni-directional.
-   * @return list of all connections.
-   */
-  List<List<MatrixPosition>> getAllConnections() {
-    List<Connection> connections = dungeon.getAllConnections();
-    List<List<MatrixPosition>> ret = new ArrayList<>();
-    for (Connection connection: connections) {
-      List<MatrixPosition> temp = new ArrayList<>();
-      temp.add(connection.getMatrixPositionA());
-      temp.add(connection.getMatrixPositionB());
-      ret.add(temp);
-    }
-    return ret;
   }
 
   /**
@@ -378,8 +309,8 @@ public class DungeonGame implements Game {
    */
   List<MatrixPosition> getAllPositions() {
     List<MatrixPosition> allPositions = new ArrayList<>();
-    for (int i = 0; i < m; i++) {
-      for (int j = 0; j < n; j++) {
+    for (int i = 0; i < row; i++) {
+      for (int j = 0; j < column; j++) {
         allPositions.add(new MatrixPosition(i, j));
       }
     }
@@ -388,48 +319,38 @@ public class DungeonGame implements Game {
 
   @Override
   public String toString() {
-    validatePlayer();
     StringBuilder ret = new StringBuilder();
-    String topBorder = "[************]";
-    String sideBorder = "[************]";
-    ret.append(topBorder.repeat(getN() + 2));
-    ret.append("\n");
-    int playerI = getPlayer().getPosition().getI();
-    int playerJ = getPlayer().getPosition().getJ();
-    int startI = getStartNode().getPosition().getI();
-    int startJ = getStartNode().getPosition().getJ();
-    int endI = getEndNode().getPosition().getI();
-    int endJ = getEndNode().getPosition().getJ();
-    for (int i = 0; i < getM(); i++) {
-      for (int k = 0; k < 5; k++) {
-        ret.append(sideBorder);
-        for (int j = 0; j < getN(); j++) {
-          LocationNode n = getLocation(new MatrixPosition(i, j));
-          if (k == 0 || k == 1) {
-            ret.append(n.hasEmptyNodeAt(NORTH) ? "              " : "      ||      ");
+    int playerI = player.getPosition().getRow();
+    int playerJ = player.getPosition().getColumn();
+    int startI = start.getPosition().getRow();
+    int startJ = start.getPosition().getColumn();
+    int endI = end.getPosition().getRow();
+    int endJ = end.getPosition().getColumn();
+    for (int i = 0; i < row; i++) {
+      for (int k = 0; k < 3; k++) {
+        for (int j = 0; j < column; j++) {
+          LocationNode column = getLocation(new MatrixPosition(i, j));
+          if (k == 0) {
+            ret.append(column.hasEmptyNodeAt(NORTH) ? "          " : "    ||    ");
           }
-          else if (k == 2) {
+          else if (k == 1) {
             ret.append(
-                n.hasEmptyNodeAt(WEST) ? "  " : "--")
-                .append(i == endI && j == endJ ? " E" : " ~")
-                .append(i == startI && j == startJ ? "S" : "~")
-                .append(n.hasAliveMonster() ? "M" : "~")
-                .append(i == playerI && j == playerJ ? "P" : "~")
-                .append(n.hasItem(CROOKED_ARROW) ? "I" : "~")
-                .append(n.isTunnel() ? "+" : "~")
-                .append(n.hasTreasure() ? "T" : "~")
-                .append(n.isCave() ? "O " : "~ ")
-                .append(n.hasEmptyNodeAt(EAST) ? "  " : "--");
+                column.hasEmptyNodeAt(WEST) ? " " : "-")
+                .append(i == endI && j == endJ ? " E" : i == startI && j == startJ ? " S" : " *")
+                .append(column.hasAliveMonster() ? "M" : "*")
+                .append(i == playerI && j == playerJ ? "P" : "*")
+                .append(column.hasItem(CROOKED_ARROW) ? "I" : "*")
+                .append(column.isTunnel() ? "t" : "c")
+                .append(column.hasTreasure() ? "T " : "* ")
+                .append(column.hasEmptyNodeAt(EAST) ? " " : "-");
           }
           else {
-            ret.append(n.hasEmptyNodeAt(SOUTH) ? "              " : "      ||      ");
+            ret.append(column.hasEmptyNodeAt(SOUTH) ? "          " : "    ||    ");
           }
         }
-        ret.append(sideBorder).append("\n");
+        ret.append("\n");
       }
     }
-    ret.append(topBorder.repeat(getN() + 2));
-    ret.append("\n");
     return ret.toString();
   }
 }

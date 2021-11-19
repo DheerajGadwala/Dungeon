@@ -1,12 +1,12 @@
 package dungeon;
 
-import static general.Odour.ODOURLESS;
+import static dungeongeneral.Odour.ODOURLESS;
 
-import general.Direction;
-import general.Item;
-import general.MatrixPosition;
-import general.Odour;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.Treasure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,7 @@ class EmptyLocation implements LocationNode {
 
   private static final EmptyLocation instance = new EmptyLocation();
 
-  EmptyLocation() {
-  }
+  private EmptyLocation() {}
 
   static EmptyLocation getInstance() {
     return instance;
@@ -45,7 +44,7 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public void decreaseTreasureCount(Treasure t) throws IllegalStateException {
+  public void decreaseTreasureCount(Treasure treasure) throws IllegalStateException {
     throw new IllegalStateException("Can not remove treasure from the empty node.");
   }
 
@@ -90,18 +89,8 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public boolean hasTreasure(Treasure t) {
-    return false;
-  }
-
-  @Override
   public boolean hasTreasure() {
     return false;
-  }
-
-  @Override
-  public String getType() {
-    return "Empty node";
   }
 
   @Override
@@ -131,13 +120,8 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public Map<Treasure, Integer> getTreasures() {
-    return null;
-  }
-
-  @Override
-  public Map<Item, Integer> getItems() {
-    return null;
+  public boolean hasMonster() {
+    return false;
   }
 
   @Override

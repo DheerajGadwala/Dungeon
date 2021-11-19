@@ -1,10 +1,10 @@
 package dungeon;
 
-import general.Direction;
-import general.Item;
-import general.MatrixPosition;
-import general.Odour;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.Treasure;
 
 import java.util.List;
 import java.util.Map;
@@ -53,23 +53,10 @@ interface LocationNode {
   LocationNode getLocationAt(Direction direction) throws IllegalStateException;
 
   /**
-   * Returns true if this location has the given treasure.
-   * @param t treasure to be checked.
-   * @return true if this has treasure else false.
-   */
-  boolean hasTreasure(Treasure t);
-
-  /**
    * Returns true if this location has any treasure.
    * @return true if this has treasure else false.
    */
   boolean hasTreasure();
-
-  /**
-   * type of this object as a string.
-   * @return type of this object.
-   */
-  String getType();
 
   /**
    * Add treasure to this location.
@@ -84,6 +71,10 @@ interface LocationNode {
    */
   MatrixPosition getPosition() throws IllegalStateException;
 
+  /**
+   * Get directions which lead to neighbouring nodes.
+   * @return list of directions that lead to valid locations.
+   */
   List<Direction> getPossibleRoutes();
 
   /**
@@ -115,13 +106,14 @@ interface LocationNode {
 
   /**
    * removes one treasure of given type.
-   * @param t Treasure whose count will be reduced by 1.
+   * @param treasure Treasure whose count will be reduced by 1.
    * @throws IllegalStateException when trying to remove treasure from
    *                                Location nodes that are not caves or when
    *                                this the cave has no treasure at all.
    * @throws IllegalArgumentException when treasure of given type does not exists in this cave.
    */
-  void decreaseTreasureCount(Treasure t) throws IllegalStateException, IllegalArgumentException;
+  void decreaseTreasureCount(Treasure treasure)
+      throws IllegalStateException, IllegalArgumentException;
 
   /**
    * We perform BFS here.
@@ -160,16 +152,10 @@ interface LocationNode {
   void setMonster(Monster monster) throws IllegalArgumentException;
 
   /**
-   * returns treasure at this location.
-   * @return treasure at this location
+   * Return true if location has a monster, dead or alive.
+   * @return true if location has monster else false.
    */
-  Map<Treasure, Integer> getTreasures();
-
-  /**
-   * returns items at this location.
-   * @return items at this location
-   */
-  Map<Item, Integer> getItems();
+  boolean hasMonster();
 
   /**
    * checks if location an alive monster in this location.

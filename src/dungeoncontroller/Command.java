@@ -13,6 +13,6 @@ interface Command {
    * @throws IllegalArgumentException depends on the command.
    * @throws IllegalStateException depends on the command.
    */
-  public void execute(Game game)
+  void execute(Game game)
       throws IllegalArgumentException, IllegalStateException;
 }

@@ -1,17 +1,17 @@
 package dungeon;
 
-import static general.Item.BOW;
-import static general.Item.CROOKED_ARROW;
-import static general.ShotResult.HIT;
-import static general.ShotResult.KILL;
-import static general.ShotResult.MISS;
+import static dungeongeneral.Item.BOW;
+import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.ShotResult.HIT;
+import static dungeongeneral.ShotResult.KILL;
+import static dungeongeneral.ShotResult.MISS;
 
-import general.Direction;
-import general.Item;
-import general.MatrixPosition;
-import general.Odour;
-import general.ShotResult;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.ShotResult;
+import dungeongeneral.Treasure;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +22,13 @@ import java.util.Map;
  */
 class DungeonPlayer implements Player {
 
-  private final HashMap<Treasure, Integer> treasures;
+  private final Map<Treasure, Integer> treasures;
   private LocationNode location;
   private boolean isAlive;
   private final Map<Item, Integer> items;
+  private int missCount;
+  private int hitCount;
+  private int killCount;
 
   /**
    * Creates an instance of the dungeon player.
@@ -45,40 +48,21 @@ class DungeonPlayer implements Player {
     items.put(CROOKED_ARROW, 3);
     this.location = location;
     this.isAlive = true;
+    this.missCount = 0;
+    this.hitCount = 0;
+    this.killCount = 0;
   }
 
   @Override
-  public Map<Treasure, Integer> getTreasures() {
-    Map<Treasure, Integer> map = new HashMap<>();
-    for (Treasure t: Treasure.values()) {
-      if (treasures.get(t) > 0) {
-        map.put(t, treasures.get(t));
-      }
-    }
-    return map;
+  public void collectTreasure(Treasure treasure) {
+    location.decreaseTreasureCount(treasure);
+    treasures.replace(treasure, treasures.get(treasure) + 1);
   }
 
   @Override
-  public Map<Item, Integer> getItems() {
-    Map<Item, Integer> map = new HashMap<>();
-    for (Item i: Item.values()) {
-      if (items.get(i) > 0) {
-        map.put(i, items.get(i));
-      }
-    }
-    return map;
-  }
-
-  @Override
-  public void collectTreasure(Treasure t) {
-    location.decreaseTreasureCount(t);
-    treasures.replace(t, treasures.get(t) + 1);
-  }
-
-  @Override
-  public void pickItem(Item i) {
-    location.decreaseItemCount(i);
-    items.replace(i, items.get(i) + 1);
+  public void pickItem(Item item) {
+    location.decreaseItemCount(item);
+    items.replace(item, items.get(item) + 1);
   }
 
   @Override
@@ -134,14 +118,18 @@ class DungeonPlayer implements Player {
     Monster monster;
     monster = location.getMonsterAtEnd(direction, distance);
     if (monster == null || !monster.isAlive()) {
+      missCount++;
       return MISS;
     }
     else {
       monster.decreaseHealth();
       if (monster.isAlive()) {
+        hitCount++;
         return HIT;
       }
       else {
+        hitCount++;
+        killCount++;
         return KILL;
       }
     }
@@ -160,7 +148,10 @@ class DungeonPlayer implements Player {
   @Override
   public String toString() {
     StringBuilder stb = new StringBuilder();
-    stb.append("Player description:\n");
+    stb.append("Player info:\n");
+    stb.append("Misses: ").append(missCount).append("\n");
+    stb.append("Hits: ").append(hitCount).append("\n");
+    stb.append("Kills: ").append(killCount).append("\n");
     stb.append("Treasure:\n");
     for (Treasure t: Treasure.values()) {
       stb.append(String.format(" %s - %d\n", t.toString(), treasures.get(t)));

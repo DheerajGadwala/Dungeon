@@ -1,20 +1,20 @@
 package dungeon;
 
-import static general.Direction.EAST;
-import static general.Direction.NORTH;
-import static general.Direction.SOUTH;
-import static general.Direction.WEST;
-import static general.Odour.LESS_PUNGENT;
-import static general.Odour.MORE_PUNGENT;
-import static general.Odour.ODOURLESS;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
+import static dungeongeneral.Odour.LESS_PUNGENT;
+import static dungeongeneral.Odour.MORE_PUNGENT;
+import static dungeongeneral.Odour.ODOURLESS;
 
-import general.Direction;
-import general.Item;
-import general.ItemList;
-import general.MatrixPosition;
-import general.Odour;
-import general.Treasure;
-import general.TreasureList;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ItemList;
+import dungeongeneral.MatrixPosition;
+import dungeongeneral.Odour;
+import dungeongeneral.Treasure;
+import dungeongeneral.TreasureList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ class Location implements LocationNode {
     initializeItems();
   }
 
-  private void initializeItems(){
+  private void initializeItems() {
     for (Item i: Item.values()) {
       items.put(i, 0);
     }
@@ -80,8 +80,7 @@ class Location implements LocationNode {
     return count;
   }
 
-  @Override
-  public String getType() {
+  String getType() {
     return isCave() ? "Cave" : "Tunnel";
   }
 
@@ -97,11 +96,6 @@ class Location implements LocationNode {
     for (Treasure t: Treasure.values()) {
       this.treasures.replace(t, treasures.get(t) + treasure.get(t));
     }
-  }
-
-  @Override
-  public boolean hasTreasure(Treasure t) {
-    return treasures.get(t) > 0;
   }
 
   @Override
@@ -159,8 +153,8 @@ class Location implements LocationNode {
   }
 
   @Override
-  public void decreaseTreasureCount(Treasure t) throws IllegalStateException {
-    if (t == null) {
+  public void decreaseTreasureCount(Treasure treasure) throws IllegalStateException {
+    if (treasure == null) {
       throw new IllegalArgumentException("treasure can not be null");
     }
     if (isTunnel()) {
@@ -169,10 +163,10 @@ class Location implements LocationNode {
     if (!hasTreasure()) {
       throw new IllegalStateException("This location has no treasure.");
     }
-    else if (treasures.get(t) == 0) {
+    else if (treasures.get(treasure) == 0) {
       throw new IllegalArgumentException("No treasure of this type.");
     }
-    treasures.replace(t, treasures.get(t) - 1);
+    treasures.replace(treasure, treasures.get(treasure) - 1);
   }
 
   @Override
@@ -268,21 +262,8 @@ class Location implements LocationNode {
   }
 
   @Override
-  public Map<Treasure, Integer> getTreasures() {
-    Map<Treasure, Integer> map = new HashMap<>();
-    for (Treasure t: Treasure.values()) {
-      map.put(t, treasures.get(t));
-    }
-    return map;
-  }
-
-  @Override
-  public Map<Item, Integer> getItems() {
-    Map<Item, Integer> map = new HashMap<>();
-    for (Item i: Item.values()) {
-      map.put(i, items.get(i));
-    }
-    return map;
+  public boolean hasMonster() {
+    return monster != null;
   }
 
   @Override
@@ -290,7 +271,9 @@ class Location implements LocationNode {
     if (monster == null) {
       return false;
     }
-    else return monster.isAlive();
+    else {
+      return monster.isAlive();
+    }
   }
 
   @Override
@@ -423,12 +406,16 @@ class Location implements LocationNode {
       stb.append("There are some items in this cave: ");
       stb.append(new ItemList(items).toString()).append("\n");
     }
-    if (hasAliveMonster()) {
-      stb.append(
-          monster.isInjured()
-              ? "There is an injured monster here.\n"
-              : "There is a monster here.\n"
-      );
+    if (hasMonster()) {
+      if(!monster.isAlive()) {
+        stb.append("There is a dead monster here.\n");
+      }
+      else if (monster.isInjured()) {
+        stb.append("There is an injured monster here.\n");
+      }
+      else {
+        stb.append("There is an alive monster here.\n");
+      }
     }
     return stb.toString();
   }

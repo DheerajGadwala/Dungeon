@@ -1,7 +1,7 @@
 package dungeon;
 
-import general.Direction;
-import general.MatrixPosition;
+import dungeongeneral.Direction;
+import dungeongeneral.MatrixPosition;
 
 /**
  * Represents an edge in the Location graph.

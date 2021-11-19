@@ -1,31 +1,22 @@
 package dungeon;
 
-import general.Direction;
-import general.Item;
-import general.Odour;
-import general.ShotResult;
-import general.Treasure;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.Odour;
+import dungeongeneral.ShotResult;
+import dungeongeneral.Treasure;
 
 /**
  * This acts as a control over the dungeon graph and the player.
- * One player can be created in this.
- * A locationGraph is created on construction.
+ * A {@link Player} and a {@link LocationGraph} are created on construction
+ * of the game. Random {@link LocationNode} are chosen as start and end.
  * The player can be operated from this on the location graph.
- * A game is created with treasure in given percentage of caves.
+ * A game is created with treasure in given percentage of caves and
+ * items in the given percentage of locations. The dungeon has {@link Monster}s
+ * in its locations. The number of monsters is equal to the given difficulty.
+ * The player can move, pick up treasure and items and shoot arrows.
  */
 public interface Game {
-
-  /**
-   * create a new player with the given name in the dungeon.
-   * @throws IllegalStateException if a player already exists in the dungeon.
-   */
-  void createPlayer() throws IllegalStateException;
-
-  /**
-   * Returns true if player is created.
-   * @return true if player is created else false.
-   */
-  boolean isPlayerCreated();
 
   /**
    * Moves player in the given direction if possible.
@@ -33,53 +24,53 @@ public interface Game {
    * @param direction direction in which the player is to be moved.
    * @throws IllegalArgumentException if direction is null or if the player
    *                                can not be moved in the given direction.
-   * @throws IllegalStateException if the player has not been created yet or
-   *                                if the game is already over.
+   * @throws IllegalStateException if the game is already over.
    */
   void movePlayer(Direction direction) throws IllegalArgumentException, IllegalStateException;
 
   /**
    * Returns the odour at player location.
    * @return odour as perceived by the player.
-   * @throws IllegalStateException if player has not been created yet.
    */
-  Odour getSmellAtPlayerLocation() throws IllegalStateException;
+  Odour getSmellAtPlayerLocation();
 
   /**
    * Makes the player collect treasure from his location if possible.
-   * @param t Treasure type to be ceded.
-   * @throws IllegalStateException if the player has not been created yet or
-   *                              location is a tunnel or if the game is already over.
-   * @throws IllegalArgumentException if t is null or if the treasure
+   * @param treasure Treasure type to be ceded.
+   * @throws IllegalStateException if location is a tunnel or if the
+   *                                location has no treasure at all or
+   *                                if the game is already over.
+   * @throws IllegalArgumentException if treasure is null or if the treasure
    *                                  is not the player's location.
    */
-  void cedeTreasure(Treasure t) throws IllegalStateException, IllegalArgumentException;
+  void cedeTreasure(Treasure treasure) throws IllegalStateException, IllegalArgumentException;
 
   /**
    * Makes the player collect item from his location if possible.
-   * @param i Item to be ceded.
-   * @throws IllegalStateException if the player has not been created yet or
-   *                              if the item is not in the player's location or
-   *                              if the game is already over.
-   * @throws IllegalArgumentException if the item is null.
+   * @param item Item to be ceded.
+   * @throws IllegalStateException if location has no items at all or
+   *                                if the game is already over.
+   * @throws IllegalArgumentException if given item type is not at the
+   *                                  player's location.
    */
-  void cedeItem(Item i) throws IllegalStateException, IllegalArgumentException;
+  void cedeItem(Item item) throws IllegalStateException, IllegalArgumentException;
 
   /**
-   * Returns description of the player, along with
-   * his current treasure and location details.
+   * Returns description of the player, which
+   * includes: game stats, player's treasure and
+   * items.
    * @return description of the player.
-   * @throws IllegalStateException when player has not been added yet.
    */
-  String getPlayerDescription() throws IllegalStateException;
+  String getPlayerDescription();
 
   /**
-   * Returns description of the player's location,
-   * along with the treasure at that location if any.
+   * Returns description of the player's location.
+   * It includes the type of of location, treasure if any,
+   * items if any and details about the monster, if it exists
+   * in the location.
    * @return description of the player's location.
-   * @throws IllegalStateException when player has not been added yet.
    */
-  String getPlayerLocationDescription() throws IllegalStateException;
+  String getLocationDescription();
 
   /**
    * Game's player shoots an arrow in the given direction and distance.
@@ -104,9 +95,27 @@ public interface Game {
    * @return true is game is over.
    */
   boolean isGameOver();
+
   /**
    * returns true if the player has won the game else false.
    * @return true if player has won else false.
    */
   boolean hasPlayerWon();
+
+  /**
+   * To string of the game returns a map of the game in its then
+   * state.
+   * Representations:
+   * t - tunnel
+   * c - cave
+   * T - treasure
+   * I - items
+   * S - Start
+   * E - End
+   * M = Monster
+   * * - nothing
+   * @return map of the game.
+   */
+  @Override
+  String toString();
 }

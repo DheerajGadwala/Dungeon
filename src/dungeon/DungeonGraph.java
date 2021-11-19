@@ -1,12 +1,12 @@
 package dungeon;
 
-import static general.Direction.EAST;
-import static general.Direction.NORTH;
-import static general.Direction.SOUTH;
-import static general.Direction.WEST;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
 
-import general.Direction;
-import general.MatrixPosition;
+import dungeongeneral.Direction;
+import dungeongeneral.MatrixPosition;
 import randomizer.Randomizer;
 
 import java.util.ArrayList;
@@ -147,7 +147,7 @@ class DungeonGraph implements LocationGraph {
   @Override
   public int getCaveCount() {
     int count = 0;
-    for(LocationNode node: locationNodes) {
+    for (LocationNode node: locationNodes) {
       count += node.isCave() ? 1 : 0;
     }
     return count;
@@ -438,11 +438,6 @@ class DungeonGraph implements LocationGraph {
       }
     }
     return caves;
-  }
-
-  @Override
-  public List<Connection> getAllConnections() {
-    return new ArrayList<>(connections);
   }
 
   @Override

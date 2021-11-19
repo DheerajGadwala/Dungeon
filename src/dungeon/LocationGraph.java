@@ -1,7 +1,7 @@
 package dungeon;
 
-import general.Direction;
-import general.MatrixPosition;
+import dungeongeneral.Direction;
+import dungeongeneral.MatrixPosition;
 
 import java.util.List;
 
@@ -80,11 +80,5 @@ interface LocationGraph {
    * @return list of all locations that are caves.
    */
   List<LocationNode> getCaves();
-
-  /**
-   * Get all connections between the positions.
-   * @return list of all connections in this graph.
-   */
-  List<Connection> getAllConnections();
 }
 
