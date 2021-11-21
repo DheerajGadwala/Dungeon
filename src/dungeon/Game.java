@@ -2,7 +2,9 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -26,13 +28,13 @@ public interface Game {
    *                                can not be moved in the given direction.
    * @throws IllegalStateException if the game is already over.
    */
-  void movePlayer(Direction direction) throws IllegalArgumentException, IllegalStateException;
+  void move(Direction direction) throws IllegalArgumentException, IllegalStateException;
 
   /**
    * Returns the odour at player location.
    * @return odour as perceived by the player.
    */
-  Odour getSmellAtPlayerLocation();
+  Odour smell();
 
   /**
    * Makes the player collect treasure from his location if possible.
@@ -61,7 +63,7 @@ public interface Game {
    * items.
    * @return description of the player.
    */
-  String getPlayerDescription();
+  PlayerDesc getPlayerDesc();
 
   /**
    * Returns description of the player's location.
@@ -70,7 +72,7 @@ public interface Game {
    * in the location.
    * @return description of the player's location.
    */
-  String getLocationDescription();
+  LocationDesc getLocationDesc();
 
   /**
    * Game's player shoots an arrow in the given direction and distance.
@@ -80,14 +82,14 @@ public interface Game {
    * @throws IllegalArgumentException if direction or distance are invalid.
    * @throws IllegalStateException when game is over.
    */
-  ShotResult shootArrow(Direction direction, int distance)
+  ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
    * Returns true if the player has at least one arrow.
    * @return true if player has at least one arrow else false.
    */
-  boolean playerHasArrow();
+  boolean hasArrow();
 
   /**
    * Returns true if player has reached end.

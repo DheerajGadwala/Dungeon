@@ -8,14 +8,18 @@ import static dungeongeneral.ShotResult.MISS;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
+import dungeongeneral.PlayerDescImpl;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Represents a player at location inside the dungeon.
@@ -66,8 +70,8 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public String getLocationDescription() {
-    return location.toString();
+  public LocationDesc getLocationDescription() {
+    return location.getDesc();
   }
 
   @Override
@@ -145,21 +149,27 @@ class DungeonPlayer implements Player {
     return items.get(CROOKED_ARROW) > 0;
   }
 
+  private Map<Item, Integer> copyItems(Map<Item, Integer> items) {
+    Map<Item, Integer> copy = new TreeMap<>();
+    for (Item item: items.keySet()) {
+      copy.put(item, items.get(item));
+    }
+    return copy;
+  }
+
+  private Map<Treasure, Integer> copyTreasures(Map<Treasure, Integer> treasures) {
+    Map<Treasure, Integer> copy = new TreeMap<>();
+    for (Treasure treasure: treasures.keySet()) {
+      copy.put(treasure, treasures.get(treasure));
+    }
+    return copy;
+  }
+
   @Override
-  public String toString() {
-    StringBuilder stb = new StringBuilder();
-    stb.append("Player info:\n");
-    stb.append("Misses: ").append(missCount).append("\n");
-    stb.append("Hits: ").append(hitCount).append("\n");
-    stb.append("Kills: ").append(killCount).append("\n");
-    stb.append("Treasure:\n");
-    for (Treasure t: Treasure.values()) {
-      stb.append(String.format(" %s - %d\n", t.toString(), treasures.get(t)));
-    }
-    stb.append("Items:\n");
-    for (Item i: Item.values()) {
-      stb.append(String.format(" %s - %d\n", i.toString(), items.get(i)));
-    }
-    return stb.toString();
+  public PlayerDesc getDesc() {
+    return new PlayerDescImpl(
+            copyItems(items), copyTreasures(treasures),
+            missCount, hitCount, killCount
+    );
   }
 }

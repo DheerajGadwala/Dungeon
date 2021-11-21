@@ -15,17 +15,15 @@ import static junit.framework.TestCase.assertFalse;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
+import dungeongeneral.LocationDesc;
 import org.junit.Before;
 import org.junit.Test;
-import randomizer.ActualRandomizer;
-import randomizer.Randomizer;
 
 /**
  * This is the test suite for the dungeon game.
  */
 public class GameTests {
 
-  private Randomizer randomizer;
   private Game sampleGame3;
   private Game monsterAtNorthSample;
 
@@ -34,7 +32,6 @@ public class GameTests {
    */
   @Before
   public void setUp() {
-    this.randomizer = new ActualRandomizer();
     sampleGame3 = new DungeonGame(
         5, 5, 60, 1, false, 2,
         28,19,18,32,47,31,48,58,8,52,46,42,3,39,38,28,19,34,26,35,20,28,25,22,
@@ -109,15 +106,22 @@ public class GameTests {
    */
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalInputForMove() {
-    sampleGame3.movePlayer(null);
+    sampleGame3.move(null);
   }
 
   /**
-   * Pass direction with no neighbour to movePlayer throws exception.
+   * Pass direction with no neighbour to move throws exception.
    */
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalInputForMoveNonExistentNeighbour() {
-    sampleGame3.movePlayer(SOUTH);
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (1, 1)\n"
+                    + "Possible routes: N \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
+    sampleGame3.move(SOUTH);
   }
 
   /**
@@ -129,10 +133,17 @@ public class GameTests {
   }
 
   /**
-   * Passing item which does not exist in the location.
+   * picking item which does not exist in the location.
    */
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalInputForCedeItemNonExistentItem() {
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (1, 1)\n"
+                    + "Possible routes: N \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
     sampleGame3.cedeItem(BOW);
   }
 
@@ -142,11 +153,17 @@ public class GameTests {
   @Test(expected = IllegalStateException.class)
   public void testIllegalInputForCedeItemNonExistentItems() {
     try {
-      sampleGame3.movePlayer(NORTH);
-      sampleGame3.movePlayer(EAST);
+      sampleGame3.move(NORTH);
+      sampleGame3.move(EAST);
     }
     catch (IllegalArgumentException ignored) {
     }
+    assertEquals(
+            "This is a tunnel\n"
+                    + "Coordinates: (0, 2)\n"
+                    + "Possible routes: S W \n",
+            sampleGame3.getLocationDesc().toString()
+    );
     sampleGame3.cedeItem(CROOKED_ARROW);
   }
 
@@ -163,6 +180,13 @@ public class GameTests {
    */
   @Test(expected = IllegalStateException.class)
   public void testIllegalInputForCedeTreasureNoTreasure() {
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (1, 1)\n"
+                    + "Possible routes: N \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
     sampleGame3.cedeTreasure(DIAMOND);
   }
 
@@ -172,7 +196,7 @@ public class GameTests {
   @Test(expected = IllegalArgumentException.class)
   public void testIllegalInputForCedeTreasureNoTreasureOfThisType() {
     try {
-      sampleGame3.movePlayer(NORTH);
+      sampleGame3.move(NORTH);
       //collecting all 3 diamonds at player location.
       sampleGame3.cedeTreasure(DIAMOND);
       sampleGame3.cedeTreasure(DIAMOND);
@@ -181,6 +205,14 @@ public class GameTests {
     }
     catch (IllegalArgumentException ignored) {
     }
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (0, 1)\n"
+                    + "Possible routes: E S W \n"
+                    + "There's some treasure in this cave: 2 rubies 3 sapphires \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
     //This throws illegal argument exception.
     sampleGame3.cedeTreasure(DIAMOND);
   }
@@ -190,52 +222,49 @@ public class GameTests {
    */
   @Test(expected = IllegalArgumentException.class)
   public void testShootIllegalInput() {
-    sampleGame3.shootArrow(null, 1);
+    sampleGame3.shoot(null, 1);
   }
 
   /**
-   * pass null as direction.
+   * pass negative distance.
    */
   @Test(expected = IllegalArgumentException.class)
   public void testShootNegativeDistance() {
-    sampleGame3.shootArrow(NORTH, -3);
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (1, 1)\n"
+                    + "Possible routes: N \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
+    sampleGame3.shoot(NORTH, -3);
   }
 
   /**
-   * pass null as direction.
+   * pass 0 distance.
    */
   @Test(expected = IllegalArgumentException.class)
+
   public void testShootZeroDistance() {
-    sampleGame3.shootArrow(NORTH, 0);
+    assertEquals(
+            "This is a cave\n"
+                    + "Coordinates: (1, 1)\n"
+                    + "Possible routes: N \n"
+                    + "There are some items in this cave: 3 crooked arrows \n",
+            sampleGame3.getLocationDesc().toString()
+    );
+    sampleGame3.shoot(NORTH, 0);
   }
 
   /**
-   * Test cedeTreasure before creating player throws exception.
-   */
-  @Test(expected = IllegalStateException.class)
-  public void testPickUpTreasureBeforePlayerCreation() {
-    Game game = new DungeonGame(10, 10, 0, 1, false, 0);
-    game.cedeTreasure(RUBY);
-  }
-
-  /**
-   * Test cedeItem before creating player throws exception.
-   */
-  @Test(expected = IllegalStateException.class)
-  public void testPickUpItemBeforePlayerCreation() {
-    Game game = new DungeonGame(10, 10, 0, 1, false, 0);
-    game.cedeItem(CROOKED_ARROW);
-  }
-
-  /**
-   * Test if exception is thrown when movePlayer is called after game is over.
+   * Test if exception is thrown when move is called after game is over.
    */
   @Test(expected = IllegalStateException.class)
   public void testMoveAfterGameOver() {
     assertFalse(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.movePlayer(NORTH);
+    monsterAtNorthSample.move(NORTH);
     assertTrue(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.movePlayer(SOUTH); // This throws exception.
+    monsterAtNorthSample.move(SOUTH); // This throws exception.
   }
 
   /**
@@ -244,9 +273,9 @@ public class GameTests {
   @Test(expected = IllegalStateException.class)
   public void testShootAfterGameOver() {
     assertFalse(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.movePlayer(NORTH);
+    monsterAtNorthSample.move(NORTH);
     assertTrue(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.shootArrow(NORTH, 1); // This throws exception.
+    monsterAtNorthSample.shoot(NORTH, 1); // This throws exception.
   }
 
   /**
@@ -255,7 +284,7 @@ public class GameTests {
   @Test(expected = IllegalStateException.class)
   public void testPickUpTreasureAfterGameOver() {
     assertFalse(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.movePlayer(NORTH);
+    monsterAtNorthSample.move(NORTH);
     assertTrue(monsterAtNorthSample.isGameOver());
     monsterAtNorthSample.cedeTreasure(RUBY);
   }
@@ -266,7 +295,7 @@ public class GameTests {
   @Test(expected = IllegalStateException.class)
   public void testPickUpItemAfterGameOver() {
     assertFalse(monsterAtNorthSample.isGameOver());
-    monsterAtNorthSample.movePlayer(NORTH);
+    monsterAtNorthSample.move(NORTH);
     assertTrue(monsterAtNorthSample.isGameOver());
     monsterAtNorthSample.cedeItem(CROOKED_ARROW);
   }
@@ -274,167 +303,209 @@ public class GameTests {
   /**
    * Test wrapping dungeon generation using pseudo random input.
    * Will create a wrapping dungeon when given a valid set of random numbers.
-   * This also shows that the start-end distance is greater than 5 in this pseudo random dungeon.
-   * This also shows that all nodes are connected in this pseudo random dungeon.
+   * We move through nodes with edges.
    */
   @Test
   public void testWrappingDungeon() {
-    Game game = new DungeonGame(6, 7, 0, 4, true, 0,
-        110,88,156,35,131,111,59,147,35,104,17,132,140,82,0,37,95,107,24,
-        123,11,65,99,53,60,101,51,28,104,71,13,100,67,44,91,29,56,72,11,25,51,54,
-        12,6,75,0,11,70,40,28,66,10,39,6,5,36,53,24,26,43,24,9,33,30,12,7,14,14,2
+    Game game = new DungeonGame(4, 4, 0, 1, true, 8,
+            53,34,14,55,20,2,28,4,19,1,8,1,38,16,24,31,11,28,
+            25,14,30,20,8,17,5,11,10,19,7,5,10,8,7,0,0,2,5,2,5,1,3,2,0
     );
-    assertEquals(
-        "    ||                  ||                            ||              \n"
-            + "- ****c* -- ****c*    ****c*    ****c*    ****t* -- ****t*    EM**c* -\n"
-            + "    ||                            ||        ||                        \n"
-            + "    ||                            ||        ||                        \n"
-            + "  ****t* -- ****c*    ****t* -- ****c*    *M**c* -- ****c*    S*P*c*  \n"
-            + "                        ||        ||        ||                  ||    \n"
-            + "                        ||        ||        ||                  ||    \n"
-            + "  ****c*    ****t* -- ****t*    ****t*    ****t*    ****c*    ****t*  \n"
-            + "    ||        ||                  ||        ||        ||        ||    \n"
-            + "    ||        ||                  ||        ||        ||        ||    \n"
-            + "  ****t*    ****t*    ****t* -- ****t*    ****c*    ****t* -- *M**c*  \n"
-            + "    ||        ||        ||                                      ||    \n"
-            + "    ||        ||        ||                                      ||    \n"
-            + "  ****c* -- ****t*    ****t* -- ****t*    ****c* -- ****t*    ****t*  \n"
-            + "    ||                            ||                  ||        ||    \n"
-            + "    ||                            ||                  ||        ||    \n"
-            + "- ****c* -- *M**c*    ****t* -- ****c* -- ****t* -- ****c*    ****t* -\n"
-            + "    ||                  ||                            ||              \n",
-        game.toString()
-    );
+    LocationDesc dec = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (2, 3)\n"
+            + "Possible routes: E \n", dec.toString());
+    game.move(EAST);
+    dec = game.getLocationDesc();
+    // we can see that the coordinates have wrapped around
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (2, 0)\n"
+            + "Possible routes: S W \n", dec.toString());
+    game.move(SOUTH);
+    dec = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (3, 0)\n"
+            + "Possible routes: N W \n", dec.toString());
+    game.move(WEST);
+    dec = game.getLocationDesc();
+    // we can see that the coordinates have wrapped around
+    assertEquals("This is a cave\n"
+            + "Coordinates: (3, 3)\n"
+            + "Possible routes: E S W \n", dec.toString());
+    game.move(WEST);
+    dec = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (3, 2)\n"
+            + "Possible routes: N E S W \n", dec.toString());
+    int i = 0;
+    // column size of dungeon is only 4 but we can loop through the dungeon.
+    while (i < 100) {
+      i++;
+      game.move(NORTH);
+    }
+    assertEquals("This is a cave\n"
+            + "Coordinates: (3, 2)\n"
+            + "Possible routes: N E S W \n", game.getLocationDesc().toString());
   }
 
   /**
    * Test non-wrapping dungeon generation using pseudo random input.
    * Will create a non-wrapping dungeon when given a valid set of random numbers.
-   * This also shows that the start-end distance is greater than 5 in this pseudo random dungeon.
-   * This also shows that all nodes are connected in this pseudo random dungeon.
+   * We walk through every corner node and check that there are no wrap around paths.
    */
   @Test
   public void testNonWrappingDungeon() {
-    Game game = new DungeonGame(6, 7, 0, 1, false, 0,
-        124,27,52,63,114,103,121,1,61,81,41,48,52,61,30,6,
-        108,58,100,60,61,18,30,80,30,13,5,16,22,22,37,70,68,30,37,
-        70,2,50,37,42,37,59,47,33,31,9,28,23,38,33,11,21,3,20
-    );
-    assertEquals(
-        "                                                                      \n"
-            + "  ****t* -- ****c* -- ****c*    S*P*c* -- ****t* -- ****t*    ****c*  \n"
-            + "    ||        ||                                      ||        ||    \n"
-            + "    ||        ||                                      ||        ||    \n"
-            + "  ****t*    ****t* -- ****c* -- EM**c*    ****c* -- ****c*    ****t*  \n"
-            + "    ||                  ||                            ||        ||    \n"
-            + "    ||                  ||                            ||        ||    \n"
-            + "  ****c*    ****t* -- ****c*    ****t* -- ****c* -- ****c* -- ****t*  \n"
-            + "              ||        ||        ||        ||        ||              \n"
-            + "              ||        ||        ||        ||        ||              \n"
-            + "  ****t* -- ****t*    ****c* -- ****c*    ****t*    ****c* -- ****t*  \n"
-            + "    ||                  ||        ||        ||        ||        ||    \n"
-            + "    ||                  ||        ||        ||        ||        ||    \n"
-            + "  ****t*    ****c*    ****c*    ****t*    ****c*    ****c*    ****t*  \n"
-            + "    ||        ||                  ||                            ||    \n"
-            + "    ||        ||                  ||                            ||    \n"
-            + "  ****t* -- ****t*    ****c* -- ****t*    ****c* -- ****t* -- ****t*  \n"
-            + "                                                                      \n",
-        game.toString());
+    Game game = new DungeonGame(4, 4, 0, 1, false, 5,
+            23,8,23,4,34,23,27,15,22,16,6,1,10,19,9,
+            6,14,9,1,12,2,8,9,2,8,12,12,6,1,4,2,1,4,5,2,1,0,1);
+    LocationDesc des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+                    + "Coordinates: (0, 0)\n"
+                    + "Possible routes: E \n", des.toString());
+    game.move(EAST);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+                    + "Coordinates: (0, 1)\n"
+                    + "Possible routes: E W \n", des.toString());
+    game.move(EAST);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (0, 2)\n"
+            + "Possible routes: E W \n", des.toString());
+    game.move(EAST);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (0, 3)\n"
+            + "Possible routes: S W \n", des.toString());
+    game.move(SOUTH);
+    des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (1, 3)\n"
+            + "Possible routes: N S W \n", des.toString());
+    game.move(SOUTH);
+    des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (2, 3)\n"
+            + "Possible routes: N S W \n", des.toString());
+    game.move(SOUTH);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (3, 3)\n"
+            + "Possible routes: N W \n", des.toString());
+    game.move(WEST);
+    des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (3, 2)\n"
+            + "Possible routes: N E W \n", des.toString());
+    game.move(WEST);
+    des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (3, 1)\n"
+            + "Possible routes: N E W \n", des.toString());
+    game.move(WEST);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (3, 0)\n"
+            + "Possible routes: N E \n", des.toString());
+    game.move(NORTH);
+    des = game.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (2, 0)\n"
+            + "Possible routes: N E S \n", des.toString());
+    game.move(NORTH);
+    des = game.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (1, 0)\n"
+            + "Possible routes: E S \n", des.toString());
+
   }
 
-  /**
-   * Test showing map when interconnectivity is not zero.
-   */
-  @Test
-  public void testInterConnectivityNonZero() {
-    Game game = new DungeonGame(5, 7, 60, 4, true, 2,
-        41,99,32,91,41,56,64,8,94,7,106,35,26,56,70,41,68,46,93,83,98,65,73,34,72,13,
-        4,29,7,5,31,58,42,5,50,15,14,2,53,56,9,3,23,4,18,17,18,0,1,3,1,11,2,3,1,7,3,3,1,8,2,3,
-        1,3,2,2,2,10,1,1,1,12,2,3,3,3,1,3,3,3,1,2,2,2,2,3,3,5,1,1,2,2,1,3,2,28,4,32,1,4,2,3,3,
-        7,3,17,5,6,3,17,2,7,5,5,5,11,3,18,1,13,1,16,5,7,1,7,5,11,5,11,2,8,1,8,2,14,2,3,16,2
-    );
-    assertEquals(
-        "    ||                  ||                                      ||    \n"
-            + "- ****t*    *M**cT    ****cT -- ***It* -- ***It*    ****cT    ****t* -\n"
-            + "              ||        ||                  ||        ||              \n"
-            + "              ||        ||                  ||        ||              \n"
-            + "- ***Ic* -- *M*Ic*    ***Ic*    ****t* -- ***IcT    ****t* -- ***Ic* -\n"
-            + "    ||        ||                  ||        ||                  ||    \n"
-            + "    ||        ||                  ||        ||                  ||    \n"
-            + "  ***Ic*    ****t*    ***Ic* -- ***It*    ***It* -- S*P*cT    ***It*  \n"
-            + "              ||                                                ||    \n"
-            + "              ||                                                ||    \n"
-            + "  ***IcT -- ***IcT -- ***IcT -- ***It* -- ****t* -- ***IcT -- ***Ic*  \n"
-            + "              ||        ||                            ||        ||    \n"
-            + "              ||        ||                            ||        ||    \n"
-            + "- ***It*    ****cT    ****c* -- ****t* -- ****cT    *M*Ic*    EM*IcT -\n"
-            + "    ||                  ||                                      ||    \n",
-        game.toString());
-  }
+  //  /**
+  //   * Test showing map when interconnectivity is not zero.
+  //   */
+  //  @Test
+  //  public void testInterConnectivityNonZero() {
+  //    Game game = new DungeonGame(5, 7, 60, 4, true, 2,
+  //        41,99,32,91,41,56,64,8,94,7,106,35,26,56,70,41,68,46,93,83,98,65,73,34,72,13,
+  //        4,29,7,5,31,58,42,5,50,15,14,2,53,56,9,3,23,4,18,17,18,0,1,3,1,11,2,3,1,7,3,3,1,8,2,3,
+  //        1,3,2,2,2,10,1,1,1,12,2,3,3,3,1,3,3,3,1,2,2,2,2,3,3,5,1,1,2,2,1,3,2,28,4,32,1,4,2,3,3,
+  //        7,3,17,5,6,3,17,2,7,5,5,5,11,3,18,1,13,1,16,5,7,1,7,5,11,5,11,2,8,1,8,2,14,2,3,16,2
+  //    );
+  //    assertEquals(
+  //        "    ||                  ||                                      ||    \n"
+  //            + "- ****t*    *M**cT    ****cT -- ***It* -- ***It*    ****cT    ****t* -\n"
+  //            + "              ||        ||                  ||        ||              \n"
+  //            + "              ||        ||                  ||        ||              \n"
+  //            + "- ***Ic* -- *M*Ic*    ***Ic*    ****t* -- ***IcT    ****t* -- ***Ic* -\n"
+  //            + "    ||        ||                  ||        ||                  ||    \n"
+  //            + "    ||        ||                  ||        ||                  ||    \n"
+  //            + "  ***Ic*    ****t*    ***Ic* -- ***It*    ***It* -- S*P*cT    ***It*  \n"
+  //            + "              ||                                                ||    \n"
+  //            + "              ||                                                ||    \n"
+  //            + "  ***IcT -- ***IcT -- ***IcT -- ***It* -- ****t* -- ***IcT -- ***Ic*  \n"
+  //            + "              ||        ||                            ||        ||    \n"
+  //            + "              ||        ||                            ||        ||    \n"
+  //            + "- ***It*    ****cT    ****c* -- ****t* -- ****cT    *M*Ic*    EM*IcT -\n"
+  //            + "    ||                  ||                                      ||    \n",
+  //        game.toString());
+  //  }
+  //
+  //  /**
+  //   * Testing showing map when interconnectivity is zero.
+  //   */
+  //  @Test
+  //  public void testInterconnectivityZero() {
+  //    Game game = new DungeonGame(5, 7, 60, 3, true, 0,
+  //        102,15,133,43,127,16,61,26,62,91,8,102,72,87,37,46,17,81,5,57,57,71,28,66,47,
+  //        8,84,73,1,73,22,72,64,29,21,59,43,48,59,8,30,13,11,11,17,9,8,8,9,26,26,12,2,3,1,10,2,
+  //        2,3,2,1,2,3,8,2,2,1,8,1,1,1,11,2,3,2,5,1,2,1,6,3,3,2,5,1,3,3,2,2,2,2,5,4,22,5,32,2,29,
+  //        4,28,1,10,2,14,4,11,2,8,4,12,4,24,5,18,2,0,1,4,4,16,5,9,3,2,1,5,3,15,4,10,3,12,3,8,11
+  //    );
+  //    assertEquals(
+  //        "    ||        ||        ||        ||                  ||              \n"
+  //            + "  ***It* -- ****cT -- *M**cT -- ***It*    ****c*    ***IcT -- ***Ic*  \n"
+  //            + "                                            ||        ||              \n"
+  //            + "                                            ||        ||              \n"
+  //            + "  ****t* -- ****t* -- ***It* -- ***It*    ***Ic* -- ****t*    ***IcT  \n"
+  //            + "    ||                            ||        ||                  ||    \n"
+  //            + "    ||                            ||        ||                  ||    \n"
+  //            + "  ****t*    ***It* -- ***Ic*    EM*Ic*    ****t* -- ****cT -- ****t*  \n"
+  //            + "    ||        ||                                      ||              \n"
+  //            + "    ||        ||                                      ||              \n"
+  //            + "  ***It*    ****t*    ***IcT    ****c*    ***It* -- ***IcT -- ***IcT  \n"
+  //            + "    ||        ||        ||        ||        ||                        \n"
+  //            + "    ||        ||        ||        ||        ||                        \n"
+  //            + "- ****cT    ***It*    ***It*    *M*Ic* -- ****t*    S*PIcT    ***Ic* -\n"
+  //            + "    ||        ||        ||        ||                  ||              \n",
+  //        game.toString());
+  //  }
 
   /**
-   * Testing showing map when interconnectivity is zero.
+   * Test location of the player when he is created.
+   * The start location has no monster.
    */
   @Test
-  public void testInterconnectivityZero() {
-    Game game = new DungeonGame(5, 7, 60, 3, true, 0,
-        102,15,133,43,127,16,61,26,62,91,8,102,72,87,37,46,17,81,5,57,57,71,28,66,47,
-        8,84,73,1,73,22,72,64,29,21,59,43,48,59,8,30,13,11,11,17,9,8,8,9,26,26,12,2,3,1,10,2,
-        2,3,2,1,2,3,8,2,2,1,8,1,1,1,11,2,3,2,5,1,2,1,6,3,3,2,5,1,3,3,2,2,2,2,5,4,22,5,32,2,29,
-        4,28,1,10,2,14,4,11,2,8,4,12,4,24,5,18,2,0,1,4,4,16,5,9,3,2,1,5,3,15,4,10,3,12,3,8,11
-    );
-    assertEquals(
-        "    ||        ||        ||        ||                  ||              \n"
-            + "  ***It* -- ****cT -- *M**cT -- ***It*    ****c*    ***IcT -- ***Ic*  \n"
-            + "                                            ||        ||              \n"
-            + "                                            ||        ||              \n"
-            + "  ****t* -- ****t* -- ***It* -- ***It*    ***Ic* -- ****t*    ***IcT  \n"
-            + "    ||                            ||        ||                  ||    \n"
-            + "    ||                            ||        ||                  ||    \n"
-            + "  ****t*    ***It* -- ***Ic*    EM*Ic*    ****t* -- ****cT -- ****t*  \n"
-            + "    ||        ||                                      ||              \n"
-            + "    ||        ||                                      ||              \n"
-            + "  ***It*    ****t*    ***IcT    ****c*    ***It* -- ***IcT -- ***IcT  \n"
-            + "    ||        ||        ||        ||        ||                        \n"
-            + "    ||        ||        ||        ||        ||                        \n"
-            + "- ****cT    ***It*    ***It*    *M*Ic* -- ****t*    S*PIcT    ***Ic* -\n"
-            + "    ||        ||        ||        ||                  ||              \n",
-        game.toString());
+  public void testPlayerLocationAtStartHasNoMonster() {
+    Game game = new DungeonGame(5, 5, 20, 1, false, 3);
+    assertTrue(game.getLocationDesc().hasNoMonster()); // start location has no monster.
   }
 
   /**
    * Test location of the player when he is created.
-   * Asserting on the map, because S and P are on the same location.
-   * The map also shows that there is no monster at the start location
-   * represented by an S.
-   * The map also shows that there is a monster at the end location
-   * represented by an E.
+   * Player has 3 arrows on game start.
    */
   @Test
-  public void testPlayerLocationAtStart() {
-    Game game = new DungeonGame(5, 5, 20, 1, false, 3,
-        7,71,58,44,39,62,22,9,42,1,58,54,5,46,16,48,36,11,17,
-        15,36,33,26,15,22,16,25,21,10,7,8,15,16,17,1,9,5,14,17,0,4,
-        16,2,12,6,7,2,4,1,1,1,7,3,2,2,9,2,1,3,18,5,1,3,11,5,14,5,15,2
-    );
-    assertEquals(
-        "                                                  \n"
-            + "  ****c*    ***It* -- EM**c* -- ****c* -- ****cT  \n"
-            + "    ||        ||        ||        ||              \n"
-            + "    ||        ||        ||        ||              \n"
-            + "  ****t*    ****t*    ****t* -- ****c* -- ****cT  \n"
-            + "    ||        ||                  ||              \n"
-            + "    ||        ||                  ||              \n"
-            + "  ****c* -- ****c* -- ***Ic*    ****t*    S*P*c*  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****c* -- ***Ic*    ****cT    ***It* -- ***Ic*  \n"
-            + "    ||        ||        ||                  ||    \n"
-            + "    ||        ||        ||                  ||    \n"
-            + "  ****c*    ****t* -- ****c* -- ****t* -- ****t*  \n"
-            + "                                                  \n",
-        game.toString()
-    );
+  public void test3ArrowsOnGameStart() {
+    Game game = new DungeonGame(5, 5, 20, 1, false, 3);
+    assertEquals("Player info:\n"
+                    + "Misses: 0\n"
+                    + "Hits: 0\n"
+                    + "Kills: 0\n"
+                    + "Treasure:\n"
+                    + "None\n"
+                    + "Items:\n"
+                    + "1 bow 3 crooked arrows \n",
+            game.getPlayerDesc().toString()); // start location has no monster.
   }
 
   /**
@@ -447,57 +518,56 @@ public class GameTests {
    * Asserting that the game is not over until player reaches end.
    * Asserting that the player has not won until the game is over and
    * player has reached the end alive.
+   * This also proves that there is a monster in the end cave.
+   *
    */
   @Test
-  public void testPlayerAtEndLocation() {
+  public void testPlayerAtEndLocationAndMonsterAtEnd() {
     Game game = new DungeonGame(
         5, 5, 0, 1, false, 2,
         40,4,17,20,59,29,45,53,12,56,53,2,48,50,
         10,11,9,10,40,39,20,29,27,25,27,21,6,16,22,2,5,1
     );
-    assertEquals(
-        "                                                  \n"
-            + "  ****c* -- ****t*    ****c* -- ****c* -- ****c*  \n"
-            + "              ||                  ||              \n"
-            + "              ||                  ||              \n"
-            + "  S*P*c* -- ****c* -- ****t* -- ****t*    ****c*  \n"
-            + "              ||                            ||    \n"
-            + "              ||                            ||    \n"
-            + "  ****t* -- ****c* -- ****c* -- ****t* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ****c* -- ****t*    ****c* -- ****t* -- EM**c*  \n"
-            + "    ||        ||        ||                        \n"
-            + "    ||        ||        ||                        \n"
-            + "  ****t* -- ****c* -- ****c* -- ****t* -- ****c*  \n"
-            + "                                                  \n",
-        game.toString());
+    //    + "  ****c* -- ****t*    ****c* -- ****c* -- ****c*  \n"
+    //    + "              ||                  ||              \n"
+    //    + "              ||                  ||              \n"
+    //    + "  S*P*c* -- ****c* -- ****t* -- ****t*    ****c*  \n"
+    //    + "              ||                            ||    \n"
+    //    + "              ||                            ||    \n"
+    //    + "  ****t* -- ****c* -- ****c* -- ****t* -- ****t*  \n"
+    //    + "    ||                  ||                        \n"
+    //    + "    ||                  ||                        \n"
+    //    + "  ****c* -- ****t*    ****c* -- ****t* -- EM**c*  \n"
+    //    + "    ||        ||        ||                        \n"
+    //    + "    ||        ||        ||                        \n"
+    //    + "  ****t* -- ****c* -- ****c* -- ****t* -- ****c*  \n"
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
+    game.move(EAST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(SOUTH);
+    game.move(SOUTH);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
+    game.move(EAST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(SOUTH);
+    game.move(SOUTH);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
+    game.move(EAST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.shootArrow(EAST, 1);
+    game.shoot(EAST, 1); // hit end cave monster
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.shootArrow(EAST, 1);
+    game.shoot(EAST, 1); // Kill end cave monster
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
-    assertTrue(game.isGameOver());
-    assertTrue(game.hasPlayerWon());
+    game.move(EAST); // Move to end cave
+    assertTrue(game.isGameOver());  // game over
+    assertTrue(game.hasPlayerWon()); // player won
+    assertTrue(game.getLocationDesc().hasDeadMonster()); // End location has a dead monster
   }
 
   /**
@@ -510,31 +580,30 @@ public class GameTests {
         40,4,17,20,59,29,45,53,12,56,53,2,48,50,
         10,11,9,10,40,39,20,29,27,25,27,21,6,16,22,2,5,1
     );
-    assertEquals(
-        "                                                  \n"
-            + "  ****c* -- ****t*    ****c* -- ****c* -- ****c*  \n"
-            + "              ||                  ||              \n"
-            + "              ||                  ||              \n"
-            + "  S*P*c* -- ****c* -- ****t* -- ****t*    ****c*  \n"
-            + "              ||                            ||    \n"
-            + "              ||                            ||    \n"
-            + "  ****t* -- ****c* -- ****c* -- ****t* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ****c* -- ****t*    ****c* -- ****t* -- EM**c*  \n"
-            + "    ||        ||        ||                        \n"
-            + "    ||        ||        ||                        \n"
-            + "  ****t* -- ****c* -- ****c* -- ****t* -- ****c*  \n"
-            + "                                                  \n",
-        game.toString());
-    game.movePlayer(EAST);
-    game.movePlayer(SOUTH);
-    game.movePlayer(EAST);
-    game.movePlayer(SOUTH);
-    game.movePlayer(EAST);
-    game.movePlayer(EAST);
-    assertTrue(game.isGameOver());
-    assertFalse(game.hasPlayerWon());
+    //      "                                                  \n"
+    //    + "  ****c* -- ****t*    ****c* -- ****c* -- ****c*  \n"
+    //    + "              ||                  ||              \n"
+    //    + "              ||                  ||              \n"
+    //    + "  S*P*c* -- ****c* -- ****t* -- ****t*    ****c*  \n"
+    //    + "              ||                            ||    \n"
+    //    + "              ||                            ||    \n"
+    //    + "  ****t* -- ****c* -- ****c* -- ****t* -- ****t*  \n"
+    //    + "    ||                  ||                        \n"
+    //    + "    ||                  ||                        \n"
+    //    + "  ****c* -- ****t*    ****c* -- ****t* -- EM**c*  \n"
+    //    + "    ||        ||        ||                        \n"
+    //    + "    ||        ||        ||                        \n"
+    //    + "  ****t* -- ****c* -- ****c* -- ****t* -- ****c*  \n"
+    //    + "                                                  \n",
+    // moving player to end location without killing the monster.
+    game.move(EAST);
+    game.move(SOUTH);
+    game.move(EAST);
+    game.move(SOUTH);
+    game.move(EAST);
+    game.move(EAST);
+    assertTrue(game.isGameOver()); // game is over
+    assertFalse(game.hasPlayerWon()); // but player has lost.
   }
 
   /**
@@ -550,47 +619,44 @@ public class GameTests {
         6,37,21,9,48,33,30,30,16,28,23,10,9,10,28,6,27,
         14,6,10,16,6,4,9,14,0,9,12,2,1,4,5,6,6,1,2,2,2,2,0,3,1,4
     );
-    assertEquals(
-        "                                        \n"
-            + "  *M**c*    ****c*    ****c*    *M**c*  \n"
-            + "    ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||    \n"
-            + "  ****c* -- ****c* -- ****c* -- ****t*  \n"
-            + "    ||                  ||              \n"
-            + "    ||                  ||              \n"
-            + "  ****t* -- EM**c* -- *M**c* -- ****t*  \n"
-            + "              ||        ||        ||    \n"
-            + "              ||        ||        ||    \n"
-            + "  ****t* -- ****c* -- ****t*    ****c*  \n"
-            + "    ||                                  \n"
-            + "    ||                                  \n"
-            + "  ****t* -- ****t* -- ****t* -- S*P*c*  \n"
-            + "                                        \n",
-        game.toString()
-    );
+    //      "                                        \n"
+    //    + "  *M**c*    ****c*    ****c*    *M**c*  \n"
+    //    + "    ||        ||        ||        ||    \n"
+    //    + "    ||        ||        ||        ||    \n"
+    //    + "  ****c* -- ****c* -- ****c* -- ****t*  \n"
+    //    + "    ||                  ||              \n"
+    //    + "    ||                  ||              \n"
+    //    + "  ****t* -- EM**c* -- *M**c* -- ****t*  \n"
+    //    + "              ||        ||        ||    \n"
+    //    + "              ||        ||        ||    \n"
+    //    + "  ****t* -- ****c* -- ****t*    ****c*  \n"
+    //    + "    ||                                  \n"
+    //    + "    ||                                  \n"
+    //    + "  ****t* -- ****t* -- ****t* -- S*P*c*  \n"
+    //    + "                                        \n",
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(WEST);
+    game.move(WEST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(WEST);
+    game.move(WEST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(WEST);
+    game.move(WEST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(NORTH);
+    game.move(NORTH);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
+    game.move(EAST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(EAST);
+    game.move(EAST);
     assertFalse(game.isGameOver());
     assertFalse(game.hasPlayerWon());
-    game.movePlayer(NORTH);
-    assertTrue(game.isGameOver());
-    assertFalse(game.hasPlayerWon());
+    game.move(NORTH);
+    assertTrue(game.isGameOver()); // player dies hence game over
+    assertFalse(game.hasPlayerWon()); // player dies hence lost
   }
 
   /**
@@ -598,29 +664,28 @@ public class GameTests {
    */
   @Test
   public void testPlayerDescription() {
+    // Exceptions are thrown if player any command fails.
     sampleGame3.cedeItem(CROOKED_ARROW);
     sampleGame3.cedeItem(CROOKED_ARROW);
-    sampleGame3.movePlayer(NORTH);
+    sampleGame3.move(NORTH);
     sampleGame3.cedeTreasure(DIAMOND);
     sampleGame3.cedeTreasure(RUBY);
-    sampleGame3.movePlayer(EAST);
-    sampleGame3.movePlayer(SOUTH);
-    sampleGame3.movePlayer(SOUTH);
+    sampleGame3.move(EAST);
+    sampleGame3.move(SOUTH);
+    sampleGame3.move(SOUTH);
     sampleGame3.cedeTreasure(DIAMOND);
     sampleGame3.cedeTreasure(SAPPHIRE);
+    sampleGame3.shoot(NORTH, 1);
     assertEquals(
         "Player info:\n"
-            + "Misses: 0\n"
-            + "Hits: 0\n"
-            + "Kills: 0\n"
-            + "Treasure:\n"
-            + " diamond - 2\n"
-            + " ruby - 1\n"
-            + " sapphire - 1\n"
-            + "Items:\n"
-            + " bow - 1\n"
-            + " crooked arrow - 5\n",
-        sampleGame3.getPlayerDescription()
+                + "Misses: 1\n"
+                + "Hits: 0\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "2 diamonds 1 ruby 1 sapphire \n"
+                + "Items:\n"
+                + "1 bow 4 crooked arrows \n",
+        sampleGame3.getPlayerDesc().toString()
     );
   }
 
@@ -630,13 +695,13 @@ public class GameTests {
    */
   @Test
   public void testPlayerLocationDescription1() {
-    sampleGame3.movePlayer(NORTH);
-    sampleGame3.movePlayer(EAST);
+    sampleGame3.move(NORTH);
+    sampleGame3.move(EAST);
     assertEquals(
         "This is a tunnel\n"
             + "Coordinates: (0, 2)\n"
             + "Possible routes: S W \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
   }
 
@@ -646,15 +711,15 @@ public class GameTests {
    */
   @Test
   public void testPlayerLocationDescription2() {
-    sampleGame3.movePlayer(NORTH);
-    sampleGame3.movePlayer(WEST);
-    sampleGame3.movePlayer(SOUTH);
+    sampleGame3.move(NORTH);
+    sampleGame3.move(WEST);
+    sampleGame3.move(SOUTH);
     assertEquals(
         "This is a tunnel\n"
             + "Coordinates: (1, 0)\n"
             + "Possible routes: N S \n"
             + "There are some items in this cave: 5 crooked arrows \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
   }
 
@@ -664,20 +729,16 @@ public class GameTests {
    */
   @Test
   public void testPlayerLocationDescription3() {
-    sampleGame3.cedeItem(CROOKED_ARROW);
-    sampleGame3.cedeItem(CROOKED_ARROW);
-    sampleGame3.movePlayer(NORTH);
-    sampleGame3.cedeTreasure(DIAMOND);
-    sampleGame3.cedeTreasure(RUBY);
-    sampleGame3.movePlayer(EAST);
-    sampleGame3.movePlayer(SOUTH);
-    sampleGame3.movePlayer(SOUTH);
+    sampleGame3.move(NORTH);
+    sampleGame3.move(EAST);
+    sampleGame3.move(SOUTH);
+    sampleGame3.move(SOUTH);
     assertEquals(
         "This is a cave\n"
             + "Coordinates: (2, 2)\n"
             + "Possible routes: N E W \n"
             + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
   }
 
@@ -687,14 +748,14 @@ public class GameTests {
    */
   @Test
   public void testPlayerLocationDescription4() {
-    sampleGame3.movePlayer(NORTH);
-    sampleGame3.movePlayer(EAST);
-    sampleGame3.movePlayer(SOUTH);
+    sampleGame3.move(NORTH);
+    sampleGame3.move(EAST);
+    sampleGame3.move(SOUTH);
     assertEquals(
         "This is a cave\n"
             + "Coordinates: (1, 2)\n"
             + "Possible routes: N E S \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
   }
 
@@ -715,28 +776,26 @@ public class GameTests {
         varargs
     );
     // Player survives in game, future given by varargs.
-    game.shootArrow(NORTH, 1); //to reduce monster's health.
-    game.movePlayer(NORTH);
+    game.shoot(NORTH, 1); //to reduce monster's health.
+    game.move(NORTH);
     assertEquals(
         "This is a cave\n"
-            + "Coordinates: (0, 1)\n"
-            + "Possible routes: E S W \n"
-            + "There is an injured monster here.\n",
-        game.getLocationDescription()
+                + "Coordinates: (0, 1)\n"
+                + "Possible routes: E S W \n"
+                + "There is an injured monster here.\n",
+        game.getLocationDesc().toString()
     );
     assertEquals(
         "Player info:\n"
-            + "Misses: 0\n"
-            + "Hits: 1\n"
-            + "Kills: 0\n"
-            + "Treasure:\n"
-            + " diamond - 0\n"
-            + " ruby - 0\n"
-            + " sapphire - 0\n"
-            + "Items:\n"
-            + " bow - 1\n"
-            + " crooked arrow - 2\n",
-        game.getPlayerDescription());
+                + "Misses: 0\n"
+                + "Hits: 1\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "None\n"
+                + "Items:\n"
+                + "1 bow 2 crooked arrows \n",
+        game.getPlayerDesc().toString()
+    );
   }
 
   /**
@@ -748,20 +807,17 @@ public class GameTests {
    */
   @Test
   public void testPlayerCollectingTreasure() {
-    sampleGame3.movePlayer(NORTH);
+    sampleGame3.move(NORTH);
     assertEquals(
         "Player info:\n"
-        + "Misses: 0\n"
-        + "Hits: 0\n"
-        + "Kills: 0\n"
-        + "Treasure:\n"
-        + " diamond - 0\n"
-        + " ruby - 0\n"
-        + " sapphire - 0\n"
-        + "Items:\n"
-        + " bow - 1\n"
-        + " crooked arrow - 3\n",
-        sampleGame3.getPlayerDescription()
+                + "Misses: 0\n"
+                + "Hits: 0\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "None\n"
+                + "Items:\n"
+                + "1 bow 3 crooked arrows \n",
+        sampleGame3.getPlayerDesc().toString()
     );
     assertEquals(
         "This is a cave\n"
@@ -769,24 +825,21 @@ public class GameTests {
             + "Possible routes: E S W \n"
             + "There's some treasure in this cave: 3 diamonds 2 rubies 3 sapphires \n"
             + "There are some items in this cave: 3 crooked arrows \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
     sampleGame3.cedeTreasure(SAPPHIRE);
     sampleGame3.cedeTreasure(SAPPHIRE);
     sampleGame3.cedeTreasure(DIAMOND);
     assertEquals(
         "Player info:\n"
-            + "Misses: 0\n"
-            + "Hits: 0\n"
-            + "Kills: 0\n"
-            + "Treasure:\n"
-            + " diamond - 1\n"
-            + " ruby - 0\n"
-            + " sapphire - 2\n"
-            + "Items:\n"
-            + " bow - 1\n"
-            + " crooked arrow - 3\n",
-        sampleGame3.getPlayerDescription()
+                + "Misses: 0\n"
+                + "Hits: 0\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "1 diamond 2 sapphires \n"
+                + "Items:\n"
+                + "1 bow 3 crooked arrows \n",
+        sampleGame3.getPlayerDesc().toString()
     );
     assertEquals(
         "This is a cave\n"
@@ -794,7 +847,7 @@ public class GameTests {
             + "Possible routes: E S W \n"
             + "There's some treasure in this cave: 2 diamonds 2 rubies 1 sapphire \n"
             + "There are some items in this cave: 3 crooked arrows \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
   }
 
@@ -812,21 +865,18 @@ public class GameTests {
             + "Coordinates: (1, 1)\n"
             + "Possible routes: N \n"
             + "There are some items in this cave: 3 crooked arrows \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
     assertEquals(
         "Player info:\n"
-            + "Misses: 0\n"
-            + "Hits: 0\n"
-            + "Kills: 0\n"
-            + "Treasure:\n"
-            + " diamond - 0\n"
-            + " ruby - 0\n"
-            + " sapphire - 0\n"
-            + "Items:\n"
-            + " bow - 1\n"
-            + " crooked arrow - 3\n",
-        sampleGame3.getPlayerDescription()
+                + "Misses: 0\n"
+                + "Hits: 0\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "None\n"
+                + "Items:\n"
+                + "1 bow 3 crooked arrows \n",
+        sampleGame3.getPlayerDesc().toString()
     );
     sampleGame3.cedeItem(CROOKED_ARROW);
     sampleGame3.cedeItem(CROOKED_ARROW);
@@ -835,275 +885,70 @@ public class GameTests {
             + "Coordinates: (1, 1)\n"
             + "Possible routes: N \n"
             + "There are some items in this cave: 1 crooked arrow \n",
-        sampleGame3.getLocationDescription()
+        sampleGame3.getLocationDesc().toString()
     );
     assertEquals(
         "Player info:\n"
-            + "Misses: 0\n"
-            + "Hits: 0\n"
-            + "Kills: 0\n"
-            + "Treasure:\n"
-            + " diamond - 0\n"
-            + " ruby - 0\n"
-            + " sapphire - 0\n"
-            + "Items:\n"
-            + " bow - 1\n"
-            + " crooked arrow - 5\n",
-        sampleGame3.getPlayerDescription()
+                + "Misses: 0\n"
+                + "Hits: 0\n"
+                + "Kills: 0\n"
+                + "Treasure:\n"
+                + "None\n"
+                + "Items:\n"
+                + "1 bow 5 crooked arrows \n",
+        sampleGame3.getPlayerDesc().toString()
     );
   }
 
   /**
    * Test that moving player in any direction changes his location.
    * P represents the player.
-   * The dungeon state gets updated hence the map has the player's new location.
+   * Invalid moves throws exceptions.
    * We move him in all 4 directions and check the dungeon map.
+   * This also shows that arrows can be in both caves and tunnels.
    */
   @Test
-  public void testDirectionsOnPlayer() {
-    assertEquals(
-        "                                                  \n"
-            + "  ****t* -- ***IcT -- ****t*    ***IcT    ***IcT  \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "  ***It*    S*PIc*    ****c* -- ***Ic* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ***It*    ***It* -- ****cT -- ****t*    ***IcT  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****t* -- EM*IcT -- ***IcT -- ****c* -- ***Ic*  \n"
-            + "              ||        ||        ||        ||    \n"
-            + "              ||        ||        ||        ||    \n"
-            + "  ****c* -- ***It*    ***Ic*    ****cT    ***IcT  \n"
-            + "                                                  \n",
-        sampleGame3.toString()
+  public void testDirectionsOnPlayerAndArrowsInCavesAndTunnels() {
+    LocationDesc desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (1, 1)\n"
+            + "Possible routes: N \n"
+            + "There are some items in this cave: 3 crooked arrows \n",
+            desc.toString());
+    sampleGame3.move(NORTH);
+    desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (0, 1)\n"
+            + "Possible routes: E S W \n"
+            + "There's some treasure in this cave: 3 diamonds 2 rubies 3 sapphires \n"
+            + "There are some items in this cave: 3 crooked arrows \n",// Arrows in a cave
+            desc.toString());
+    sampleGame3.move(EAST);
+    desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (0, 2)\n"
+            + "Possible routes: S W \n",
+            desc.toString());
+    sampleGame3.move(SOUTH);
+    desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (1, 2)\n"
+            + "Possible routes: N E S \n",
+            desc.toString());
+    sampleGame3.move(SOUTH);
+    desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a cave\n"
+            + "Coordinates: (2, 2)\n"
+            + "Possible routes: N E W \n"
+            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+            desc.toString());
+    sampleGame3.move(WEST);
+    desc = sampleGame3.getLocationDesc();
+    assertEquals("This is a tunnel\n"
+            + "Coordinates: (2, 1)\n"
+            + "Possible routes: E S \n"
+            + "There are some items in this cave: 3 crooked arrows \n", // Arrows in a tunnel.
+            desc.toString()
     );
-    sampleGame3.movePlayer(NORTH);
-    assertEquals(
-        "                                                  \n"
-            + "  ****t* -- **PIcT -- ****t*    ***IcT    ***IcT  \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "  ***It*    S**Ic*    ****c* -- ***Ic* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ***It*    ***It* -- ****cT -- ****t*    ***IcT  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****t* -- EM*IcT -- ***IcT -- ****c* -- ***Ic*  \n"
-            + "              ||        ||        ||        ||    \n"
-            + "              ||        ||        ||        ||    \n"
-            + "  ****c* -- ***It*    ***Ic*    ****cT    ***IcT  \n"
-            + "                                                  \n",
-        sampleGame3.toString()
-    );
-    sampleGame3.movePlayer(EAST);
-    assertEquals(
-        "                                                  \n"
-            + "  ****t* -- ***IcT -- **P*t*    ***IcT    ***IcT  \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "  ***It*    S**Ic*    ****c* -- ***Ic* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ***It*    ***It* -- ****cT -- ****t*    ***IcT  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****t* -- EM*IcT -- ***IcT -- ****c* -- ***Ic*  \n"
-            + "              ||        ||        ||        ||    \n"
-            + "              ||        ||        ||        ||    \n"
-            + "  ****c* -- ***It*    ***Ic*    ****cT    ***IcT  \n"
-            + "                                                  \n",
-        sampleGame3.toString()
-    );
-    sampleGame3.movePlayer(SOUTH);
-    assertEquals(
-        "                                                  \n"
-            + "  ****t* -- ***IcT -- ****t*    ***IcT    ***IcT  \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "  ***It*    S**Ic*    **P*c* -- ***Ic* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ***It*    ***It* -- ****cT -- ****t*    ***IcT  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****t* -- EM*IcT -- ***IcT -- ****c* -- ***Ic*  \n"
-            + "              ||        ||        ||        ||    \n"
-            + "              ||        ||        ||        ||    \n"
-            + "  ****c* -- ***It*    ***Ic*    ****cT    ***IcT  \n"
-            + "                                                  \n",
-        sampleGame3.toString()
-    );
-    sampleGame3.movePlayer(SOUTH);
-    sampleGame3.movePlayer(WEST);
-    assertEquals(
-        "                                                  \n"
-            + "  ****t* -- ***IcT -- ****t*    ***IcT    ***IcT  \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||        ||    \n"
-            + "  ***It*    S**Ic*    ****c* -- ***Ic* -- ****t*  \n"
-            + "    ||                  ||                        \n"
-            + "    ||                  ||                        \n"
-            + "  ***It*    **PIt* -- ****cT -- ****t*    ***IcT  \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "    ||        ||                  ||        ||    \n"
-            + "  ****t* -- EM*IcT -- ***IcT -- ****c* -- ***Ic*  \n"
-            + "              ||        ||        ||        ||    \n"
-            + "              ||        ||        ||        ||    \n"
-            + "  ****c* -- ***It*    ***Ic*    ****cT    ***IcT  \n"
-            + "                                                  \n",
-        sampleGame3.toString()
-    );
-  }
-
-  /**
-   * Test that only the given percentage of caves get treasure.
-   * Total number of caves that get the treasure should be equal to
-   * the total number of caves multiplied by the given percentage.
-   * We get the count from the toString of the game.
-   */
-  @Test
-  public void testTreasurePercentage() {
-    int percent = randomizer.getIntBetween(0, 100);
-    Game game = generateRandomDungeonPercentGiven(percent);
-    String str = game.toString();
-    int countCaves = 0;
-    int countTreasureCaves = 0;
-    for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) == 'c') {
-        countCaves++;
-      }
-      else if (str.charAt(i) == 'T') {
-        countTreasureCaves++;
-      }
-    }
-    assertEquals(
-        (int) (countCaves * percent / 100.0),
-        countTreasureCaves, 1);
-  }
-
-
-  /**
-   * Test that only the given percentage of caves get treasure.
-   * Total number of caves that get the treasure should be equal to
-   * the total number of caves multiplied by the given percentage.
-   * We get the count from the toString of the game.
-   */
-  @Test
-  public void testArrowPercentage() {
-    int percent = randomizer.getIntBetween(0, 100);
-    Game game = generateRandomDungeonPercentGiven(percent);
-    String str = game.toString();
-    int countLocations = 0;
-    int countArrowCaves = 0;
-    for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) == 'c' || str.charAt(i) == 't') {
-        countLocations++;
-      }
-      else if (str.charAt(i) == 'I') {
-        countArrowCaves++;
-      }
-    }
-    assertEquals(
-        (int) (countLocations * percent / 100.0),
-        countArrowCaves, 1);
-  }
-
-  /**
-   * Test that exactly n monsters are created in the dungeon.
-   * This is tested by counting the number of 'M's in the toString
-   * of the game.
-   */
-  @Test
-  public void nMonsters() {
-    int givenMonsters = randomizer.getIntBetween(1, 10);
-    Game game = generateRandomDungeonDifficultyGiven(givenMonsters);
-    String str = game.toString();
-    int countMonsters = 0;
-    for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) == 'M') {
-        countMonsters++;
-      }
-    }
-    assertEquals(givenMonsters, countMonsters);
-  }
-
-  /**
-   * Visit all nodes in a deterministic dungeon.
-   */
-  @Test
-  public void allLocationsAreReachable() {
-    Game game = new DungeonGame(
-        5, 4, 0, 1, false, 2,
-        32,0,3,48,2,50,32,26,21,24,17,15,10,3,
-        11,22,20,23,25,2,13,23,13,18,11,5,12,14,11,3,1
-    );
-    assertEquals(
-        "                                        \n"
-            + "  ****c* -- ****c* -- ****t* -- S*P*c*  \n"
-            + "              ||                        \n"
-            + "              ||                        \n"
-            + "  ****c*    ****t*    ****t* -- ****c*  \n"
-            + "    ||        ||        ||              \n"
-            + "    ||        ||        ||              \n"
-            + "  ****c* -- ****c* -- ****c* -- EM**c*  \n"
-            + "    ||        ||        ||              \n"
-            + "    ||        ||        ||              \n"
-            + "  ****t*    ****c* -- ****c*    ****c*  \n"
-            + "    ||        ||        ||        ||    \n"
-            + "    ||        ||        ||        ||    \n"
-            + "  ****t* -- ****t*    ****t* -- ****t*  \n"
-            + "                                        \n",
-        game.toString()
-    );
-    game.movePlayer(WEST);
-    game.movePlayer(WEST);
-    game.movePlayer(WEST);
-    game.movePlayer(EAST);
-    game.movePlayer(SOUTH);
-    game.movePlayer(SOUTH);
-    game.movePlayer(WEST);
-    game.movePlayer(NORTH);
-    game.movePlayer(SOUTH);
-    game.movePlayer(SOUTH);
-    game.movePlayer(SOUTH);
-    game.movePlayer(EAST);
-    game.movePlayer(NORTH);
-    game.movePlayer(EAST);
-    game.movePlayer(SOUTH);
-    game.movePlayer(EAST);
-    game.movePlayer(NORTH);
-    game.movePlayer(SOUTH);
-    game.movePlayer(WEST);
-    game.movePlayer(NORTH);
-    game.movePlayer(NORTH);
-    game.movePlayer(NORTH);
-    game.movePlayer(EAST);
-    game.movePlayer(WEST);
-    game.movePlayer(SOUTH);
-    game.shootArrow(EAST, 1);
-    game.shootArrow(EAST, 1);
-    game.movePlayer(EAST);
-    assertTrue(game.isGameOver());
-  }
-
-  private Game generateRandomDungeonPercentGiven(int percent) {
-    int m = randomizer.getIntBetween(5, 30);
-    int n = randomizer.getIntBetween(5, 30);
-    boolean wrap = randomizer.getIntBetween(1, 2) == 1;
-    int interconnectivity = randomizer.getIntBetween(0, m * n / 2 - 1);
-    return new DungeonGame(m, n, percent, 5, wrap, interconnectivity);
-  }
-
-  private Game generateRandomDungeonDifficultyGiven(int difficulty) {
-    int m = randomizer.getIntBetween(5, 30);
-    int n = randomizer.getIntBetween(5, 30);
-    int percent = randomizer.getIntBetween(0, 100);
-    boolean wrap = randomizer.getIntBetween(1, 2) == 1;
-    int interconnectivity = randomizer.getIntBetween(0, m * n / 2 - 1);
-    Game game = new DungeonGame(m, n, percent, difficulty, wrap, interconnectivity);
-    return game;
   }
 }

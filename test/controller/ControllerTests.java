@@ -103,7 +103,7 @@ public class ControllerTests {
 
   /**
    * If the model returns an odour to the controller on call to the method,
-   * getSmellAtPlayerLocation, the controller must append the expected implication
+   * smell, the controller must append the expected implication
    * to the output.
    * Visit {@link MockGameOdour} for clarification of its functionality.
    */
@@ -629,6 +629,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 2 rubies 1 sapphire \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -639,6 +640,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 1 sapphire \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -649,6 +651,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -659,6 +662,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -669,6 +673,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -678,6 +683,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -688,6 +694,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -698,6 +705,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -708,6 +716,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -718,6 +727,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -728,6 +738,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -739,6 +750,7 @@ public class ControllerTests {
                     + "This is a cave\n"
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -884,12 +896,9 @@ public class ControllerTests {
                     + "Hits: 6\n"
                     + "Kills: 3\n"
                     + "Treasure:\n"
-                    + " diamond - 2\n"
-                    + " ruby - 2\n"
-                    + " sapphire - 1\n"
+                    + "2 diamonds 2 rubies 1 sapphire \n"
                     + "Items:\n"
-                    + " bow - 1\n"
-                    + " crooked arrow - 0\n",
+                    + "1 bow \n",
             controllerLog.toString()
     );
   }
@@ -983,12 +992,9 @@ public class ControllerTests {
                     + "Hits: 2\n"
                     + "Kills: 0\n"
                     + "Treasure:\n"
-                    + " diamond - 0\n"
-                    + " ruby - 0\n"
-                    + " sapphire - 0\n"
+                    + "None\n"
                     + "Items:\n"
-                    + " bow - 1\n"
-                    + " crooked arrow - 0\n",
+                    + "1 bow \n",
             controllerLog.toString());
   }
 
@@ -1076,6 +1082,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 2 rubies 1 sapphire \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1086,6 +1093,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 2 rubies \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1098,6 +1106,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1108,6 +1117,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1118,6 +1128,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1151,6 +1162,7 @@ public class ControllerTests {
                     + "Coordinates: (1, 0)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby \n"
+                    + "There is a dead monster here.\n"
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
@@ -1164,12 +1176,9 @@ public class ControllerTests {
                     + "Hits: 2\n"
                     + "Kills: 1\n"
                     + "Treasure:\n"
-                    + " diamond - 0\n"
-                    + " ruby - 1\n"
-                    + " sapphire - 1\n"
+                    + "1 ruby 1 sapphire \n"
                     + "Items:\n"
-                    + " bow - 1\n"
-                    + " crooked arrow - 2\n",
+                    + "1 bow 2 crooked arrows \n",
             controllerLog.toString());
   }
 }

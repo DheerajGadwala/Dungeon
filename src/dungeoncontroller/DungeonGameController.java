@@ -53,8 +53,8 @@ public class DungeonGameController implements GameController {
   public void playGame(Game game) {
     try {
       while (!game.isGameOver()) {
-        out.append(game.getLocationDescription());
-        Odour smell = game.getSmellAtPlayerLocation();
+        out.append(game.getLocationDesc().toString());
+        Odour smell = game.smell();
         out.append(smell.getImplication());
         out.append("\n");
         out.append("What do you do?\nMove, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n");
@@ -110,7 +110,7 @@ public class DungeonGameController implements GameController {
         out.append("The Otyugh is feeding on your body!\n");
       }
       out.append("Final player description:\n");
-      out.append(game.getPlayerDescription());
+      out.append(game.getPlayerDesc().toString());
     } catch (IOException ioe) {
       throw new IllegalStateException("IO problem.");
     }

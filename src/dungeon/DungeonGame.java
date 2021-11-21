@@ -8,8 +8,10 @@ import static dungeongeneral.Item.CROOKED_ARROW;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 import randomizer.ActualRandomizer;
@@ -146,7 +148,7 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public ShotResult shootArrow(Direction direction, int distance)
+  public ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     validateGameOver();
     return player.shoot(direction, distance);
@@ -162,7 +164,6 @@ public class DungeonGame implements Game {
       int interconnectivity, int numberOfMonsters) {
     int monsterFailureCount = 0;
     while (this.start == null || this.end == null) {
-      System.out.println("here");
       if (monsterFailureCount == 100) {
         throw new IllegalArgumentException("Number of monsters is too high!");
       }
@@ -214,7 +215,7 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public void movePlayer(Direction direction)
+  public void move(Direction direction)
       throws IllegalStateException, IllegalArgumentException {
     validateGameOver();
     player.movePlayer(direction);
@@ -234,7 +235,7 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public Odour getSmellAtPlayerLocation() {
+  public Odour smell() {
     return player.smell();
   }
 
@@ -276,7 +277,7 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public boolean playerHasArrow() {
+  public boolean hasArrow() {
     return player.hasArrow();
   }
 
@@ -294,12 +295,12 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public String getPlayerDescription() {
-    return player.toString();
+  public PlayerDesc getPlayerDesc() {
+    return player.getDesc();
   }
 
   @Override
-  public String getLocationDescription() {
+  public LocationDesc getLocationDesc() {
     return player.getLocationDescription();
   }
 
@@ -317,8 +318,7 @@ public class DungeonGame implements Game {
     return allPositions;
   }
 
-  @Override
-  public String toString() {
+  String dump() {
     StringBuilder ret = new StringBuilder();
     int playerI = player.getPosition().getRow();
     int playerJ = player.getPosition().getColumn();

@@ -1,8 +1,32 @@
 This is a cave
-Coordinates: (4, 3)
-Possible routes: N E S 
-There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire 
-There are some items in this cave: 4 crooked arrows 
+Coordinates: (0, 3)
+Possible routes: N
+There are some items in this cave: 4 crooked arrows
+smells like there aren't any otyughs near by.
+What do you do?
+Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
+m
+Direction? [N E S W]
+n
+You move towards N
+##################################################################
+This is a tunnel
+Coordinates: (3, 3)
+Possible routes: N S
+There are some items in this cave: 3 crooked arrows
+you sense a slightly pungent smell of otyughs.
+What do you do?
+Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
+m
+Direction? [N E S W]
+n
+You move towards N
+##################################################################
+This is a cave
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
@@ -14,10 +38,10 @@ Distance?
 You hear a howl filled with agony.
 ##################################################################
 This is a cave
-Coordinates: (4, 3)
-Possible routes: N E S 
-There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire 
-There are some items in this cave: 4 crooked arrows 
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
@@ -27,10 +51,23 @@ n
 You move towards N
 ##################################################################
 This is a cave
-Coordinates: (3, 3)
-Possible routes: E S W 
-There are some items in this cave: 5 crooked arrows 
+Coordinates: (1, 3)
+Possible routes: E S W
+There's some treasure in this cave: 3 diamonds 3 rubies 3 sapphires
 There is an injured monster here.
+you sense a very pungent smell of otyughs, be careful!
+What do you do?
+Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
+m
+Direction? [N E S W]
+s
+You move towards S
+##################################################################
+This is a cave
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
@@ -38,89 +75,52 @@ s
 Direction? [N E S W]
 s
 Distance?
-10
+1
 You just hear the hiss of your arrow.
 ##################################################################
 This is a cave
-Coordinates: (3, 3)
-Possible routes: E S W 
-There are some items in this cave: 5 crooked arrows 
-There is an injured monster here.
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
 s
 Direction? [N E S W]
-w
+s
 Distance?
-400
+1
 You just hear the hiss of your arrow.
 You are out of arrows!
 ##################################################################
 This is a cave
-Coordinates: (3, 3)
-Possible routes: E S W 
-There are some items in this cave: 5 crooked arrows 
-There is an injured monster here.
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
 s
 Direction? [N E S W]
-e
+s
 Distance?
-2
+1
 Not enough arrows.
 ##################################################################
 This is a cave
-Coordinates: (3, 3)
-Possible routes: E S W 
-There are some items in this cave: 5 crooked arrows 
-There is an injured monster here.
+Coordinates: (2, 3)
+Possible routes: N E S
+There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire
+There are some items in this cave: 4 crooked arrows
 you sense a very pungent smell of otyughs, be careful!
 What do you do?
 Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
 m
 Direction? [N E S W]
-e
-You move towards E
-##################################################################
-This is a cave
-Coordinates: (3, 0)
-Possible routes: W 
-There's some treasure in this cave: 3 diamonds 1 ruby 3 sapphires 
-you sense a very pungent smell of otyughs, be careful!
-What do you do?
-Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
-m
-Direction? [N E S W]
-w
-You move towards W
-##################################################################
-This is a cave
-Coordinates: (3, 3)
-Possible routes: E S W 
-There are some items in this cave: 5 crooked arrows 
-There is an injured monster here.
-you sense a very pungent smell of otyughs, be careful!
-What do you do?
-Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
-m
-Direction? [N E S W]
-e
-You move towards E
-##################################################################
-This is a cave
-Coordinates: (3, 0)
-Possible routes: W 
-There's some treasure in this cave: 3 diamonds 1 ruby 3 sapphires 
-you sense a very pungent smell of otyughs, be careful!
-What do you do?
-Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]
-m
-Direction? [N E S W]
-w
-You move towards W
+n
+You move towards N
 ##################################################################
 The Otyugh is feeding on your body!
 Final player description:
@@ -129,9 +129,6 @@ Misses: 2
 Hits: 1
 Kills: 0
 Treasure:
- diamond - 0
- ruby - 0
- sapphire - 0
+None
 Items:
- bow - 1
- crooked arrow - 0
+1 bow

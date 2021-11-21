@@ -22,6 +22,12 @@ interface Monster {
   boolean isInjured();
 
   /**
+   * Returns monster health.
+   * @return health of the monster.
+   */
+  int getHealth();
+
+  /**
    * This monster tries to kill the player.
    * @param player player this monster will try to kill.
    */

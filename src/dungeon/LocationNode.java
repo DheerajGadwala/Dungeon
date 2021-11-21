@@ -2,6 +2,7 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
@@ -215,4 +216,10 @@ interface LocationNode {
    * @return true if this location has at least one item else false.
    */
   boolean hasItems();
+
+  /**
+   * Returns description object of this location.
+   * @return description object of this location.
+   */
+  LocationDesc getDesc();
 }

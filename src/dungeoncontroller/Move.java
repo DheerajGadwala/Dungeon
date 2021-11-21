@@ -26,7 +26,7 @@ class Move extends AbstractCommand {
     if (game == null) {
       throw new IllegalArgumentException("game can not be null");
     }
-    game.movePlayer(direction);
+    game.move(direction);
     try {
       out.append("You move towards ").append(direction.toString()).append("\n");
     } catch (IOException ignored) {

@@ -5,7 +5,9 @@ import static dungeongeneral.Odour.ODOURLESS;
 import dungeon.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -14,7 +16,7 @@ import java.io.IOException;
 /**
  * This mock is always in a 'game not over' state.
  * This mock returns given shotResult and hasArrow inputs
- * as Shoot and playerHasArrow methods respectively.
+ * as Shoot and hasArrow methods respectively.
  */
 class MockGameShotResult implements Game {
 
@@ -43,13 +45,13 @@ class MockGameShotResult implements Game {
   }
 
   @Override
-  public void movePlayer(Direction direction)
+  public void move(Direction direction)
       throws IllegalArgumentException, IllegalStateException {
     //Unused
   }
 
   @Override
-  public Odour getSmellAtPlayerLocation() throws IllegalStateException {
+  public Odour smell() throws IllegalStateException {
     return ODOURLESS;
   }
 
@@ -66,17 +68,17 @@ class MockGameShotResult implements Game {
   }
 
   @Override
-  public String getPlayerDescription() throws IllegalStateException {
-    return uniqueCode;
+  public PlayerDesc getPlayerDesc() throws IllegalStateException {
+    return new PlayerDescTestImpl(uniqueCode);
   }
 
   @Override
-  public String getLocationDescription() throws IllegalStateException {
-    return uniqueCode;
+  public LocationDesc getLocationDesc() throws IllegalStateException {
+    return new LocationDescTestImpl(uniqueCode);
   }
 
   @Override
-  public ShotResult shootArrow(Direction direction, int distance)
+  public ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     try {
       gameLog.append(direction.toString()).append("\n");
@@ -88,7 +90,7 @@ class MockGameShotResult implements Game {
   }
 
   @Override
-  public boolean playerHasArrow() {
+  public boolean hasArrow() {
     return this.hasArrow;
   }
 

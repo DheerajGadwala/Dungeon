@@ -14,8 +14,6 @@ public class ActualRandomizer implements Randomizer {
     if (a > b) {
       throw new IllegalArgumentException("invalid range of numbers.");
     }
-    int random = rand.nextInt(b - a + 1) + a;
-    System.out.println(random);
-    return random;
+    return rand.nextInt(b - a + 1) + a;
   }
 }

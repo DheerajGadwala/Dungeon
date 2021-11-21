@@ -25,6 +25,5 @@ public class Driver {
             Integer.parseInt(args[5])
     );
     new DungeonGameController(input, output).playGame(game);
-
   }
 }

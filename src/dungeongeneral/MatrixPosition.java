@@ -60,4 +60,5 @@ public class MatrixPosition {
   public String toString() {
     return String.format("(%d, %d)", row, column);
   }
+
 }

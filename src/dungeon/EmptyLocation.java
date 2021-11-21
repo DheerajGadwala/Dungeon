@@ -4,6 +4,7 @@ import static dungeongeneral.Odour.ODOURLESS;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
@@ -163,6 +164,11 @@ class EmptyLocation implements LocationNode {
   @Override
   public boolean hasItems() {
     return false;
+  }
+
+  @Override
+  public LocationDesc getDesc() {
+    return null;
   }
 
   @Override

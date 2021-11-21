@@ -2,8 +2,10 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -33,7 +35,7 @@ interface Player {
    * get Description of the location of the player.
    * @return location description as a string.
    */
-  String getLocationDescription();
+  LocationDesc getLocationDescription();
 
   /**
    * get neighbouring location directions from player's current location.
@@ -87,4 +89,10 @@ interface Player {
    * @return true if player has at least one arrow else false.
    */
   boolean hasArrow();
+
+  /**
+   * Returns current description object of the player.
+   * @return description of the player.
+   */
+  PlayerDesc getDesc();
 }

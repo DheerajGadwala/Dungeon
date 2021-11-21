@@ -29,11 +29,11 @@ class Shoot extends AbstractCommand {
 
   @Override
   public void execute(Game game) throws IllegalArgumentException, IllegalStateException {
-    ShotResult sr = game.shootArrow(direction, distance);
+    ShotResult sr = game.shoot(direction, distance);
     try {
       out.append(sr.getImplication());
       out.append("\n");
-      if (!game.playerHasArrow()) {
+      if (!game.hasArrow()) {
         out.append("You are out of arrows!\n");
       }
     } catch (IOException e) {

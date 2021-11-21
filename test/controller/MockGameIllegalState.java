@@ -5,7 +5,9 @@ import static dungeongeneral.Odour.ODOURLESS;
 import dungeon.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.LocationDesc;
 import dungeongeneral.Odour;
+import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -33,7 +35,7 @@ class MockGameIllegalState implements Game {
   }
 
   @Override
-  public void movePlayer(Direction direction)
+  public void move(Direction direction)
       throws IllegalArgumentException, IllegalStateException {
     try {
       gameLog.append(direction.toString()).append("\n");
@@ -43,7 +45,7 @@ class MockGameIllegalState implements Game {
   }
 
   @Override
-  public Odour getSmellAtPlayerLocation() throws IllegalStateException {
+  public Odour smell() throws IllegalStateException {
     return ODOURLESS;
   }
 
@@ -67,18 +69,19 @@ class MockGameIllegalState implements Game {
     throw new IllegalStateException("Illegal state, because the model said so.");
   }
 
+
   @Override
-  public String getPlayerDescription() throws IllegalStateException {
-    return uniqueCode;
+  public PlayerDesc getPlayerDesc() throws IllegalStateException {
+    return new PlayerDescTestImpl(uniqueCode);
   }
 
   @Override
-  public String getLocationDescription() throws IllegalStateException {
-    return uniqueCode;
+  public LocationDesc getLocationDesc() throws IllegalStateException {
+    return new LocationDescTestImpl(uniqueCode);
   }
 
   @Override
-  public ShotResult shootArrow(Direction direction, int distance)
+  public ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     try {
       gameLog.append(direction.toString()).append("\n");
@@ -89,7 +92,7 @@ class MockGameIllegalState implements Game {
   }
 
   @Override
-  public boolean playerHasArrow() {
+  public boolean hasArrow() {
     return true;
   }
 

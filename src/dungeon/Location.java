@@ -10,16 +10,17 @@ import static dungeongeneral.Odour.ODOURLESS;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.ItemList;
+import dungeongeneral.LocationDesc;
+import dungeongeneral.LocationDescImpl;
 import dungeongeneral.MatrixPosition;
 import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
-import dungeongeneral.TreasureList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 
 class Location implements LocationNode {
@@ -78,10 +79,6 @@ class Location implements LocationNode {
       count++;
     }
     return count;
-  }
-
-  String getType() {
-    return isCave() ? "Cave" : "Tunnel";
   }
 
   @Override
@@ -388,35 +385,28 @@ class Location implements LocationNode {
     return hasItems;
   }
 
+  private Map<Item, Integer> copyItems(Map<Item, Integer> items) {
+    Map<Item, Integer> copy = new TreeMap<>();
+    for (Item item: items.keySet()) {
+      copy.put(item, items.get(item));
+    }
+    return copy;
+  }
+
+  private Map<Treasure, Integer> copyTreasures(Map<Treasure, Integer> treasures) {
+    Map<Treasure, Integer> copy = new TreeMap<>();
+    for (Treasure treasure: treasures.keySet()) {
+      copy.put(treasure, treasures.get(treasure));
+    }
+    return copy;
+  }
+
   @Override
-  public String toString() {
-    String type = isCave() ? "cave" : "tunnel";
-    StringBuilder stb = new StringBuilder("This is a " + type + "\n");
-    stb.append("Coordinates: ").append(position.toString()).append("\n");
-    stb.append("Possible routes: ");
-    for (Direction d: getPossibleRoutes()) {
-      stb.append(d.toString()).append(" ");
-    }
-    stb.append("\n");
-    if (hasTreasure()) {
-      stb.append("There's some treasure in this cave: ");
-      stb.append(new TreasureList(treasures).toString()).append("\n");
-    }
-    if (hasItems()) {
-      stb.append("There are some items in this cave: ");
-      stb.append(new ItemList(items).toString()).append("\n");
-    }
-    if (hasMonster()) {
-      if(!monster.isAlive()) {
-        stb.append("There is a dead monster here.\n");
-      }
-      else if (monster.isInjured()) {
-        stb.append("There is an injured monster here.\n");
-      }
-      else {
-        stb.append("There is an alive monster here.\n");
-      }
-    }
-    return stb.toString();
+  public LocationDesc getDesc() {
+    return new LocationDescImpl(
+            copyItems(items), copyTreasures(treasures),
+            isCave(), hasMonster(), monster == null ? 0 : monster.getHealth(),
+            getPosition(), getPossibleRoutes()
+            );
   }
 }
