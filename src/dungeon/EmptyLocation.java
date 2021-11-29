@@ -116,7 +116,7 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public void setMonster(Monster monster) throws IllegalArgumentException {
+  public void setMonster(Entity monster) throws IllegalArgumentException {
     throw new IllegalStateException("Can not add monster to sentinel.");
   }
 
@@ -151,12 +151,12 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public Monster getMonster() throws IllegalStateException {
+  public Entity getMonster() throws IllegalStateException {
     return null;
   }
 
   @Override
-  public Monster getMonsterAtEnd(Direction direction, int distance)
+  public Entity getMonsterAtEnd(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     return null;
   }

@@ -1,25 +1,16 @@
 package dungeon;
 
-import static dungeongeneral.Item.BOW;
 import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.Item.POTION;
 import static dungeongeneral.ShotResult.HIT;
 import static dungeongeneral.ShotResult.KILL;
 import static dungeongeneral.ShotResult.MISS;
+import static dungeongeneral.Weapon.*;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.Odour;
-import dungeongeneral.PlayerDesc;
-import dungeongeneral.PlayerDescImpl;
-import dungeongeneral.ShotResult;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
+import randomizer.Randomizer;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Represents a player at location inside the dungeon.
@@ -28,8 +19,10 @@ class DungeonPlayer implements Player {
 
   private final Map<Treasure, Integer> treasures;
   private LocationNode location;
-  private boolean isAlive;
+  private int health;
   private final Map<Item, Integer> items;
+  private final List<Weapon> weapons;
+  private final Randomizer randomizer;
   private int missCount;
   private int hitCount;
   private int killCount;
@@ -39,19 +32,26 @@ class DungeonPlayer implements Player {
    * @param location initial location of this player
    * @throws IllegalArgumentException when name or location are null or empty.
    */
-  public DungeonPlayer(LocationNode location) throws IllegalArgumentException {
+  public DungeonPlayer(LocationNode location, Randomizer randomizer) throws IllegalArgumentException {
     if (location == null || location.isEmptyNode()) {
       throw new IllegalArgumentException("Location can not be null or empty node.");
+    }
+    if (randomizer == null) {
+      throw new IllegalArgumentException("Randomizer can not be null.");
     }
     treasures = new HashMap<>();
     for (Treasure t: Treasure.values()) {
       treasures.put(t, 0);
     }
     items = new HashMap<>();
-    items.put(BOW, 1);
     items.put(CROOKED_ARROW, 3);
+    items.put(POTION, 1);
+    weapons = new ArrayList<>();
+    weapons.add(BOW);
+    weapons.add(SWORD);
+    this.randomizer = randomizer;
     this.location = location;
-    this.isAlive = true;
+    this.health = 20;
     this.missCount = 0;
     this.hitCount = 0;
     this.killCount = 0;
@@ -80,7 +80,7 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public void movePlayer(Direction direction)
+  public void move(Direction direction)
       throws IllegalArgumentException {
     if (direction == null) {
       throw new IllegalArgumentException("Direction can not be null.");
@@ -98,17 +98,57 @@ class DungeonPlayer implements Player {
 
   @Override
   public void die() {
-    this.isAlive = false;
+    this.health = 0;
+  }
+
+  @Override
+  public Treasure getMugged() {
+    List<Treasure> hasTreasure = new ArrayList<>();
+    for(Treasure t: treasures.keySet()) {
+      if (treasures.get(t) == 0) {
+        hasTreasure.add(t);
+      }
+    }
+    if(hasTreasure.size() != 0) {
+      Treasure removed = hasTreasure.remove(
+              randomizer.getIntBetween(0, hasTreasure.size() - 1)
+      );
+      treasures.put(removed, treasures.get(removed) - 1);
+      return removed;
+    }
+    return null;
+  }
+
+  @Override
+  public void decreaseHealth(int damage) {
+    this.health -= damage;
   }
 
   @Override
   public boolean isAlive() {
-    return isAlive;
+    return this.health > 0;
+  }
+
+  @Override
+  public void consumePotion() throws IllegalStateException {
+    if(items.get(POTION) == 0) {
+      throw new IllegalStateException("You do not have any potions.");
+    }
+    items.put(POTION, items.get(POTION) - 1);
+    this.health += 5;
+  }
+
+  @Override
+  public void attack(Entity monster) {
+    if(weapons.contains(AXE)) {
+      int damage = AXE.getDamage() + randomizer.getIntBetween(-2, 2);
+      monster.decreaseHealth(damage);
+    }
   }
 
   @Override
   public ShotResult shoot(Direction direction, int distance)
-      throws IllegalArgumentException {
+      throws IllegalArgumentException, IllegalStateException {
     if (direction == null) {
       throw new IllegalArgumentException("Direction can not be null.");
     }
@@ -119,14 +159,14 @@ class DungeonPlayer implements Player {
       throw new IllegalArgumentException("Distance needs to be at least one.");
     }
     items.replace(CROOKED_ARROW, items.get(CROOKED_ARROW) - 1);
-    Monster monster;
+    Entity monster;
     monster = location.getMonsterAtEnd(direction, distance);
     if (monster == null || !monster.isAlive()) {
       missCount++;
       return MISS;
     }
     else {
-      monster.decreaseHealth();
+      monster.decreaseHealth(BOW.getDamage());
       if (monster.isAlive()) {
         hitCount++;
         return HIT;
@@ -137,11 +177,6 @@ class DungeonPlayer implements Player {
         return KILL;
       }
     }
-  }
-
-  @Override
-  public Odour smell() {
-    return location.getOdour();
   }
 
   @Override

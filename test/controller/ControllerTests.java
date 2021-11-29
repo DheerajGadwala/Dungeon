@@ -1,8 +1,5 @@
 package controller;
 
-import static dungeongeneral.Odour.LESS_PUNGENT;
-import static dungeongeneral.Odour.MORE_PUNGENT;
-import static dungeongeneral.Odour.ODOURLESS;
 import static dungeongeneral.ShotResult.HIT;
 import static dungeongeneral.ShotResult.KILL;
 import static dungeongeneral.ShotResult.MISS;
@@ -12,7 +9,6 @@ import dungeon.DungeonGame;
 import dungeon.Game;
 import dungeoncontroller.DungeonGameController;
 import dungeoncontroller.GameController;
-import dungeongeneral.Odour;
 import dungeongeneral.ShotResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,67 +98,37 @@ public class ControllerTests {
   }
 
   /**
-   * If the model returns an odour to the controller on call to the method,
-   * smell, the controller must append the expected implication
-   * to the output.
-   * Visit {@link MockGameOdour} for clarification of its functionality.
-   */
-  @Test
-  public void testOdourOnController() {
-    int n = randomizer.getIntBetween(1, 3);
-    Odour odour = n == 1 ? ODOURLESS : n == 2 ? LESS_PUNGENT : MORE_PUNGENT;
-    Appendable modelLog = new StringBuilder();
-    String uniqueCode = "189\n";
-    Game m = new MockGameOdour(modelLog, uniqueCode, odour);
-    Readable input = new StringReader("");
-    Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
-    c.playGame(m);
-    assertEquals("", modelLog.toString());
-    assertEquals(
-        uniqueCode
-            + odour.getImplication()
-            + "\n"
-            + "What do you do?\n"
-            + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n",
-        controllerLog.toString());
-  }
-
-  /**
    * Test if controller appends the location description
    * returned by the model and does not change anything.
    * We are returning the unique code from inside the mock
    * model. Hence we get the unique code as the location
    * description.
-   * Visit {@link MockGameOdour} for clarification of its functionality.
+   * Visit {@link MockGameLogger} for clarification of its functionality.
    */
   @Test
   public void testPlayerLocationDescription() {
     Appendable modelLog = new StringBuilder();
     String uniqueCode = "190\n";
-    Game m = new MockGameOdour(modelLog, uniqueCode, ODOURLESS);
+    Game m = new MockGameLogger(modelLog, uniqueCode);
     Readable input = new StringReader("m\ns\nm\nn");
     Appendable controllerLog = new StringWriter();
     GameController c = new DungeonGameController(input, controllerLog);
     c.playGame(m);
-    assertEquals("", modelLog.toString());
+    assertEquals("S\nN\n", modelLog.toString());
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
             + "You move towards S\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
             + "You move towards N\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n",
         controllerLog.toString()
@@ -193,7 +159,6 @@ public class ControllerTests {
     assertEquals(
 
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
@@ -234,7 +199,6 @@ public class ControllerTests {
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
@@ -273,7 +237,6 @@ public class ControllerTests {
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "What Treasure? [Diamond[d/D] Ruby[r/R] Sapphire[s/S]]\n"
@@ -303,26 +266,25 @@ public class ControllerTests {
     Appendable modelLog = new StringBuilder();
     String uniqueCode = "191\n";
     Game m = new MockGameIllegalArgs(modelLog, uniqueCode);
-    Readable input = new StringReader("i\na\nb\na");
+    Readable input = new StringReader("i\na\np\na");
     Appendable controllerLog = new StringWriter();
     GameController c = new DungeonGameController(input, controllerLog);
     c.playGame(m);
     assertEquals(
-        "crooked arrow\nbow\ncrooked arrow\n",
+        "crooked arrow\npotion\ncrooked arrow\n",
         modelLog.toString()
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
-            + "What do you do?\n"
-            + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n"
-            + "Illegal args, because the model said so.\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n"
-            + "Illegal args, because the model said so.\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n"
-            + "Illegal args, because the model said so.\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n",
+                + "What do you do?\n"
+                + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
+                + "What Item? [Arrow[a/A] Potion[p/P]]\n"
+                + "Illegal args, because the model said so.\n"
+                + "What Item? [Arrow[a/A] Potion[p/P]]\n"
+                + "Illegal args, because the model said so.\n"
+                + "What Item? [Arrow[a/A] Potion[p/P]]\n"
+                + "Illegal args, because the model said so.\n"
+                + "What Item? [Arrow[a/A] Potion[p/P]]\n",
         controllerLog.toString()
     );
   }
@@ -352,28 +314,24 @@ public class ControllerTests {
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+            + "What Item? [Arrow[a/A] Potion[p/P]]\n"
             + "Illegal state, because the model said so.\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "What Treasure? [Diamond[d/D] Ruby[r/R] Sapphire[s/S]]\n"
             + "Illegal state, because the model said so.\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
             + "Illegal state, because the model said so.\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
@@ -381,7 +339,6 @@ public class ControllerTests {
             + "Illegal state, because the model said so.\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n",
         controllerLog.toString()
@@ -416,7 +373,6 @@ public class ControllerTests {
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Please enter a valid input.\n"
@@ -425,16 +381,14 @@ public class ControllerTests {
             + "You picked 1 ruby\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Please enter a valid input.\n"
-            + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+            + "What Item? [Arrow[a/A] Potion[p/P]]\n"
             + "Please enter a valid input.\n"
             + "You picked 1 crooked arrow\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Please enter a valid input.\n"
@@ -445,7 +399,6 @@ public class ControllerTests {
             + "You just hear the hiss of your arrow.\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
@@ -454,7 +407,6 @@ public class ControllerTests {
             + "You move towards E\n"
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n",
         controllerLog.toString()
@@ -490,7 +442,6 @@ public class ControllerTests {
     );
     assertEquals(
         uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
@@ -499,7 +450,6 @@ public class ControllerTests {
             + (hasArrow ? "" : "You are out of arrows!\n")
             + "##################################################################\n"
             + uniqueCode
-            + "smells like there aren't any otyughs near by.\n"
             + "What do you do?\n"
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n",
         controllerLog.toString()
@@ -531,56 +481,50 @@ public class ControllerTests {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 4 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 3 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 2 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 1 crooked arrow \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -765,7 +709,7 @@ public class ControllerTests {
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -796,7 +740,6 @@ public class ControllerTests {
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 3 sapphires \n"
                     + "There are some items in this cave: 4 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -808,10 +751,9 @@ public class ControllerTests {
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 3 sapphires \n"
                     + "There are some items in this cave: 4 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -819,10 +761,9 @@ public class ControllerTests {
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 3 sapphires \n"
                     + "There are some items in this cave: 3 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -830,7 +771,6 @@ public class ControllerTests {
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 3 sapphires \n"
                     + "There are some items in this cave: 2 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -840,7 +780,6 @@ public class ControllerTests {
                     + "Coordinates: (0, 3)\n"
                     + "Possible routes: N E S W \n"
                     + "There's some treasure in this cave: 1 diamond 2 rubies 2 sapphires \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -898,7 +837,7 @@ public class ControllerTests {
                     + "Treasure:\n"
                     + "2 diamonds 2 rubies 1 sapphire \n"
                     + "Items:\n"
-                    + "1 bow \n",
+                    + "1 potion \n",
             controllerLog.toString()
     );
   }
@@ -926,7 +865,6 @@ public class ControllerTests {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -937,7 +875,6 @@ public class ControllerTests {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -994,7 +931,7 @@ public class ControllerTests {
                     + "Treasure:\n"
                     + "None\n"
                     + "Items:\n"
-                    + "1 bow \n",
+                    + "1 potion \n",
             controllerLog.toString());
   }
 
@@ -1013,7 +950,7 @@ public class ControllerTests {
             1, 8, 2, 6, 1, 1);
     Readable input = new StringReader(
             "t\nd\nm\ne\nm\ne\ns\nn\n1\ns\nn\n1\nm\nn\nt\ns\nt"
-                    + "\ns\nr\ni\na\ni\nb\nm\nn\ni\nb\na\nm\ns\nm\nw"
+                    + "\ns\nr\ni\na\ni\np\nm\nn\ni\np\na\nm\ns\nm\nw"
     );
     Appendable controllerLog = new StringWriter();
     GameController controller = new DungeonGameController(input, controllerLog);
@@ -1023,7 +960,6 @@ public class ControllerTests {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "What Treasure? [Diamond[d/D] Ruby[r/R] Sapphire[s/S]]\n"
@@ -1033,7 +969,6 @@ public class ControllerTests {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "smells like there aren't any otyughs near by.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
                     + "Direction? [N E S W]\n"
@@ -1110,7 +1045,7 @@ public class ControllerTests {
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "This location has no items.\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -1121,7 +1056,7 @@ public class ControllerTests {
                     + "you sense a very pungent smell of otyughs, be careful!\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "This location has no items.\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -1143,9 +1078,9 @@ public class ControllerTests {
                     + "you sense a slightly pungent smell of otyughs.\n"
                     + "What do you do?\n"
                     + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
-                    + "This location does not have any bows.\n"
-                    + "What Item? [Arrow[a/A] Bow[b/B]]\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
+                    + "This location does not have any potions.\n"
+                    + "What Item? [Arrow[a/A] Potion[p/P]]\n"
                     + "You picked 1 crooked arrow\n"
                     + "##################################################################\n"
                     + "This is a cave\n"
@@ -1178,7 +1113,7 @@ public class ControllerTests {
                     + "Treasure:\n"
                     + "1 ruby 1 sapphire \n"
                     + "Items:\n"
-                    + "1 bow 2 crooked arrows \n",
+                    + "2 crooked arrows 1 potion \n",
             controllerLog.toString());
   }
 }

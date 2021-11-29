@@ -1,12 +1,9 @@
 package controller;
 
-import static dungeongeneral.Odour.ODOURLESS;
-
 import dungeon.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.LocationDesc;
-import dungeongeneral.Odour;
 import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
@@ -45,8 +42,8 @@ class MockGameIllegalState implements Game {
   }
 
   @Override
-  public Odour smell() throws IllegalStateException {
-    return ODOURLESS;
+  public void attack() {
+
   }
 
   @Override

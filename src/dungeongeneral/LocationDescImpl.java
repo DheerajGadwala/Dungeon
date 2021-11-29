@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static dungeongeneral.Odour.ODOURLESS;
+
 /**
  * This represents the description of a location at a particular point in the location's state.
  */
@@ -17,6 +19,7 @@ public class LocationDescImpl implements LocationDesc {
   private final Map<Treasure, Integer> treasures;
   private final Map<Item, Integer> items;
   private final List<Direction> routes;
+  private final Odour odour;
 
   /**
    * Creates a location description object.
@@ -27,12 +30,14 @@ public class LocationDescImpl implements LocationDesc {
    * @param monsterHealth health of the monster. [0 if no monster]
    * @param position position of the location.
    * @param routes directions with lead to neighbouring locations.
+   * @param odour odour at this location.
    * @throws IllegalArgumentException if any reference type argument is null.
    */
   public LocationDescImpl(
           Map<Item, Integer> items, Map<Treasure, Integer> treasures,
           boolean isCave, boolean hasMonster, int monsterHealth,
-          MatrixPosition position, List<Direction> routes
+          MatrixPosition position, List<Direction> routes,
+          Odour odour
   ) throws IllegalArgumentException {
     if (treasures == null) {
       throw new IllegalArgumentException("treasures can not be null.");
@@ -46,6 +51,9 @@ public class LocationDescImpl implements LocationDesc {
     if (routes == null) {
       throw new IllegalArgumentException("routes can not be null.");
     }
+    if (odour == null) {
+      throw new IllegalArgumentException("Odour can not be null");
+    }
     this.treasures = copyTreasures(treasures);
     this.items = copyItems(items);
     this.isCave = isCave;
@@ -53,6 +61,7 @@ public class LocationDescImpl implements LocationDesc {
     this.monsterHealth = monsterHealth;
     this.position = position;
     this.routes = new ArrayList<>(routes);
+    this.odour = odour;
   }
   
   private Map<Item, Integer> copyItems(Map<Item, Integer> items) {
@@ -140,6 +149,11 @@ public class LocationDescImpl implements LocationDesc {
   }
 
   @Override
+  public Odour getOdour() {
+    return odour;
+  }
+
+  @Override
   public String toString() {
     String type = isCave ? "cave" : "tunnel";
     StringBuilder stb = new StringBuilder("This is a " + type + "\n");
@@ -167,6 +181,9 @@ public class LocationDescImpl implements LocationDesc {
       else {
         stb.append("There is an alive monster here.\n");
       }
+    }
+    if (odour != ODOURLESS) {
+      stb.append(odour.getImplication()).append("\n");
     }
     return stb.toString();
   }

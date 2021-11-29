@@ -4,8 +4,8 @@ import static dungeongeneral.Direction.EAST;
 import static dungeongeneral.Direction.NORTH;
 import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
-import static dungeongeneral.Item.BOW;
 import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.Item.POTION;
 import static dungeongeneral.Treasure.DIAMOND;
 import static dungeongeneral.Treasure.RUBY;
 import static dungeongeneral.Treasure.SAPPHIRE;
@@ -144,7 +144,7 @@ public class GameTests {
                     + "There are some items in this cave: 3 crooked arrows \n",
             sampleGame3.getLocationDesc().toString()
     );
-    sampleGame3.cedeItem(BOW);
+    sampleGame3.cedeItem(POTION);
   }
 
   /**
@@ -381,27 +381,32 @@ public class GameTests {
     des = game.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (1, 3)\n"
-            + "Possible routes: N S W \n", des.toString());
+            + "Possible routes: N S W \n"
+            + "you sense a slightly pungent smell of otyughs.\n", des.toString());
     game.move(SOUTH);
     des = game.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (2, 3)\n"
-            + "Possible routes: N S W \n", des.toString());
+            + "Possible routes: N S W \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n", des.toString());
     game.move(SOUTH);
     des = game.getLocationDesc();
     assertEquals("This is a tunnel\n"
             + "Coordinates: (3, 3)\n"
-            + "Possible routes: N W \n", des.toString());
+            + "Possible routes: N W \n"
+            + "you sense a slightly pungent smell of otyughs.\n", des.toString());
     game.move(WEST);
     des = game.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (3, 2)\n"
-            + "Possible routes: N E W \n", des.toString());
+            + "Possible routes: N E W \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n", des.toString());
     game.move(WEST);
     des = game.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (3, 1)\n"
-            + "Possible routes: N E W \n", des.toString());
+            + "Possible routes: N E W \n"
+            + "you sense a slightly pungent smell of otyughs.\n", des.toString());
     game.move(WEST);
     des = game.getLocationDesc();
     assertEquals("This is a tunnel\n"
@@ -504,7 +509,7 @@ public class GameTests {
                     + "Treasure:\n"
                     + "None\n"
                     + "Items:\n"
-                    + "1 bow 3 crooked arrows \n",
+                    + "3 crooked arrows 1 potion \n",
             game.getPlayerDesc().toString()); // start location has no monster.
   }
 
@@ -684,7 +689,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "2 diamonds 1 ruby 1 sapphire \n"
                 + "Items:\n"
-                + "1 bow 4 crooked arrows \n",
+                + "4 crooked arrows 1 potion \n",
         sampleGame3.getPlayerDesc().toString()
     );
   }
@@ -737,7 +742,8 @@ public class GameTests {
         "This is a cave\n"
             + "Coordinates: (2, 2)\n"
             + "Possible routes: N E W \n"
-            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n"
+                + "you sense a slightly pungent smell of otyughs.\n",
         sampleGame3.getLocationDesc().toString()
     );
   }
@@ -782,7 +788,8 @@ public class GameTests {
         "This is a cave\n"
                 + "Coordinates: (0, 1)\n"
                 + "Possible routes: E S W \n"
-                + "There is an injured monster here.\n",
+                + "There is an injured monster here.\n"
+                + "you sense a very pungent smell of otyughs, be careful!\n",
         game.getLocationDesc().toString()
     );
     assertEquals(
@@ -793,7 +800,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "None\n"
                 + "Items:\n"
-                + "1 bow 2 crooked arrows \n",
+                + "2 crooked arrows 1 potion \n",
         game.getPlayerDesc().toString()
     );
   }
@@ -816,7 +823,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "None\n"
                 + "Items:\n"
-                + "1 bow 3 crooked arrows \n",
+                + "3 crooked arrows 1 potion \n",
         sampleGame3.getPlayerDesc().toString()
     );
     assertEquals(
@@ -838,7 +845,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "1 diamond 2 sapphires \n"
                 + "Items:\n"
-                + "1 bow 3 crooked arrows \n",
+                + "3 crooked arrows 1 potion \n",
         sampleGame3.getPlayerDesc().toString()
     );
     assertEquals(
@@ -875,7 +882,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "None\n"
                 + "Items:\n"
-                + "1 bow 3 crooked arrows \n",
+                + "3 crooked arrows 1 potion \n",
         sampleGame3.getPlayerDesc().toString()
     );
     sampleGame3.cedeItem(CROOKED_ARROW);
@@ -895,7 +902,7 @@ public class GameTests {
                 + "Treasure:\n"
                 + "None\n"
                 + "Items:\n"
-                + "1 bow 5 crooked arrows \n",
+                + "5 crooked arrows 1 potion \n",
         sampleGame3.getPlayerDesc().toString()
     );
   }
@@ -940,14 +947,16 @@ public class GameTests {
     assertEquals("This is a cave\n"
             + "Coordinates: (2, 2)\n"
             + "Possible routes: N E W \n"
-            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+            + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n"
+            + "you sense a slightly pungent smell of otyughs.\n",
             desc.toString());
     sampleGame3.move(WEST);
     desc = sampleGame3.getLocationDesc();
     assertEquals("This is a tunnel\n"
             + "Coordinates: (2, 1)\n"
             + "Possible routes: E S \n"
-            + "There are some items in this cave: 3 crooked arrows \n", // Arrows in a tunnel.
+            + "There are some items in this cave: 3 crooked arrows \n" // Arrows in a tunnel.
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             desc.toString()
     );
   }

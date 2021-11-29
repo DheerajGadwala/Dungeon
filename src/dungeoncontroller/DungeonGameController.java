@@ -4,8 +4,8 @@ import static dungeongeneral.Direction.EAST;
 import static dungeongeneral.Direction.NORTH;
 import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
-import static dungeongeneral.Item.BOW;
 import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.Item.POTION;
 import static dungeongeneral.Treasure.DIAMOND;
 import static dungeongeneral.Treasure.RUBY;
 import static dungeongeneral.Treasure.SAPPHIRE;
@@ -13,7 +13,6 @@ import static dungeongeneral.Treasure.SAPPHIRE;
 import dungeon.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
 
 import java.io.IOException;
@@ -54,9 +53,6 @@ public class DungeonGameController implements GameController {
     try {
       while (!game.isGameOver()) {
         out.append(game.getLocationDesc().toString());
-        Odour smell = game.smell();
-        out.append(smell.getImplication());
-        out.append("\n");
         out.append("What do you do?\nMove, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n");
         char x = getValidInput("[MSITmsit]").charAt(0);
         Direction direction;
@@ -79,8 +75,8 @@ public class DungeonGameController implements GameController {
                 break;
               case 'i':
               case 'I':
-                out.append("What Item? [Arrow[a/A] Bow[b/B]]\n");
-                Item item = itemMap.get(getValidInput("[AaBb]"));
+                out.append("What Item? [Arrow[a/A] Potion[p/P]]\n");
+                Item item = itemMap.get(getValidInput("[AaPp]"));
                 new PickUpItem(item, out).execute(game);
                 break;
               case 't':
@@ -141,8 +137,8 @@ public class DungeonGameController implements GameController {
     directionMap.put("w", WEST);
     itemMap.put("a", CROOKED_ARROW);
     itemMap.put("A", CROOKED_ARROW);
-    itemMap.put("b", BOW);
-    itemMap.put("B", BOW);
+    itemMap.put("p", POTION);
+    itemMap.put("P", POTION);
     treasureMap.put("r", RUBY);
     treasureMap.put("R", RUBY);
     treasureMap.put("d", DIAMOND);

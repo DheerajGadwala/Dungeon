@@ -1,10 +1,6 @@
 package controller;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 
 import java.util.List;
 import java.util.Map;
@@ -74,6 +70,11 @@ class LocationDescTestImpl implements LocationDesc {
 
   @Override
   public List<Direction> getRoutes() {
+    return null;
+  }
+
+  @Override
+  public Odour getOdour() {
     return null;
   }
 

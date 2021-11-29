@@ -27,9 +27,9 @@ class Location implements LocationNode {
 
   private final HashMap<Direction, LocationNode> neighbours;
   private final MatrixPosition position;
-  private HashMap<Treasure, Integer> treasures;
-  private Monster monster;
-  private final HashMap<Item, Integer> items;
+  private Map<Treasure, Integer> treasures;
+  private Entity monster;
+  private final Map<Item, Integer> items;
 
   public Location(
       MatrixPosition position,
@@ -245,7 +245,7 @@ class Location implements LocationNode {
   }
 
   @Override
-  public void setMonster(Monster monster) throws IllegalArgumentException {
+  public void setMonster(Entity monster) throws IllegalArgumentException {
     if (monster == null) {
       throw new IllegalArgumentException("Monster can not be null");
     }
@@ -331,7 +331,7 @@ class Location implements LocationNode {
   }
 
   @Override
-  public Monster getMonster() throws IllegalStateException {
+  public Entity getMonster() throws IllegalStateException {
     if (monster == null) {
       throw new IllegalStateException("No monster at this location.");
     }
@@ -339,7 +339,7 @@ class Location implements LocationNode {
   }
 
   @Override
-  public Monster getMonsterAtEnd(Direction direction, int distance)
+  public Entity getMonsterAtEnd(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     if (distance < 0 || direction == null) {
       throw new IllegalArgumentException("Invalid Distance/ Direction.");
@@ -406,7 +406,7 @@ class Location implements LocationNode {
     return new LocationDescImpl(
             copyItems(items), copyTreasures(treasures),
             isCave(), hasMonster(), monster == null ? 0 : monster.getHealth(),
-            getPosition(), getPossibleRoutes()
+            getPosition(), getPossibleRoutes(), getOdour()
             );
   }
 }

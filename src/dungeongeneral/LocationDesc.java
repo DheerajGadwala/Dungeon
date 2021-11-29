@@ -82,4 +82,6 @@ public interface LocationDesc {
    * @return list of directions which have routes to neighbouring locations.
    */
   List<Direction> getRoutes();
+
+  Odour getOdour();
 }

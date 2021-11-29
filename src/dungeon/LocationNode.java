@@ -150,7 +150,7 @@ interface LocationNode {
    * @param monster monster to be set
    * @throws IllegalArgumentException if monster is null.
    */
-  void setMonster(Monster monster) throws IllegalArgumentException;
+  void setMonster(Entity monster) throws IllegalArgumentException;
 
   /**
    * Return true if location has a monster, dead or alive.
@@ -195,7 +195,7 @@ interface LocationNode {
    * @return the monster in this location.
    * @throws IllegalStateException when there is no monster in this location.
    */
-  Monster getMonster() throws IllegalStateException;
+  Entity getMonster() throws IllegalStateException;
 
   /**
    * Travel continues through tunnels regardless of directions.
@@ -208,7 +208,7 @@ interface LocationNode {
    *                                exists at the end of the path or if the monster
    *                                at the end is already dead.
    */
-  Monster getMonsterAtEnd(Direction direction, int distance)
+  Entity getMonsterAtEnd(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException;
 
   /**

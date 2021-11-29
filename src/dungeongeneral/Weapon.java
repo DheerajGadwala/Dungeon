@@ -1,16 +1,14 @@
 package dungeongeneral;
 
-/**
- * Represents an item in the game.
- */
-public enum Item {
-  CROOKED_ARROW("crooked arrow", "crooked arrows"),
-  POTION("potion", "potions");
+public enum Weapon {
+  BOW("bow", "bows"),
+  SWORD("sword", "swords"),
+  AXE("axe", "axes");
 
   private final String singular;
   private final String plural;
 
-  Item(String singular, String plural) {
+  Weapon(String singular, String plural) {
     this.singular = singular;
     this.plural = plural;
   }
@@ -29,6 +27,21 @@ public enum Item {
    */
   public String getPlural() {
     return plural;
+  }
+
+  public int getDamage() {
+    if (this == BOW) {
+      return 1;
+    }
+    else if (this == SWORD) {
+      return 4;
+    }
+    else if (this == AXE) {
+      return 8;
+    }
+    else {
+      return 0;
+    }
   }
 
   @Override

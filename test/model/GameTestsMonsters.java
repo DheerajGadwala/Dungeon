@@ -159,7 +159,7 @@ public class GameTestsMonsters {
                 + "Treasure:\n"
                 + "None\n"
                 + "Items:\n"
-                + "1 bow \n",
+                + "1 potion \n",
         game.getPlayerDesc().toString()
     );
     // We go to the location and check if it has a dead monster using the location description.
@@ -231,6 +231,7 @@ public class GameTestsMonsters {
     assertEquals(MISS, res);
     // lets go there and check if there is any monster.
     // d = 1
+    assertTrue(game.getLocationDesc().hasNoMonster());
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (2, 4)\n"
@@ -244,7 +245,8 @@ public class GameTestsMonsters {
             "This is a tunnel\n"
                     + "Coordinates: (3, 4)\n"
                     + "Possible routes: N W \n"
-                    + "There are some items in this cave: 4 crooked arrows \n",
+                    + "There are some items in this cave: 4 crooked arrows \n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             game.getLocationDesc().toString()
     );
     game.move(WEST);
@@ -253,7 +255,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (3, 3)\n"
-                    + "Possible routes: E S W \n",
+                    + "Possible routes: E S W \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             game.getLocationDesc().toString()
     );
     assertTrue(game.getLocationDesc().hasNoMonster());
@@ -279,7 +282,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a cave\n"
             + "Coordinates: (2, 4)\n"
-            + "Possible routes: S \n",
+            + "Possible routes: S \n"
+            + "you sense a slightly pungent smell of otyughs.\n",
             game.getLocationDesc().toString()
     );
     game.move(SOUTH);
@@ -289,7 +293,8 @@ public class GameTestsMonsters {
             "This is a tunnel\n"
             + "Coordinates: (3, 4)\n"
             + "Possible routes: N W \n"
-            + "There are some items in this cave: 4 crooked arrows \n",
+            + "There are some items in this cave: 4 crooked arrows \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             game.getLocationDesc().toString()
     );
     game.move(WEST);
@@ -299,7 +304,8 @@ public class GameTestsMonsters {
             "This is a cave\n"
                     + "Coordinates: (3, 3)\n"
                     + "Possible routes: E S W \n"
-                    + "There is an injured monster here.\n",
+                    + "There is an injured monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             game.getLocationDesc().toString()
     );
     // This is the monster we injured.
@@ -317,7 +323,7 @@ public class GameTestsMonsters {
         2,8,2,3,1,5,2,1,1,7,3,2,3,5,4,7,1,2,3,0,2,11,3,14,4,9,4,6,3,14,2,4,3,0,1,12,2,2,3,7,5
     );
     // monster at distance 1 to the south. [arrow distance]
-    assertSame(game.smell(), LESS_PUNGENT);
+    assertSame(game.getLocationDesc().getOdour(), LESS_PUNGENT);
     game.shoot(SOUTH, 1);
     ShotResult res = game.shoot(SOUTH, 1);
     assertEquals(KILL, res);
@@ -334,11 +340,13 @@ public class GameTestsMonsters {
     game.move(WEST);
     // This is a cave
     // d = 0
+    assertTrue(game.getLocationDesc().hasDeadMonster());
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (3, 3)\n"
                     + "Possible routes: E S W \n"
-                    + "There is a dead monster here.\n",
+                    + "There is a dead monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             game.getLocationDesc().toString()
     );
     // This is the monster we injured.
@@ -459,7 +467,8 @@ public class GameTestsMonsters {
             + "Coordinates: (2, 1)\n"
             + "Possible routes: E S W \n"
             + "There are some items in this cave: 3 crooked arrows \n"
-            + "There is a dead monster here.\n",
+            + "There is a dead monster here.\n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             d52.toString()
     );
     assertTrue(d52.hasDeadMonster());
@@ -484,7 +493,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (2, 1)\n"
                     + "Possible routes: E S W \n"
                     + "There are some items in this cave: 3 crooked arrows \n"
-                    + "There is a dead monster here.\n",
+                    + "There is a dead monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             d37.toString()
     );
     // Tests that the arrow hits have killed the monster
@@ -500,9 +510,10 @@ public class GameTestsMonsters {
    */
   @Test
   public void testNoSmellNonWrapping() {
-    Odour smell = sampleGame.smell();
+    Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(ODOURLESS, smell);
     LocationDesc des = sampleGame.getLocationDesc();
+    assertEquals(ODOURLESS, des.getOdour());
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (0, 0)\n"
@@ -529,7 +540,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (2, 0)\n"
-                    + "Possible routes: N E S \n",
+                    + "Possible routes: N E S \n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString()
     );
     // no monster here, hence ODOURLESS is correct at (0, 0)
@@ -557,11 +569,12 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a cave\n"
             + "Coordinates: (2, 0)\n"
-            + "Possible routes: N E S \n",
+            + "Possible routes: N E S \n"
+            + "you sense a slightly pungent smell of otyughs.\n",
             des.toString()
     );
     assertTrue(des.hasNoMonster());
-    Odour smell = sampleGame.smell();
+    Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(LESS_PUNGENT, smell);
     // less pungent smell here, indicates one monster in 2 distance from current location.
     // we covered the north, because we came from there.
@@ -581,7 +594,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a tunnel\n"
             + "Coordinates: (2, 2)\n"
-            + "Possible routes: E W \n",
+            + "Possible routes: E W \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     assertTrue(des.hasNoMonster());
@@ -593,7 +607,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a tunnel\n"
             + "Coordinates: (3, 0)\n"
-            + "Possible routes: N E \n",
+            + "Possible routes: N E \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     assertTrue(des.hasNoMonster());
@@ -605,7 +620,8 @@ public class GameTestsMonsters {
             + "Coordinates: (3, 1)\n"
             + "Possible routes: E S W \n"
             + "There's some treasure in this cave: 1 diamond 1 ruby 3 sapphires \n"
-            + "There is an alive monster here.\n",
+            + "There is an alive monster here.\n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     // this is the location with the monster, at a distance of 2
@@ -623,10 +639,10 @@ public class GameTestsMonsters {
     sampleGame.move(SOUTH);
     sampleGame.move(SOUTH);
     sampleGame.move(EAST);
-    Odour smell = sampleGame.smell();
+    Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(ODOURLESS, smell);
     sampleGame.move(EAST);
-    smell = sampleGame.smell();
+    smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
     // Two locations from this position, there are 2 monsters, one in each location.
     // Lets go there and check. We injure the monsters and enter their locations.
@@ -637,7 +653,8 @@ public class GameTestsMonsters {
             "This is a cave\n"
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: N S W \n"
-                    + "There are some items in this cave: 4 crooked arrows \n",
+                    + "There are some items in this cave: 4 crooked arrows \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             sampleGame.getLocationDesc().toString()
     );
     // Since we came from the west, there's one monster in the north and one in the south.
@@ -651,7 +668,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (1, 3)\n"
                     + "Possible routes: N S W \n"
                     + "There's some treasure in this cave: 3 diamonds 1 ruby 1 sapphire \n"
-                    + "There is an injured monster here.\n",
+                    + "There is an injured monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     // we found the monster to the north, lets go south.
@@ -664,7 +682,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (3, 3)\n"
                     + "Possible routes: N S W \n"
                     + "There are some items in this cave: 2 crooked arrows \n"
-                    + "There is an injured monster here.\n",
+                    + "There is an injured monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     // We found the monster here as well
@@ -683,14 +702,15 @@ public class GameTestsMonsters {
     sampleGame.move(SOUTH);
     sampleGame.move(SOUTH);
     sampleGame.move(SOUTH);
-    Odour smell = sampleGame.smell();
+    Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
     // There is a monster in one of the neighbours. [pseudo random dungeon]
     LocationDesc des = sampleGame.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
             + "Coordinates: (3, 0)\n"
-            + "Possible routes: N E \n",
+            + "Possible routes: N E \n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
     sampleGame.move(EAST);
@@ -700,7 +720,8 @@ public class GameTestsMonsters {
             + "Coordinates: (3, 1)\n"
             + "Possible routes: E S W \n"
             + "There's some treasure in this cave: 1 diamond 1 ruby 3 sapphires \n"
-            + "There is an alive monster here.\n",
+            + "There is an alive monster here.\n"
+            + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString()
     );
 
@@ -723,11 +744,12 @@ public class GameTestsMonsters {
     // Deterministic dungeon
     // This location has no odour.
 
-    Odour smell = sampleGame2.smell();
+    Odour smell = sampleGame2.getLocationDesc().getOdour();
     assertEquals(ODOURLESS, smell);
     // This location has no odour, we go to all neighbours and neighbours' neighbours and
     // assert that there are no monsters/ only dead monsters.
     LocationDesc des = sampleGame2.getLocationDesc();
+    assertEquals(ODOURLESS, des.getOdour());
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (4, 0)\n"
@@ -742,7 +764,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (4, 1)\n"
                     + "Possible routes: N E S W \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "There is a dead monster here.\n",
+                    + "There is a dead monster here.\n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString());
     sampleGame2.move(SOUTH);
     des = sampleGame2.getLocationDesc();
@@ -767,7 +790,8 @@ public class GameTestsMonsters {
             "This is a cave\n"
                     + "Coordinates: (4, 2)\n"
                     + "Possible routes: E S W \n"
-                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString());
     sampleGame2.move(WEST);
     sampleGame2.move(WEST);
@@ -777,14 +801,16 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 0)\n"
-                    + "Possible routes: S W \n",
+                    + "Possible routes: S W \n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString());
     sampleGame2.move(WEST);
     des = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 3)\n"
-                    + "Possible routes: N E \n",
+                    + "Possible routes: N E \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString());
   }
 
@@ -804,7 +830,7 @@ public class GameTestsMonsters {
     sampleGame2.move(NORTH);
 
 
-    Odour smell = sampleGame2.smell();
+    Odour smell = sampleGame2.getLocationDesc().getOdour();
     assertEquals(LESS_PUNGENT, smell);
     // There is one monster 2 distance away.
     // Let us check our neighbours and our neighbours' neighbours.
@@ -812,7 +838,8 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 0)\n"
-                    + "Possible routes: S W \n",
+                    + "Possible routes: S W \n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString());
     sampleGame2.move(SOUTH);
     des = sampleGame2.getLocationDesc();
@@ -829,7 +856,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (4, 1)\n"
                     + "Possible routes: N E S W \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "There is a dead monster here.\n",
+                    + "There is a dead monster here.\n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString());
     sampleGame2.move(WEST);
     des = sampleGame2.getLocationDesc();
@@ -844,14 +872,16 @@ public class GameTestsMonsters {
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 0)\n"
-                    + "Possible routes: S W \n",
+                    + "Possible routes: S W \n"
+                    + "you sense a slightly pungent smell of otyughs.\n",
             des.toString());
     sampleGame2.move(WEST);
     des = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 3)\n"
-                    + "Possible routes: N E \n",
+                    + "Possible routes: N E \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString());
     sampleGame2.move(NORTH);
     des = sampleGame2.getLocationDesc();
@@ -860,7 +890,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (2, 3)\n"
                     + "Possible routes: E S W \n"
                     + "There are some items in this cave: 2 crooked arrows \n"
-                    + "There is an alive monster here.\n",
+                    + "There is an alive monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             des.toString());
     // This is the monster that was causing the less pungent smell 2 distance away.
   }
@@ -873,7 +904,7 @@ public class GameTestsMonsters {
    */
   @Test
   public void testVeryPungentWrapping2Monsters() {
-    Odour smell = sampleGame2.smell();
+    Odour smell = sampleGame2.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
 
     // This deterministic dungeon has a monster to current location -> west -> west
@@ -885,7 +916,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (4, 3)\n"
                     + "Possible routes: W \n"
                     + "There's some treasure in this cave: 1 diamond 1 ruby 1 sapphire \n"
-                    + "There are some items in this cave: 4 crooked arrows \n",
+                    + "There are some items in this cave: 4 crooked arrows \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
     sampleGame2.move(WEST);
     dec = sampleGame2.getLocationDesc();
@@ -893,7 +925,8 @@ public class GameTestsMonsters {
             "This is a cave\n"
                     + "Coordinates: (4, 2)\n"
                     + "Possible routes: E S W \n"
-                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
     // Lets shoot both the monsters once so that we do not die.
     sampleGame2.shoot(WEST, 1);
@@ -905,7 +938,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (4, 1)\n"
                     + "Possible routes: N E S W \n"
                     + "There are some items in this cave: 5 crooked arrows \n"
-                    + "There is an injured monster here.\n",
+                    + "There is an injured monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
     sampleGame2.move(EAST);
     sampleGame2.move(SOUTH);
@@ -915,7 +949,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (0, 2)\n"
                     + "Possible routes: N E S \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby 2 sapphires \n"
-                    + "There is an injured monster here.\n",
+                    + "There is an injured monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
     // These were the 2 monsters that were causing the MORE_PUNGENT smell
 
@@ -937,14 +972,15 @@ public class GameTestsMonsters {
     // We killed the monster to the west and came from east so,
     // there is only one monster to the immediate south. We know this,
     // because of the more_pungent smell.
-    Odour smell = sampleGame2.smell();
+    Odour smell = sampleGame2.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
     LocationDesc dec = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (4, 2)\n"
                     + "Possible routes: E S W \n"
-                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n",
+                    + "There's some treasure in this cave: 2 diamonds 3 rubies 1 sapphire \n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
 
     sampleGame2.move(SOUTH);
@@ -954,7 +990,8 @@ public class GameTestsMonsters {
                     + "Coordinates: (0, 2)\n"
                     + "Possible routes: N E S \n"
                     + "There's some treasure in this cave: 2 diamonds 1 ruby 2 sapphires \n"
-                    + "There is an alive monster here.\n",
+                    + "There is an alive monster here.\n"
+                    + "you sense a very pungent smell of otyughs, be careful!\n",
             dec.toString());
   }
 
@@ -980,13 +1017,13 @@ public class GameTestsMonsters {
     game.shoot(NORTH, 1); //to reduce monster's health.
     game.move(NORTH);
     // Go there and check for smell.
-    assertEquals(MORE_PUNGENT, game.smell());
+    assertEquals(MORE_PUNGENT, game.getLocationDesc().getOdour());
     assertTrue(game.getLocationDesc().hasInjuredMonster());
     // Lets kill the monster, come back and check for the smell again to make
     // sure that this monster is the origin of the smell.
     game.move(SOUTH);
     game.shoot(NORTH, 1); // kill
     assertTrue(game.getLocationDesc().hasNoMonster()); // assert no monster
-    assertEquals(ODOURLESS, game.smell());
+    assertEquals(ODOURLESS, game.getLocationDesc().getOdour());
   }
 }

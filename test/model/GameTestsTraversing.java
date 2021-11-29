@@ -860,16 +860,14 @@ public class GameTestsTraversing {
     // Assert that no monster was found in a tunnel.
     assertEquals(0, monsterInTunnelCount);
     // Assert Player description because it has stats.
-    assertEquals(
-            "Player info:\n"
+    assertEquals("Player info:\n"
             + "Misses: 0\n"
             + "Hits: 12\n"
             + "Kills: 6\n"
             + "Treasure:\n"
             + "None\n"
             + "Items:\n"
-            + "1 bow \n",
-            game.getPlayerDesc().toString());
+            + "1 potion \n", game.getPlayerDesc().toString());
   }
 
   /**

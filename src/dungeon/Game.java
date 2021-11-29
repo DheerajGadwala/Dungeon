@@ -3,7 +3,6 @@ package dungeon;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.LocationDesc;
-import dungeongeneral.Odour;
 import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
@@ -14,7 +13,7 @@ import dungeongeneral.Treasure;
  * of the game. Random {@link LocationNode} are chosen as start and end.
  * The player can be operated from this on the location graph.
  * A game is created with treasure in given percentage of caves and
- * items in the given percentage of locations. The dungeon has {@link Monster}s
+ * items in the given percentage of locations. The dungeon has {@link Entity}s
  * in its locations. The number of monsters is equal to the given difficulty.
  * The player can move, pick up treasure and items and shoot arrows.
  */
@@ -30,11 +29,7 @@ public interface Game {
    */
   void move(Direction direction) throws IllegalArgumentException, IllegalStateException;
 
-  /**
-   * Returns the odour at player location.
-   * @return odour as perceived by the player.
-   */
-  Odour smell();
+  void attack();
 
   /**
    * Makes the player collect treasure from his location if possible.
@@ -103,21 +98,4 @@ public interface Game {
    * @return true if player has won else false.
    */
   boolean hasPlayerWon();
-
-  /**
-   * To string of the game returns a map of the game in its then
-   * state.
-   * Representations:
-   * t - tunnel
-   * c - cave
-   * T - treasure
-   * I - items
-   * S - Start
-   * E - End
-   * M = Monster
-   * * - nothing
-   * @return map of the game.
-   */
-  @Override
-  String toString();
 }

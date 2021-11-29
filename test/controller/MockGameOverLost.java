@@ -6,7 +6,6 @@ import dungeon.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.LocationDesc;
-import dungeongeneral.Odour;
 import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
@@ -35,8 +34,8 @@ class MockGameOverLost implements Game {
   }
 
   @Override
-  public Odour smell() throws IllegalStateException {
-    return null;
+  public void attack() {
+
   }
 
   @Override

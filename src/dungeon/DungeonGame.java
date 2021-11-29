@@ -10,7 +10,6 @@ import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.LocationDesc;
 import dungeongeneral.MatrixPosition;
-import dungeongeneral.Odour;
 import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
@@ -38,7 +37,11 @@ public class DungeonGame implements Game {
   private LocationGraph dungeon;
   private LocationNode start;
   private LocationNode end;
+  private LocationNode monsterStart;
+  private LocationNode thiefStart;
   private final Player player;
+  private final Entity movingMonster;
+  private final Entity thief;
   private boolean gameOver;
   private static final int MIN_SE_DISTANCE = 5;
 
@@ -63,7 +66,11 @@ public class DungeonGame implements Game {
     generateTreasure(percentage);
     generateItems(percentage);
     generateMonsters(numberOfMonsters);
-    this.player = new DungeonPlayer(this.start);
+    this.player = new DungeonPlayer(this.start, this.randomizer);
+    this.monsterStart = pickRandomLocation();
+    this.movingMonster = new Tarrasque(monsterStart, this.randomizer);
+    this.thiefStart = pickRandomLocation();
+    this.thief = new Thief(thiefStart);
   }
 
   private void validateMN(int row, int column) {
@@ -110,6 +117,16 @@ public class DungeonGame implements Game {
     }
   }
 
+  private LocationNode pickRandomLocation() {
+    List<MatrixPosition> allPositions = getAllPositions();
+    allPositions.remove(start.getPosition());
+    return dungeon.getLocation(
+            allPositions.get(
+                    randomizer.getIntBetween(0, allPositions.size())
+            )
+    );
+  }
+
   /**
    * This is a constructor for Dungeon control class.
    * @param row dimension of the dungeon
@@ -152,6 +169,12 @@ public class DungeonGame implements Game {
       throws IllegalArgumentException, IllegalStateException {
     validateGameOver();
     return player.shoot(direction, distance);
+  }
+
+  @Override
+  public void attack() {
+    validateGameOver();
+
   }
 
   @Override
@@ -218,10 +241,10 @@ public class DungeonGame implements Game {
   public void move(Direction direction)
       throws IllegalStateException, IllegalArgumentException {
     validateGameOver();
-    player.movePlayer(direction);
+    player.move(direction);
     if (getPlayerLocation().hasAliveMonster()) {
       try {
-        getPlayerLocation().getMonster().attack(player);
+        getPlayerLocation().getMonster().harm(player);
       }
       catch (IllegalStateException ignored) {
       }
@@ -232,11 +255,6 @@ public class DungeonGame implements Game {
     else if (getPlayerPosition().equals(getEndPosition())) {
       gameOver = true;
     }
-  }
-
-  @Override
-  public Odour smell() {
-    return player.smell();
   }
 
   private LocationNode getPlayerLocation() {
@@ -285,7 +303,7 @@ public class DungeonGame implements Game {
    * Get end position.
    * @return matrix position of end location.
    */
-  MatrixPosition getEndPosition() {
+  private MatrixPosition getEndPosition() {
     return end.getPosition();
   }
 
@@ -308,7 +326,7 @@ public class DungeonGame implements Game {
    * Returns positions of all location nodes.
    * @return positions of all locations.
    */
-  List<MatrixPosition> getAllPositions() {
+  private List<MatrixPosition> getAllPositions() {
     List<MatrixPosition> allPositions = new ArrayList<>();
     for (int i = 0; i < row; i++) {
       for (int j = 0; j < column; j++) {

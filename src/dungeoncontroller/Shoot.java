@@ -36,8 +36,7 @@ class Shoot extends AbstractCommand {
       if (!game.hasArrow()) {
         out.append("You are out of arrows!\n");
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ignored) {
     }
   }
 }
