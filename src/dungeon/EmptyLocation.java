@@ -4,8 +4,7 @@ import static dungeongeneral.Odour.ODOURLESS;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
+import dungeongeneral.Coordinate;
 import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
 
@@ -95,12 +94,22 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
+  public Map<Treasure, Integer> getTreasure() {
+    return null;
+  }
+
+  @Override
+  public Map<Item, Integer> getItems() {
+    return null;
+  }
+
+  @Override
   public void addTreasure(Map<Treasure, Integer> treasure) throws IllegalStateException {
     throw  new IllegalStateException("can not add treasure to the empty node");
   }
 
   @Override
-  public MatrixPosition getPosition()
+  public Coordinate getCoordinates()
       throws IllegalStateException {
     throw new IllegalStateException("Empty nodes do not have a position!");
   }
@@ -122,6 +131,26 @@ class EmptyLocation implements LocationNode {
 
   @Override
   public boolean hasMonster() {
+    return false;
+  }
+
+  @Override
+  public boolean hasNoMonster() {
+    return false;
+  }
+
+  @Override
+  public boolean hasDeadMonster() {
+    return false;
+  }
+
+  @Override
+  public boolean hasInjuredMonster() {
+    return false;
+  }
+
+  @Override
+  public boolean hasHealthyMonster() {
     return false;
   }
 
@@ -167,8 +196,8 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public LocationDesc getDesc() {
-    return null;
+  public ReadOnlyLocation getDesc() {
+    return this;
   }
 
   @Override

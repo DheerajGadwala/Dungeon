@@ -3,10 +3,10 @@ package controller;
 import static dungeongeneral.ShotResult.MISS;
 
 import dungeon.Game;
+import dungeon.ReadOnlyLocation;
+import dungeon.ReadOnlyPlayer;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -34,11 +34,6 @@ class MockGameOverLost implements Game {
   }
 
   @Override
-  public void attack() {
-
-  }
-
-  @Override
   public void cedeTreasure(Treasure treasure)
       throws IllegalStateException, IllegalArgumentException {
     //Unused
@@ -51,12 +46,12 @@ class MockGameOverLost implements Game {
 
 
   @Override
-  public PlayerDesc getPlayerDesc() throws IllegalStateException {
+  public ReadOnlyPlayer getPlayerDesc() throws IllegalStateException {
     return new PlayerDescTestImpl(uniqueCode);
   }
 
   @Override
-  public LocationDesc getLocationDesc() throws IllegalStateException {
+  public ReadOnlyLocation getLocationDesc() throws IllegalStateException {
     return new LocationDescTestImpl(uniqueCode);
   }
 

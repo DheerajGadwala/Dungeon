@@ -10,8 +10,8 @@ import static junit.framework.Assert.assertTrue;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
+import dungeon.ReadOnlyLocation;
+import dungeongeneral.Coordinate;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -52,8 +52,8 @@ public class GameTestsTraversing {
 
     int treasureCount = 0;
     int caveCount = 0;
-    Set<MatrixPosition> visited = new HashSet<>();
-    LocationDesc
+    Set<Coordinate> visited = new HashSet<>();
+    ReadOnlyLocation
             desc = game.getLocationDesc();
     if (!visited.contains(desc.getCoordinates())) {
       if (desc.isCave()) {
@@ -356,8 +356,8 @@ public class GameTestsTraversing {
 
     int arrowCount = 0;
     int locationCount = 0;
-    Set<MatrixPosition> visited = new HashSet<>();
-    LocationDesc
+    Set<Coordinate> visited = new HashSet<>();
+    ReadOnlyLocation
             desc = game.getLocationDesc();
     if (!visited.contains(desc.getCoordinates())) {
       locationCount++;
@@ -595,11 +595,11 @@ public class GameTestsTraversing {
             1,1,3,1,3,3,3,3,1,1,3,2,1,0,3,3,2,1,2,3,3,1,1,2,1,0,1,3,1,5,1,10,2,9,3,9,5,4,4,8,
             3,1,1,5,5,2,5,3,5,2,4,1,2,1,1,1,1,0,4,0,5,5,3,0,0,1);
     game.cedeItem(CROOKED_ARROW);
-    Set<MatrixPosition> visited = new HashSet<>();
+    Set<Coordinate> visited = new HashSet<>();
     int monsterCount = 0;
     int locationCount = 0;
     int monsterInTunnelCount = 0;
-    LocationDesc desc;
+    ReadOnlyLocation desc;
     desc = game.getLocationDesc();
     if (!visited.contains(desc.getCoordinates())) {
       locationCount++;
@@ -880,7 +880,7 @@ public class GameTestsTraversing {
             32,0,3,48,2,50,32,26,21,24,17,15,10,3,
             11,22,20,23,25,2,13,23,13,18,11,5,12,14,11,3,1
     );
-    Set<MatrixPosition> visited = new HashSet<>();
+    Set<Coordinate> visited = new HashSet<>();
     game.move(WEST);
     visited.add(
             game.getLocationDesc().getCoordinates() // Add coordinates to set

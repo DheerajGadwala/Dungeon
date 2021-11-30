@@ -1,7 +1,7 @@
 package dungeon;
 
 import dungeongeneral.Direction;
-import dungeongeneral.MatrixPosition;
+import dungeongeneral.Coordinate;
 
 /**
  * Represents an edge in the Location graph.
@@ -23,12 +23,12 @@ class Connection {
     return this.B;
   }
 
-  MatrixPosition getMatrixPositionA() {
-    return getVertexA().getPosition();
+  Coordinate getMatrixPositionA() {
+    return getVertexA().getCoordinates();
   }
 
-  MatrixPosition getMatrixPositionB() {
-    return getVertexB().getPosition();
+  Coordinate getMatrixPositionB() {
+    return getVertexB().getCoordinates();
   }
 
   Direction getDirection() {
@@ -49,12 +49,12 @@ class Connection {
     return isConnectedToA(that) || isConnectedToB(that);
   }
 
-  boolean hasVertexAt(MatrixPosition a) {
-    return A.getPosition().equals(a) || B.getPosition().equals(a);
+  boolean hasVertexAt(Coordinate a) {
+    return A.getCoordinates().equals(a) || B.getCoordinates().equals(a);
   }
 
   @Override
   public String toString() {
-    return "A: " + A.getPosition() + "B: " + B.getPosition();
+    return "A: " + A.getCoordinates() + "B: " + B.getCoordinates();
   }
 }

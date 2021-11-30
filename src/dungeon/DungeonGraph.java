@@ -6,7 +6,7 @@ import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
 
 import dungeongeneral.Direction;
-import dungeongeneral.MatrixPosition;
+import dungeongeneral.Coordinate;
 import randomizer.Randomizer;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ class DungeonGraph implements LocationGraph {
     this.n = n;
     for (int i = 0; i < m; i++) {
       for (int j = 0; j < n; j++) {
-        this.createLocationNode(new MatrixPosition(i, j));
+        this.createLocationNode(new Coordinate(i, j));
       }
     }
     for (int i = 0; i < m; i++) {
@@ -86,55 +86,55 @@ class DungeonGraph implements LocationGraph {
   private void addConnections(int i, int j, int m, int n, boolean wrap) {
     if (wrap) {
       this.addConnection(
-          new MatrixPosition(i, j),
-          new MatrixPosition(((i - 1) % m + m) % m, j),
+          new Coordinate(i, j),
+          new Coordinate(((i - 1) % m + m) % m, j),
           NORTH
       );
       this.addConnection(
-          new MatrixPosition(i, j),
-          new MatrixPosition(i, (j + 1) % n),
+          new Coordinate(i, j),
+          new Coordinate(i, (j + 1) % n),
           EAST
       );
       this.addConnection(
-          new MatrixPosition(i, j),
-          new MatrixPosition((i + 1) % m, j),
+          new Coordinate(i, j),
+          new Coordinate((i + 1) % m, j),
           SOUTH
       );
       this.addConnection(
-          new MatrixPosition(i, j),
-          new MatrixPosition(i, ((j - 1) % n + n) % n),
+          new Coordinate(i, j),
+          new Coordinate(i, ((j - 1) % n + n) % n),
           WEST
       );
     }
     else {
       if (i - 1 > -1) {
-        this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i - 1, j), NORTH);
+        this.addConnection(new Coordinate(i, j), new Coordinate(i - 1, j), NORTH);
       }
       if (j + 1 < n) {
-        this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i, j + 1), EAST);
+        this.addConnection(new Coordinate(i, j), new Coordinate(i, j + 1), EAST);
       }
       if (i + 1 < m) {
-        this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i + 1, j), SOUTH);
+        this.addConnection(new Coordinate(i, j), new Coordinate(i + 1, j), SOUTH);
       }
       if (j - 1 > -1) {
-        this.addConnection(new MatrixPosition(i, j), new MatrixPosition(i, j - 1), WEST);
+        this.addConnection(new Coordinate(i, j), new Coordinate(i, j - 1), WEST);
       }
     }
   }
 
-  private boolean containsPosition(MatrixPosition position) {
+  private boolean containsPosition(Coordinate position) {
     for (LocationNode node: locationNodes) {
-      if (node.getPosition().equals(position)) {
+      if (node.getCoordinates().equals(position)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean containsConnection(MatrixPosition position1, MatrixPosition position2) {
+  private boolean containsConnection(Coordinate position1, Coordinate position2) {
     for (Connection edge: connections) {
-      MatrixPosition nodePos1 = edge.getVertexA().getPosition();
-      MatrixPosition nodePos2 = edge.getVertexB().getPosition();
+      Coordinate nodePos1 = edge.getVertexA().getCoordinates();
+      Coordinate nodePos2 = edge.getVertexB().getCoordinates();
       if (
           (nodePos1.equals(position1) && nodePos2.equals(position2))
       ) {
@@ -154,9 +154,9 @@ class DungeonGraph implements LocationGraph {
   }
 
   @Override
-  public LocationNode getLocation(MatrixPosition position) {
+  public LocationNode getLocation(Coordinate position) {
     for (LocationNode node: locationNodes) {
-      if (node.getPosition().equals(position)) {
+      if (node.getCoordinates().equals(position)) {
         return node;
       }
     }
@@ -164,7 +164,7 @@ class DungeonGraph implements LocationGraph {
   }
 
   @Override
-  public void createLocationNode(MatrixPosition position)
+  public void createLocationNode(Coordinate position)
       throws IllegalArgumentException, IllegalStateException {
     if (position == null) {
       throw new IllegalArgumentException("Position can not be null!");
@@ -178,8 +178,8 @@ class DungeonGraph implements LocationGraph {
   }
 
   private void validateEdge(
-      MatrixPosition position1,
-      MatrixPosition position2,
+      Coordinate position1,
+      Coordinate position2,
       Direction direction
   ) throws IllegalArgumentException, IllegalStateException {
     if (direction == null) {
@@ -190,8 +190,8 @@ class DungeonGraph implements LocationGraph {
   }
 
   private void validateEdge(
-      MatrixPosition position1,
-      MatrixPosition position2
+      Coordinate position1,
+      Coordinate position2
   ) throws IllegalArgumentException, IllegalStateException {
     if (position1 == null || position2 == null) {
       throw new IllegalArgumentException("Position(s) can not be null!");
@@ -203,8 +203,8 @@ class DungeonGraph implements LocationGraph {
 
   @Override
   public void addConnection(
-      MatrixPosition position1,
-      MatrixPosition position2,
+      Coordinate position1,
+      Coordinate position2,
       Direction direction
   )
       throws IllegalArgumentException, IllegalStateException {
@@ -220,7 +220,7 @@ class DungeonGraph implements LocationGraph {
   }
 
   @Override
-  public void removeConnection(MatrixPosition position1, MatrixPosition position2)
+  public void removeConnection(Coordinate position1, Coordinate position2)
       throws IllegalArgumentException, IllegalStateException {
     validateEdge(position1, position2);
     if (!containsConnection(position1, position2)) {
@@ -247,15 +247,15 @@ class DungeonGraph implements LocationGraph {
   private void merge(DungeonGraph that) {
     for (LocationNode k: that.locationNodes) {
       try {
-        this.createLocationNode(k.getPosition());
+        this.createLocationNode(k.getCoordinates());
       }
       catch (IllegalStateException ignored) {
       }
     }
     for (Connection k: that.connections) {
       try {
-        MatrixPosition v1 = k.getMatrixPositionA();
-        MatrixPosition v2 = k.getMatrixPositionB();
+        Coordinate v1 = k.getMatrixPositionA();
+        Coordinate v2 = k.getMatrixPositionB();
         Direction d = k.getDirection();
         this.addConnection(v1, v2, d);
         this.addConnection(v2, v1, d.getOpposite());
@@ -270,8 +270,8 @@ class DungeonGraph implements LocationGraph {
    */
   private List<DungeonGraph> unify(
       List<DungeonGraph> allGraphs,
-      MatrixPosition vertexA,
-      MatrixPosition vertexB
+      Coordinate vertexA,
+      Coordinate vertexB
   ) {
     DungeonGraph unifiedGraph = new DungeonGraph(randomizer, m, n);
     List<DungeonGraph> finalGraphs = new ArrayList<>();
@@ -322,8 +322,8 @@ class DungeonGraph implements LocationGraph {
     }
     catch (IllegalStateException ignored) {
     }
-    MatrixPosition vertexA = edge.getMatrixPositionA();
-    MatrixPosition vertexB = edge.getMatrixPositionB();
+    Coordinate vertexA = edge.getMatrixPositionA();
+    Coordinate vertexB = edge.getMatrixPositionB();
     Direction d = edge.getDirection();
     this.addConnection(vertexA, vertexB, d);
     this.addConnection(vertexB, vertexA, d.getOpposite());
@@ -451,7 +451,7 @@ class DungeonGraph implements LocationGraph {
       for (int k = 0; k < 3; k++) {
         ret.append(sideBorder);
         for (int j = 0; j < n; j++) {
-          LocationNode n = this.getLocation(new MatrixPosition(i, j));
+          LocationNode n = this.getLocation(new Coordinate(i, j));
           if (k == 0) {
             ret.append(n.hasEmptyNodeAt(NORTH) ? "     " : "  |  ");
           }

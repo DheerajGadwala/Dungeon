@@ -1,11 +1,12 @@
 package controller;
 
+import dungeon.ReadOnlyLocation;
 import dungeongeneral.*;
 
 import java.util.List;
 import java.util.Map;
 
-class LocationDescTestImpl implements LocationDesc {
+class LocationDescTestImpl implements ReadOnlyLocation {
 
   private final String uniqueCode;
 
@@ -44,6 +45,11 @@ class LocationDescTestImpl implements LocationDesc {
   }
 
   @Override
+  public boolean hasMonster() {
+    return false;
+  }
+
+  @Override
   public boolean hasNoMonster() {
     return false;
   }
@@ -64,17 +70,32 @@ class LocationDescTestImpl implements LocationDesc {
   }
 
   @Override
-  public MatrixPosition getCoordinates() {
+  public boolean hasAliveMonster() {
+    return false;
+  }
+
+  @Override
+  public boolean hasItem(Item item) {
+    return false;
+  }
+
+  @Override
+  public Coordinate getCoordinates() {
     return null;
   }
 
   @Override
-  public List<Direction> getRoutes() {
+  public List<Direction> getPossibleRoutes() {
     return null;
   }
 
   @Override
   public Odour getOdour() {
+    return null;
+  }
+
+  @Override
+  public ReadOnlyLocation getDesc() {
     return null;
   }
 

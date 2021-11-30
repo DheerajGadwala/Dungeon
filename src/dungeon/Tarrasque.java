@@ -1,12 +1,16 @@
 package dungeon;
 
+import dungeongeneral.Direction;
+import dungeongeneral.Coordinate;
 import randomizer.Randomizer;
 
-public class Tarrasque implements Entity {
+import java.util.List;
+
+class Tarrasque implements Entity {
 
   private LocationNode location;
   private int health;
-  private Randomizer randomizer;
+  private final Randomizer randomizer;
 
   Tarrasque(LocationNode location, Randomizer randomizer) {
     if (location == null || location.isEmptyNode()) {
@@ -48,5 +52,31 @@ public class Tarrasque implements Entity {
   @Override
   public void decreaseHealth(int damage) {
     this.health -= damage;
+  }
+
+  @Override
+  public Coordinate getPosition() {
+    return location.getCoordinates();
+  }
+
+  @Override
+  public void move(Direction direction) throws IllegalArgumentException {
+    if (direction == null) {
+      throw new IllegalArgumentException("Direction can not be null.");
+    }
+    if (location.hasEmptyNodeAt(direction)) {
+      throw new IllegalArgumentException("No path in the given direction.");
+    }
+    location = location.getLocationAt(direction);
+  }
+
+  @Override
+  public LocationNode getLocation() {
+    return location;
+  }
+
+  @Override
+  public List<Direction> getPossibleRoutes() {
+    return location.getPossibleRoutes();
   }
 }

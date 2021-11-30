@@ -8,13 +8,7 @@ import static dungeongeneral.Odour.LESS_PUNGENT;
 import static dungeongeneral.Odour.MORE_PUNGENT;
 import static dungeongeneral.Odour.ODOURLESS;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.LocationDescImpl;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.Odour;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,13 +20,13 @@ import java.util.function.Predicate;
 class Location implements LocationNode {
 
   private final HashMap<Direction, LocationNode> neighbours;
-  private final MatrixPosition position;
+  private final Coordinate position;
   private Map<Treasure, Integer> treasures;
   private Entity monster;
   private final Map<Item, Integer> items;
 
   public Location(
-      MatrixPosition position,
+      Coordinate position,
       HashMap<Direction, LocationNode> neighbours
   ) {
     this.position = position;
@@ -42,7 +36,7 @@ class Location implements LocationNode {
   }
 
   public Location(
-      MatrixPosition position
+      Coordinate position
   ) {
     this.position = position;
     this.neighbours = new HashMap<>();
@@ -221,7 +215,7 @@ class Location implements LocationNode {
   }
 
   @Override
-  public MatrixPosition getPosition() {
+  public Coordinate getCoordinates() {
     return position;
   }
 
@@ -377,12 +371,8 @@ class Location implements LocationNode {
   }
 
   @Override
-  public boolean hasItems() {
-    boolean hasItems = false;
-    for (Item i: Item.values()) {
-      hasItems |= hasItem(i);
-    }
-    return hasItems;
+  public ReadOnlyLocation getDesc() {
+    return this;
   }
 
   private Map<Item, Integer> copyItems(Map<Item, Integer> items) {
@@ -402,11 +392,77 @@ class Location implements LocationNode {
   }
 
   @Override
-  public LocationDesc getDesc() {
-    return new LocationDescImpl(
-            copyItems(items), copyTreasures(treasures),
-            isCave(), hasMonster(), monster == null ? 0 : monster.getHealth(),
-            getPosition(), getPossibleRoutes(), getOdour()
-            );
+  public boolean hasItems() {
+    int sum = 0;
+    for (Item i: Item.values()) {
+      sum += items.get(i);
+    }
+    return sum > 0;
   }
+
+  @Override
+  public Map<Treasure, Integer> getTreasure() {
+    return copyTreasures(treasures);
+  }
+
+  @Override
+  public Map<Item, Integer> getItems() {
+    return copyItems(items);
+  }
+
+  @Override
+  public boolean hasNoMonster() {
+    return !hasMonster();
+  }
+
+  @Override
+  public boolean hasDeadMonster() {
+    return hasMonster() && monster.getHealth() == 0;
+  }
+
+  @Override
+  public boolean hasInjuredMonster() {
+    return hasMonster() && monster.getHealth() == 1;
+  }
+
+  @Override
+  public boolean hasHealthyMonster() {
+    return hasMonster() && monster.getHealth() == 2;
+  }
+
+  @Override
+  public String toString() {
+    String type = isCave() ? "cave" : "tunnel";
+    StringBuilder stb = new StringBuilder("This is a " + type + "\n");
+    stb.append("Coordinates: ").append(position.toString()).append("\n");
+    stb.append("Possible routes: ");
+    for (Direction d: getPossibleRoutes()) {
+      stb.append(d.toString()).append(" ");
+    }
+    stb.append("\n");
+    if (hasTreasure()) {
+      stb.append("There's some treasure in this cave: ");
+      stb.append(new TreasureList(treasures).toString()).append("\n");
+    }
+    if (hasItems()) {
+      stb.append("There are some items in this cave: ");
+      stb.append(new ItemList(items).toString()).append("\n");
+    }
+    if (hasMonster()) {
+      if (hasDeadMonster()) {
+        stb.append("There is a dead monster here.\n");
+      }
+      else if (hasInjuredMonster()) {
+        stb.append("There is an injured monster here.\n");
+      }
+      else {
+        stb.append("There is an alive monster here.\n");
+      }
+    }
+    if (getOdour() != ODOURLESS) {
+      stb.append(getOdour().getImplication()).append("\n");
+    }
+    return stb.toString();
+  }
+
 }

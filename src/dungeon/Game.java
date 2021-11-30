@@ -2,8 +2,6 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -14,7 +12,7 @@ import dungeongeneral.Treasure;
  * The player can be operated from this on the location graph.
  * A game is created with treasure in given percentage of caves and
  * items in the given percentage of locations. The dungeon has {@link Entity}s
- * in its locations. The number of monsters is equal to the given difficulty.
+ * in its locations. The number of otyughs is equal to the given difficulty.
  * The player can move, pick up treasure and items and shoot arrows.
  */
 public interface Game {
@@ -28,8 +26,6 @@ public interface Game {
    * @throws IllegalStateException if the game is already over.
    */
   void move(Direction direction) throws IllegalArgumentException, IllegalStateException;
-
-  void attack();
 
   /**
    * Makes the player collect treasure from his location if possible.
@@ -58,16 +54,16 @@ public interface Game {
    * items.
    * @return description of the player.
    */
-  PlayerDesc getPlayerDesc();
+  ReadOnlyPlayer getPlayerDesc();
 
   /**
    * Returns description of the player's location.
    * It includes the type of of location, treasure if any,
-   * items if any and details about the monster, if it exists
+   * items if any and details about an entity, if it exists
    * in the location.
    * @return description of the player's location.
    */
-  LocationDesc getLocationDesc();
+  ReadOnlyLocation getLocationDesc();
 
   /**
    * Game's player shoots an arrow in the given direction and distance.

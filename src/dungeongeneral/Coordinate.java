@@ -5,7 +5,7 @@ import static java.util.Objects.hash;
 /**
  * Represents the position of an object inside a matrix.
  */
-public class MatrixPosition {
+public class Coordinate {
   private final int row;
   private final int column;
   private final int hashcode;
@@ -15,7 +15,7 @@ public class MatrixPosition {
    * @param row row index
    * @param column column index
    */
-  public MatrixPosition(int row, int column) {
+  public Coordinate(int row, int column) {
     this.row = row;
     this.column = column;
     this.hashcode = hash(row) + hash(column);
@@ -43,8 +43,8 @@ public class MatrixPosition {
       return false;
     }
     else if (that.getClass() == this.getClass()) {
-      MatrixPosition thatMatrixPosition = (MatrixPosition) that;
-      return thatMatrixPosition.getRow() == row && thatMatrixPosition.getColumn() == column;
+      Coordinate thatCoordinate = (Coordinate) that;
+      return thatCoordinate.getRow() == row && thatCoordinate.getColumn() == column;
     }
     else {
       return false;

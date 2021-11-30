@@ -6,7 +6,7 @@ import java.util.TreeMap;
 /**
  * Takes in a hashmap and returns a beautified toString on call to toString.
  */
-class ItemList {
+public class ItemList {
 
   private final Map<Item, Integer> map;
 
@@ -14,7 +14,7 @@ class ItemList {
    * creates an object of this type.
    * @param map map of items and integers.
    */
-  ItemList(Map<Item, Integer> map) {
+  public ItemList(Map<Item, Integer> map) {
     if (map == null) {
       throw new IllegalArgumentException("map can not be null");
     }

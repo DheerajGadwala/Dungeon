@@ -2,9 +2,6 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
 
 import java.util.List;
@@ -17,7 +14,7 @@ import java.util.function.Predicate;
  * A location might have treasure if it is a cave.
  * There is only one empty node. [Singleton]
  */
-interface LocationNode {
+interface LocationNode extends ReadOnlyLocation {
 
   /**
    * Checks if a location node is a tunnel.
@@ -65,18 +62,6 @@ interface LocationNode {
    * @throws IllegalStateException if treasure is being added to a Tunnel or Empty node.
    */
   void addTreasure(Map<Treasure, Integer> treasure) throws IllegalStateException;
-
-  /**
-   * get position of this location.
-   * @return position of this location.
-   */
-  MatrixPosition getPosition() throws IllegalStateException;
-
-  /**
-   * Get directions which lead to neighbouring nodes.
-   * @return list of directions that lead to valid locations.
-   */
-  List<Direction> getPossibleRoutes();
 
   /**
    * return true if this location node has that as a neighbour.
@@ -153,18 +138,6 @@ interface LocationNode {
   void setMonster(Entity monster) throws IllegalArgumentException;
 
   /**
-   * Return true if location has a monster, dead or alive.
-   * @return true if location has monster else false.
-   */
-  boolean hasMonster();
-
-  /**
-   * checks if location an alive monster in this location.
-   * @return true if location has monster else false.
-   */
-  boolean hasAliveMonster();
-
-  /**
    * sets the number of arrows at this location number of arrows.
    * @param n number of arrows
    * @throws IllegalArgumentException when n is less than or equal to 0.
@@ -177,18 +150,6 @@ interface LocationNode {
    * @throws IllegalStateException when this location has no items.
    */
   void decreaseItemCount(Item item) throws IllegalArgumentException, IllegalStateException;
-
-  /**
-   * Checks if there is at least one arrow in this location.
-   * @return true there is at least one arrow in this location else false.
-   */
-  boolean hasItem(Item item);
-
-  /**
-   * Get odour at this location.
-   * @return odour at this locatiom.
-   */
-  Odour getOdour();
 
   /**
    * returns the monster in this location.
@@ -210,16 +171,4 @@ interface LocationNode {
    */
   Entity getMonsterAtEnd(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException;
-
-  /**
-   * returns true if this location has at least one item.
-   * @return true if this location has at least one item else false.
-   */
-  boolean hasItems();
-
-  /**
-   * Returns description object of this location.
-   * @return description object of this location.
-   */
-  LocationDesc getDesc();
 }

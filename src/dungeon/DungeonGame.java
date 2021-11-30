@@ -8,9 +8,7 @@ import static dungeongeneral.Item.CROOKED_ARROW;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.PlayerDesc;
+import dungeongeneral.Coordinate;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 import randomizer.ActualRandomizer;
@@ -31,21 +29,17 @@ import java.util.Map;
  */
 public class DungeonGame implements Game {
 
-  private final int row;
-  private final int column;
-  private final Randomizer randomizer;
-  private LocationGraph dungeon;
-  private LocationNode start;
-  private LocationNode end;
-  private LocationNode monsterStart;
-  private LocationNode thiefStart;
-  private final Player player;
-  private final Entity movingMonster;
-  private final Entity thief;
-  private boolean gameOver;
-  private static final int MIN_SE_DISTANCE = 5;
+  protected final int row;
+  protected final int column;
+  protected final Randomizer randomizer;
+  protected LocationGraph dungeon;
+  protected LocationNode start;
+  protected LocationNode end;
+  protected final Player player;
+  protected boolean gameOver;
+  protected static final int MIN_SE_DISTANCE = 5;
 
-  private DungeonGame(
+  protected DungeonGame(
       int row, int column, int percentage, int numberOfMonsters,
       boolean enableWrap, int interconnectivity, Randomizer randomizer
   ) throws IllegalArgumentException {
@@ -67,10 +61,6 @@ public class DungeonGame implements Game {
     generateItems(percentage);
     generateMonsters(numberOfMonsters);
     this.player = new DungeonPlayer(this.start, this.randomizer);
-    this.monsterStart = pickRandomLocation();
-    this.movingMonster = new Tarrasque(monsterStart, this.randomizer);
-    this.thiefStart = pickRandomLocation();
-    this.thief = new Thief(thiefStart);
   }
 
   private void validateMN(int row, int column) {
@@ -107,7 +97,7 @@ public class DungeonGame implements Game {
   }
 
   private void generateItems(int percentage) {
-    List<MatrixPosition> allPositions = getAllPositions();
+    List<Coordinate> allPositions = getAllPositions();
     double toBeAddedIn = allPositions.size() * percentage / 100.0;
     while (toBeAddedIn - 1 >= 0) {
       int x = randomizer.getIntBetween(0, allPositions.size() - 1);
@@ -115,16 +105,6 @@ public class DungeonGame implements Game {
       dungeon.getLocation(allPositions.remove(x)).setItemCount(CROOKED_ARROW, val);
       toBeAddedIn--;
     }
-  }
-
-  private LocationNode pickRandomLocation() {
-    List<MatrixPosition> allPositions = getAllPositions();
-    allPositions.remove(start.getPosition());
-    return dungeon.getLocation(
-            allPositions.get(
-                    randomizer.getIntBetween(0, allPositions.size())
-            )
-    );
   }
 
   /**
@@ -172,12 +152,6 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public void attack() {
-    validateGameOver();
-
-  }
-
-  @Override
   public boolean hasPlayerWon() {
     return isGameOver() && player.isAlive();
   }
@@ -193,7 +167,7 @@ public class DungeonGame implements Game {
       this.dungeon = new DungeonGraph(
           randomizer, row, column, enableWrap
       ).getMst(interconnectivity);
-      List<MatrixPosition> possibleStarts = getAllPositions();
+      List<Coordinate> possibleStarts = getAllPositions();
       LocationNode start = null;
       LocationNode end = null;
       while (possibleStarts.size() > 0) {
@@ -261,11 +235,11 @@ public class DungeonGame implements Game {
     return dungeon.getLocation(player.getPosition());
   }
 
-  private LocationNode getLocation(MatrixPosition position) {
+  private LocationNode getLocation(Coordinate position) {
     return dungeon.getLocation(position);
   }
   
-  private void validateGameOver()
+  protected void validateGameOver()
       throws IllegalStateException {
     if (isGameOver()) {
       throw new IllegalStateException("Action not possible after game is over!");
@@ -290,7 +264,7 @@ public class DungeonGame implements Game {
    * Get current position of player.
    * @return current matrix position of player.
    */
-  private MatrixPosition getPlayerPosition() {
+  private Coordinate getPlayerPosition() {
     return player.getPosition();
   }
 
@@ -303,8 +277,8 @@ public class DungeonGame implements Game {
    * Get end position.
    * @return matrix position of end location.
    */
-  private MatrixPosition getEndPosition() {
-    return end.getPosition();
+  private Coordinate getEndPosition() {
+    return end.getCoordinates();
   }
 
   @Override
@@ -313,12 +287,12 @@ public class DungeonGame implements Game {
   }
 
   @Override
-  public PlayerDesc getPlayerDesc() {
+  public ReadOnlyPlayer getPlayerDesc() {
     return player.getDesc();
   }
 
   @Override
-  public LocationDesc getLocationDesc() {
+  public ReadOnlyLocation getLocationDesc() {
     return player.getLocationDescription();
   }
 
@@ -326,11 +300,11 @@ public class DungeonGame implements Game {
    * Returns positions of all location nodes.
    * @return positions of all locations.
    */
-  private List<MatrixPosition> getAllPositions() {
-    List<MatrixPosition> allPositions = new ArrayList<>();
+  protected List<Coordinate> getAllPositions() {
+    List<Coordinate> allPositions = new ArrayList<>();
     for (int i = 0; i < row; i++) {
       for (int j = 0; j < column; j++) {
-        allPositions.add(new MatrixPosition(i, j));
+        allPositions.add(new Coordinate(i, j));
       }
     }
     return allPositions;
@@ -340,14 +314,14 @@ public class DungeonGame implements Game {
     StringBuilder ret = new StringBuilder();
     int playerI = player.getPosition().getRow();
     int playerJ = player.getPosition().getColumn();
-    int startI = start.getPosition().getRow();
-    int startJ = start.getPosition().getColumn();
-    int endI = end.getPosition().getRow();
-    int endJ = end.getPosition().getColumn();
+    int startI = start.getCoordinates().getRow();
+    int startJ = start.getCoordinates().getColumn();
+    int endI = end.getCoordinates().getRow();
+    int endJ = end.getCoordinates().getColumn();
     for (int i = 0; i < row; i++) {
       for (int k = 0; k < 3; k++) {
         for (int j = 0; j < column; j++) {
-          LocationNode column = getLocation(new MatrixPosition(i, j));
+          LocationNode column = getLocation(new Coordinate(i, j));
           if (k == 0) {
             ret.append(column.hasEmptyNodeAt(NORTH) ? "          " : "    ||    ");
           }

@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertTrue;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import dungeongeneral.LocationDesc;
+import dungeon.ReadOnlyLocation;
 import dungeongeneral.Odour;
 import dungeongeneral.ShotResult;
 import org.junit.Before;
@@ -461,7 +461,7 @@ public class GameTestsMonsters {
         d--;
       }
     }
-    LocationDesc d52 = game.getLocationDesc();
+    ReadOnlyLocation d52 = game.getLocationDesc();
     assertEquals(
             "This is a cave\n"
             + "Coordinates: (2, 1)\n"
@@ -487,7 +487,7 @@ public class GameTestsMonsters {
         d--;
       }
     }
-    LocationDesc d37 = game.getLocationDesc();
+    ReadOnlyLocation d37 = game.getLocationDesc();
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (2, 1)\n"
@@ -512,7 +512,7 @@ public class GameTestsMonsters {
   public void testNoSmellNonWrapping() {
     Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(ODOURLESS, smell);
-    LocationDesc des = sampleGame.getLocationDesc();
+    ReadOnlyLocation des = sampleGame.getLocationDesc();
     assertEquals(ODOURLESS, des.getOdour());
     assertEquals(
             "This is a cave\n"
@@ -555,7 +555,7 @@ public class GameTestsMonsters {
   @Test
   public void testSlightlyPungentNonWrapping() {
     sampleGame.move(SOUTH);
-    LocationDesc des = sampleGame.getLocationDesc();
+    ReadOnlyLocation des = sampleGame.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (1, 0)\n"
@@ -661,7 +661,7 @@ public class GameTestsMonsters {
     assertSame(HIT, sampleGame.shoot(NORTH, 1));
     assertSame(HIT, sampleGame.shoot(SOUTH, 1));
     sampleGame.move(NORTH);
-    LocationDesc des = sampleGame.getLocationDesc();
+    ReadOnlyLocation des = sampleGame.getLocationDesc();
     assertTrue(des.hasInjuredMonster());
     assertEquals(
             "This is a cave\n"
@@ -705,7 +705,7 @@ public class GameTestsMonsters {
     Odour smell = sampleGame.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
     // There is a monster in one of the neighbours. [pseudo random dungeon]
-    LocationDesc des = sampleGame.getLocationDesc();
+    ReadOnlyLocation des = sampleGame.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
             + "Coordinates: (3, 0)\n"
@@ -748,7 +748,7 @@ public class GameTestsMonsters {
     assertEquals(ODOURLESS, smell);
     // This location has no odour, we go to all neighbours and neighbours' neighbours and
     // assert that there are no monsters/ only dead monsters.
-    LocationDesc des = sampleGame2.getLocationDesc();
+    ReadOnlyLocation des = sampleGame2.getLocationDesc();
     assertEquals(ODOURLESS, des.getOdour());
     assertEquals(
             "This is a tunnel\n"
@@ -834,7 +834,7 @@ public class GameTestsMonsters {
     assertEquals(LESS_PUNGENT, smell);
     // There is one monster 2 distance away.
     // Let us check our neighbours and our neighbours' neighbours.
-    LocationDesc des = sampleGame2.getLocationDesc();
+    ReadOnlyLocation des = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a tunnel\n"
                     + "Coordinates: (3, 0)\n"
@@ -910,7 +910,7 @@ public class GameTestsMonsters {
     // This deterministic dungeon has a monster to current location -> west -> west
     // and another at current location -> west -> south.
 
-    LocationDesc dec = sampleGame2.getLocationDesc();
+    ReadOnlyLocation dec = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (4, 3)\n"
@@ -974,7 +974,7 @@ public class GameTestsMonsters {
     // because of the more_pungent smell.
     Odour smell = sampleGame2.getLocationDesc().getOdour();
     assertEquals(MORE_PUNGENT, smell);
-    LocationDesc dec = sampleGame2.getLocationDesc();
+    ReadOnlyLocation dec = sampleGame2.getLocationDesc();
     assertEquals(
             "This is a cave\n"
                     + "Coordinates: (4, 2)\n"

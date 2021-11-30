@@ -70,7 +70,7 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public LocationDesc getLocationDescription() {
+  public ReadOnlyLocation getLocationDescription() {
     return location.getDesc();
   }
 
@@ -92,8 +92,8 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public MatrixPosition getPosition() {
-    return location.getPosition();
+  public Coordinate getPosition() {
+    return location.getCoordinates();
   }
 
   @Override
@@ -102,7 +102,7 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public Treasure getMugged() {
+  public Treasure getRobbed() {
     List<Treasure> hasTreasure = new ArrayList<>();
     for(Treasure t: treasures.keySet()) {
       if (treasures.get(t) == 0) {
@@ -184,6 +184,11 @@ class DungeonPlayer implements Player {
     return items.get(CROOKED_ARROW) > 0;
   }
 
+  @Override
+  public ReadOnlyPlayer getDesc() {
+    return this;
+  }
+
   private Map<Item, Integer> copyItems(Map<Item, Integer> items) {
     Map<Item, Integer> copy = new TreeMap<>();
     for (Item item: items.keySet()) {
@@ -201,10 +206,42 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public PlayerDesc getDesc() {
-    return new PlayerDescImpl(
-            copyItems(items), copyTreasures(treasures),
-            missCount, hitCount, killCount
-    );
+  public Map<Treasure, Integer> getTreasure() {
+    return copyTreasures(treasures);
   }
+
+  @Override
+  public Map<Item, Integer> getItems() {
+    return copyItems(items);
+  }
+
+  @Override
+  public int getMissCount() {
+    return missCount;
+  }
+
+  @Override
+  public int getHitCount() {
+    return hitCount;
+  }
+
+  @Override
+  public int getKillCount() {
+    return killCount;
+  }
+
+  @Override
+  public String toString() {
+    TreasureList tl = new TreasureList(treasures);
+    ItemList il = new ItemList(items);
+    return "Player info:\n"
+            + "Misses: " + missCount + "\n"
+            + "Hits: " + hitCount + "\n"
+            + "Kills: " + killCount + "\n"
+            + "Treasure:\n"
+            + tl.toString() + "\n"
+            + "Items:\n"
+            + il.toString() + "\n";
+  }
+
 }

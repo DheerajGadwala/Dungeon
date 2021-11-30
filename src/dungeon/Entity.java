@@ -1,5 +1,10 @@
 package dungeon;
 
+import dungeongeneral.Direction;
+import dungeongeneral.Coordinate;
+
+import java.util.List;
+
 /**
  * This represents an entity.
  * An entity is in a location.
@@ -38,4 +43,30 @@ interface Entity {
    * @param damage damage to this entity's health.
    */
   void decreaseHealth(int damage);
+
+  /**
+   * Gets position of this entity.
+   * @return position of this entity.
+   * @throws IllegalStateException when entity does not have a position. [Otyugh]
+   */
+  Coordinate getPosition() throws IllegalStateException;
+
+  /**
+   * The entity moves in the given direction.
+   * @throws IllegalStateException when entity can not move. [Otyugh]
+   * @throws IllegalArgumentException when move in the given direction is not possible.
+   */
+  void move(Direction direction) throws IllegalStateException;
+
+  /**
+   * Returns location of the entity.
+   * @return Location of the entity.
+   */
+  LocationNode getLocation();
+
+  /**
+   * Returns a list of all possible directions in which the entity can move.
+   * @return list of directions.
+   */
+  List<Direction> getPossibleRoutes();
 }

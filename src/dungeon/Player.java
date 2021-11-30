@@ -2,9 +2,6 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
-import dungeongeneral.LocationDesc;
-import dungeongeneral.MatrixPosition;
-import dungeongeneral.PlayerDesc;
 import dungeongeneral.ShotResult;
 import dungeongeneral.Treasure;
 
@@ -16,7 +13,7 @@ import java.util.List;
  * A Player has a location.
  * A Player can look for and move to the neighbouring locations as well.
  */
-interface Player {
+interface Player extends ReadOnlyPlayer{
 
   /**
    * Collect treasure from the entity's current location.
@@ -31,30 +28,12 @@ interface Player {
   void pickItem(Item item);
 
   /**
-   * get Description of the location of the entity.
-   * @return location description as a string.
-   */
-  LocationDesc getLocationDescription();
-
-  /**
-   * get neighbouring location directions from entity's current location.
-   * @return list of directions which lead to other locations.
-   */
-  List<Direction> getPossibleRoutes();
-
-  /**
    * move entity in the given direction.
    * @param direction direction in which the entity is to be moved.
    * @throws  IllegalArgumentException if the given direction is null or if
    *                                  there is no neighbour in the given direction.
    */
   void move(Direction direction) throws IllegalArgumentException, IllegalStateException;
-
-  /**
-   * Get position of the entity on the matrix.
-   * @return a matrix position object representing the entity's location.
-   */
-  MatrixPosition getPosition();
 
   /**
    * kills the entity.
@@ -65,19 +44,13 @@ interface Player {
    * Player is mugged of a random treasure.
    * @return treasure lost by the player.
    */
-  Treasure getMugged();
+  Treasure getRobbed();
 
   /**
    * Decreases the player's health.
    * @param damage damage to the player's health.
    */
   void decreaseHealth(int damage);
-
-  /**
-   * Returns true if the entity is alive.
-   * @return true if entity is alive.
-   */
-  boolean isAlive();
 
   /**
    * Consumes a potion.
@@ -99,17 +72,5 @@ interface Player {
    */
   ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException;
-
-  /**
-   * Returns true if entity has at least one arrow.
-   * @return true if entity has at least one arrow else false.
-   */
-  boolean hasArrow();
-
-  /**
-   * Returns current description object of the entity.
-   * @return description of the entity.
-   */
-  PlayerDesc getDesc();
 
 }

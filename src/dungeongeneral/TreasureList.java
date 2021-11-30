@@ -6,7 +6,7 @@ import java.util.TreeMap;
 /**
  * Takes in a hashmap and returns a beautified toString on call toString.
  */
-class TreasureList {
+public class TreasureList {
 
   private final Map<Treasure, Integer> map;
 
@@ -14,7 +14,7 @@ class TreasureList {
    * creates an object of this type.
    * @param map map of items and integers.
    */
-  TreasureList(Map<Treasure, Integer> map) {
+  public TreasureList(Map<Treasure, Integer> map) {
     if (map == null) {
       throw new IllegalArgumentException("map can not be null");
     }

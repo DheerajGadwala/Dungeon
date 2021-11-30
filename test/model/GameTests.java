@@ -15,7 +15,7 @@ import static junit.framework.TestCase.assertFalse;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import dungeongeneral.LocationDesc;
+import dungeon.ReadOnlyLocation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -311,7 +311,7 @@ public class GameTests {
             53,34,14,55,20,2,28,4,19,1,8,1,38,16,24,31,11,28,
             25,14,30,20,8,17,5,11,10,19,7,5,10,8,7,0,0,2,5,2,5,1,3,2,0
     );
-    LocationDesc dec = game.getLocationDesc();
+    ReadOnlyLocation dec = game.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (2, 3)\n"
             + "Possible routes: E \n", dec.toString());
@@ -358,7 +358,7 @@ public class GameTests {
     Game game = new DungeonGame(4, 4, 0, 1, false, 5,
             23,8,23,4,34,23,27,15,22,16,6,1,10,19,9,
             6,14,9,1,12,2,8,9,2,8,12,12,6,1,4,2,1,4,5,2,1,0,1);
-    LocationDesc des = game.getLocationDesc();
+    ReadOnlyLocation des = game.getLocationDesc();
     assertEquals("This is a cave\n"
                     + "Coordinates: (0, 0)\n"
                     + "Possible routes: E \n", des.toString());
@@ -916,7 +916,7 @@ public class GameTests {
    */
   @Test
   public void testDirectionsOnPlayerAndArrowsInCavesAndTunnels() {
-    LocationDesc desc = sampleGame3.getLocationDesc();
+    ReadOnlyLocation desc = sampleGame3.getLocationDesc();
     assertEquals("This is a cave\n"
             + "Coordinates: (1, 1)\n"
             + "Possible routes: N \n"

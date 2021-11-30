@@ -1,12 +1,13 @@
 package controller;
 
-import dungeongeneral.Item;
-import dungeongeneral.PlayerDesc;
-import dungeongeneral.Treasure;
+import dungeon.ReadOnlyLocation;
+import dungeon.ReadOnlyPlayer;
+import dungeongeneral.*;
 
+import java.util.List;
 import java.util.Map;
 
-class PlayerDescTestImpl implements PlayerDesc {
+class PlayerDescTestImpl implements ReadOnlyPlayer {
 
   private final String uniqueCode;
 
@@ -25,6 +26,16 @@ class PlayerDescTestImpl implements PlayerDesc {
   }
 
   @Override
+  public Coordinate getPosition() {
+    return null;
+  }
+
+  @Override
+  public List<Direction> getPossibleRoutes() {
+    return null;
+  }
+
+  @Override
   public int getMissCount() {
     return 0;
   }
@@ -37,6 +48,26 @@ class PlayerDescTestImpl implements PlayerDesc {
   @Override
   public int getKillCount() {
     return 0;
+  }
+
+  @Override
+  public boolean isAlive() {
+    return false;
+  }
+
+  @Override
+  public boolean hasArrow() {
+    return false;
+  }
+
+  @Override
+  public ReadOnlyPlayer getDesc() {
+    return null;
+  }
+
+  @Override
+  public ReadOnlyLocation getLocationDescription() {
+    return null;
   }
 
   @Override

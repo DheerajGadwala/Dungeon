@@ -1,6 +1,11 @@
 package dungeon;
 
+import dungeongeneral.Direction;
+import dungeongeneral.Coordinate;
 import randomizer.Randomizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Otyugh is a type of monster.
@@ -67,5 +72,40 @@ class Otyugh implements Entity {
       throw new IllegalStateException("This otyugh is already dead.");
     }
     this.health -= damage;
+  }
+
+  /**
+   * Otyughs have no position.
+   * @return Position of entity.
+   * @throws IllegalStateException Since this is an otyugh, we throw an exception.
+   */
+  @Override
+  public Coordinate getPosition() throws IllegalStateException {
+    throw new IllegalStateException("Otyughs have no clue about their position.");
+  }
+
+  /**
+   * Otyugh can not move.
+   * @param direction direction in which entity is to be moved.
+   * @throws IllegalStateException Since this is an otyugh, we throw an exception.
+   */
+  @Override
+  public void move(Direction direction) throws IllegalStateException {
+    throw new IllegalStateException("Otyughs can not move.");
+  }
+
+  /**
+   * Location information is not stored here.
+   * @return Location.
+   * @throws IllegalStateException Since this is an otyugh, we throw an exception.
+   */
+  @Override
+  public LocationNode getLocation() throws IllegalStateException {
+    throw new IllegalStateException("Otyughs have no clue about their location.");
+  }
+
+  @Override
+  public List<Direction> getPossibleRoutes() {
+    return new ArrayList<>();
   }
 }

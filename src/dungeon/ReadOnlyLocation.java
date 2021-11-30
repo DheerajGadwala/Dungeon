@@ -1,4 +1,6 @@
-package dungeongeneral;
+package dungeon;
+
+import dungeongeneral.*;
 
 import java.util.List;
 import java.util.Map;
@@ -9,13 +11,7 @@ import java.util.Map;
  * This is essentially a snapshot of the location's data at
  * a particular moment.
  */
-public interface LocationDesc {
-
-  /**
-   * True if the location had items when this description was constructed.
-   * @return true if the location has items when this description was constructed else false.
-   */
-  boolean hasItems();
+public interface ReadOnlyLocation {
 
   /**
    * True if the location had treasure when this description was constructed.
@@ -48,6 +44,12 @@ public interface LocationDesc {
   boolean isTunnel();
 
   /**
+   * Return true if location has a monster, dead or alive.
+   * @return true if location has monster else false.
+   */
+  boolean hasMonster();
+
+  /**
    * Returns true if location has no monster.
    * @return true if location has no monster else false.
    */
@@ -72,16 +74,44 @@ public interface LocationDesc {
   boolean hasHealthyMonster();
 
   /**
+   * checks if location an alive monster in this location.
+   * @return true if location has monster else false.
+   */
+  boolean hasAliveMonster();
+
+  /**
+   * Checks if there is at least one arrow in this location.
+   * @return true there is at least one arrow in this location else false.
+   */
+  boolean hasItem(Item item);
+
+  /**
+   * returns true if this location has at least one item.
+   * @return true if this location has at least one item else false.
+   */
+  boolean hasItems();
+
+  /**
    * Returns position of the location.
    * @return position of the location.
    */
-  MatrixPosition getCoordinates();
+  Coordinate getCoordinates();
 
   /**
    * Returns list of directions which have routes to neighbouring locations.
    * @return list of directions which have routes to neighbouring locations.
    */
-  List<Direction> getRoutes();
+  List<Direction> getPossibleRoutes();
 
+  /**
+   * Returns odour at this location.
+   * @return odour at this location.
+   */
   Odour getOdour();
+
+  /**
+   * Returns description object of this location.
+   * @return description object of this location.
+   */
+  ReadOnlyLocation getDesc();
 }

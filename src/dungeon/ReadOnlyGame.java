@@ -1,8 +1,6 @@
 package dungeon;
 
-import dungeongeneral.LocationDesc;
 import dungeongeneral.Odour;
-import dungeongeneral.PlayerDesc;
 
 /**
  * This is a ready only version of the game that can be used by a view.
@@ -21,7 +19,7 @@ public interface ReadOnlyGame {
    * items.
    * @return description of the player.
    */
-  PlayerDesc getPlayerDesc();
+  ReadOnlyPlayer getPlayerDesc();
 
   /**
    * Returns description of the player's location.

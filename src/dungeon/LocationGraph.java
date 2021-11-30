@@ -1,7 +1,7 @@
 package dungeon;
 
 import dungeongeneral.Direction;
-import dungeongeneral.MatrixPosition;
+import dungeongeneral.Coordinate;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ interface LocationGraph {
    * @param position position of the location to be returned.
    * @return location being requested.
    */
-  LocationNode getLocation(MatrixPosition position);
+  LocationNode getLocation(Coordinate position);
 
   /**
    * create a Location Node in the graph with matrix position(id).
@@ -28,7 +28,7 @@ interface LocationGraph {
    *                                already exists in this graph.
    * @throws IllegalArgumentException when position is null.
    */
-  void createLocationNode(MatrixPosition position)
+  void createLocationNode(Coordinate position)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
@@ -41,7 +41,7 @@ interface LocationGraph {
    * @throws IllegalStateException when a connection between locations of
    *                                given positions already exists.
    */
-  void addConnection(MatrixPosition position1, MatrixPosition position2, Direction direction)
+  void addConnection(Coordinate position1, Coordinate position2, Direction direction)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
@@ -53,7 +53,7 @@ interface LocationGraph {
    * @throws IllegalStateException when a connection between locations of
    *                                given positions does not exist.
    */
-  void removeConnection(MatrixPosition position1, MatrixPosition position2)
+  void removeConnection(Coordinate position1, Coordinate position2)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
