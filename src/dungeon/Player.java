@@ -1,11 +1,6 @@
 package dungeon;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.ShotResult;
-import dungeongeneral.Treasure;
-
-import java.util.List;
+import dungeongeneral.*;
 
 /**
  * This is A Player.
@@ -13,7 +8,7 @@ import java.util.List;
  * A Player has a location.
  * A Player can look for and move to the neighbouring locations as well.
  */
-interface Player extends ReadOnlyPlayer{
+interface Player extends ReadOnlyPlayer {
 
   /**
    * Collect treasure from the entity's current location.
@@ -73,4 +68,9 @@ interface Player extends ReadOnlyPlayer{
   ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException;
 
+  /**
+   * Get location of the player.
+   * @return location of the player.
+   */
+  LocationNode getLocation();
 }

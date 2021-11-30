@@ -1,6 +1,6 @@
 package dungeon;
 
-import dungeongeneral.Coordinate;
+import dungeongeneral.*;
 import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
@@ -9,18 +9,18 @@ import java.util.List;
 
 public class DungeonGameWithObstacles extends DungeonGame implements GameWithObstacles{
 
-  private final Entity movingMonster;
+  private final Entity tarrasque;
   private final Entity thief;
-  private LocationNode monsterStart;
-  private LocationNode thiefStart;
-
+  private final TarrasqueStrategy tarrasqueStrategy;
+  private final ThiefStrategy thiefStrategy;
 
   private DungeonGameWithObstacles(int row, int column, int percentage, int numberOfMonsters, boolean enableWrap, int interconnectivity, Randomizer randomizer) throws IllegalArgumentException {
     super(row, column, percentage, numberOfMonsters, enableWrap, interconnectivity, randomizer);
-    this.monsterStart = pickRandomLocation();
-    this.movingMonster = new Tarrasque(monsterStart, this.randomizer);
-    this.thiefStart = pickRandomLocation();
-    this.thief = new Thief(this.thiefStart);
+    this.tarrasque = new Tarrasque(pickRandomLocation(), this.randomizer);
+    this.thief = new Thief(pickRandomLocation());
+    this.tarrasqueStrategy = new TarrasqueStrategy(tarrasque, player, randomizer);
+    this.thiefStrategy = new ThiefStrategy(thief, player, randomizer);
+
   }
 
   public DungeonGameWithObstacles(
@@ -56,11 +56,47 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   @Override
   public void attack() {
     validateGameOver();
-    if (player.getPosition() == movingMonster.getPosition()) {
-      player.attack(movingMonster);
+    if (player.getPosition() == tarrasque.getPosition()) {
+      player.attack(tarrasque);
     }
     else {
       throw new IllegalStateException("Tarrasque not at player location.");
     }
+    tarrasqueStrategy.nextAction();
+    thiefStrategy.nextAction();
   }
+
+  @Override
+  public void move(Direction direction)
+          throws IllegalStateException, IllegalArgumentException {
+    super.move(direction);
+    tarrasqueStrategy.nextAction();
+    thiefStrategy.nextAction();
+  }
+
+  @Override
+  public ShotResult shoot(Direction direction, int distance)
+          throws IllegalArgumentException, IllegalStateException {
+    ShotResult result = super.shoot(direction, distance);
+    tarrasqueStrategy.nextAction();
+    thiefStrategy.nextAction();
+    return result;
+  }
+
+  @Override
+  public void cedeTreasure(Treasure treasure)
+          throws IllegalStateException, IllegalArgumentException {
+    super.cedeTreasure(treasure);
+    tarrasqueStrategy.nextAction();
+    thiefStrategy.nextAction();
+  }
+
+  @Override
+  public void cedeItem(Item item)
+          throws IllegalStateException, IllegalArgumentException {
+    super.cedeItem(item);
+    tarrasqueStrategy.nextAction();
+    thiefStrategy.nextAction();
+  }
+
 }

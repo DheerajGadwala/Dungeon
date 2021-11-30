@@ -2,11 +2,7 @@ package dungeon;
 
 import static dungeongeneral.Odour.ODOURLESS;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.Coordinate;
-import dungeongeneral.Odour;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,11 +6,7 @@ import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
 import static dungeongeneral.Item.CROOKED_ARROW;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.Coordinate;
-import dungeongeneral.ShotResult;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
@@ -145,10 +141,44 @@ public class DungeonGame implements Game {
   }
 
   @Override
+  public void move(Direction direction)
+          throws IllegalStateException, IllegalArgumentException {
+    validateGameOver();
+    player.move(direction);
+    if (getPlayerLocation().hasAliveMonster()) {
+      try {
+        getPlayerLocation().getMonster().harm(player);
+      }
+      catch (IllegalStateException ignored) {
+      }
+      if (!player.isAlive()) {
+        gameOver = true;
+      }
+    }
+    else if (getPlayerPosition().equals(getEndPosition())) {
+      gameOver = true;
+    }
+  }
+
+  @Override
   public ShotResult shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     validateGameOver();
     return player.shoot(direction, distance);
+  }
+
+  @Override
+  public void cedeTreasure(Treasure treasure)
+          throws IllegalStateException, IllegalArgumentException {
+    validateGameOver();
+    player.collectTreasure(treasure);
+  }
+
+  @Override
+  public void cedeItem(Item item)
+          throws IllegalStateException, IllegalArgumentException {
+    validateGameOver();
+    player.pickItem(item);
   }
 
   @Override
@@ -211,28 +241,8 @@ public class DungeonGame implements Game {
     return ret;
   }
 
-  @Override
-  public void move(Direction direction)
-      throws IllegalStateException, IllegalArgumentException {
-    validateGameOver();
-    player.move(direction);
-    if (getPlayerLocation().hasAliveMonster()) {
-      try {
-        getPlayerLocation().getMonster().harm(player);
-      }
-      catch (IllegalStateException ignored) {
-      }
-      if (!player.isAlive()) {
-        gameOver = true;
-      }
-    }
-    else if (getPlayerPosition().equals(getEndPosition())) {
-      gameOver = true;
-    }
-  }
-
   private LocationNode getPlayerLocation() {
-    return dungeon.getLocation(player.getPosition());
+    return player.getLocation();
   }
 
   private LocationNode getLocation(Coordinate position) {
@@ -244,20 +254,6 @@ public class DungeonGame implements Game {
     if (isGameOver()) {
       throw new IllegalStateException("Action not possible after game is over!");
     }
-  }
-  
-  @Override
-  public void cedeTreasure(Treasure treasure)
-      throws IllegalStateException, IllegalArgumentException {
-    validateGameOver();
-    player.collectTreasure(treasure);
-  }
-
-  @Override
-  public void cedeItem(Item item)
-      throws IllegalStateException, IllegalArgumentException {
-    validateGameOver();
-    player.pickItem(item);
   }
 
   /**

@@ -1,6 +1,4 @@
-package dungeon;
-
-import dungeongeneral.*;
+package dungeongeneral;
 
 import java.util.List;
 import java.util.Map;

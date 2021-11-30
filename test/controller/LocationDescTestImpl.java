@@ -1,6 +1,6 @@
 package controller;
 
-import dungeon.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.*;
 
 import java.util.List;

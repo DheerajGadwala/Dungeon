@@ -3,8 +3,8 @@ package controller;
 import static dungeongeneral.ShotResult.MISS;
 
 import dungeon.Game;
-import dungeon.ReadOnlyLocation;
-import dungeon.ReadOnlyPlayer;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyPlayer;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.ShotResult;

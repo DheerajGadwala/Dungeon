@@ -1,6 +1,4 @@
-package dungeon;
-
-import dungeongeneral.Odour;
+package dungeongeneral;
 
 /**
  * This is a ready only version of the game that can be used by a view.
@@ -28,7 +26,7 @@ public interface ReadOnlyGame {
    * in the location.
    * @return description of the player's location.
    */
-  LocationDesc getLocationDesc();
+  ReadOnlyLocation getLocationDesc();
 
   /**
    * Returns true if the player has at least one arrow.

@@ -2,6 +2,7 @@ package dungeon;
 
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.Treasure;
 
 import java.util.List;

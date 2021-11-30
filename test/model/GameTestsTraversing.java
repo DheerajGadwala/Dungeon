@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertTrue;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import dungeon.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.Coordinate;
 import org.junit.Test;
 

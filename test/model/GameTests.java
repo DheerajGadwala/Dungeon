@@ -15,7 +15,7 @@ import static junit.framework.TestCase.assertFalse;
 
 import dungeon.DungeonGame;
 import dungeon.Game;
-import dungeon.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyLocation;
 import org.junit.Before;
 import org.junit.Test;
 

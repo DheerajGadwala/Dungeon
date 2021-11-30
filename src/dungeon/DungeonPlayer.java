@@ -180,6 +180,11 @@ class DungeonPlayer implements Player {
   }
 
   @Override
+  public LocationNode getLocation() {
+    return location;
+  }
+
+  @Override
   public boolean hasArrow() {
     return items.get(CROOKED_ARROW) > 0;
   }

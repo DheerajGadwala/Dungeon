@@ -1,9 +1,4 @@
-package dungeon;
-
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.Coordinate;
-import dungeongeneral.Treasure;
+package dungeongeneral;
 
 import java.util.List;
 import java.util.Map;

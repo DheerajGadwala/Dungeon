@@ -1,9 +1,6 @@
 package dungeon;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.ShotResult;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 
 /**
  * This acts as a control over the dungeon graph and the player.
