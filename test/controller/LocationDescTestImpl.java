@@ -95,8 +95,13 @@ class LocationDescTestImpl implements ReadOnlyLocation {
   }
 
   @Override
-  public ReadOnlyLocation getDesc() {
-    return null;
+  public boolean hasPit() {
+    return false;
+  }
+
+  @Override
+  public boolean isDiscovered() {
+    return false;
   }
 
   @Override

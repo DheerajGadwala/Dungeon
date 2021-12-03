@@ -1,6 +1,6 @@
 package dungeoncontroller;
 
-import dungeon.Game;
+import dungeonmodel.Game;
 import dungeongeneral.Direction;
 
 import java.io.IOException;

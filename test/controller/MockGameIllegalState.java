@@ -1,6 +1,6 @@
 package controller;
 
-import dungeon.Game;
+import dungeonmodel.Game;
 import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.ReadOnlyPlayer;
 import dungeongeneral.Direction;
@@ -97,4 +97,5 @@ class MockGameIllegalState implements Game {
   public boolean hasPlayerWon() {
     return false;
   }
+
 }

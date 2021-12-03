@@ -544,7 +544,7 @@ Direction? [N E S W]
 e
 You move towards E
 ##################################################################
-You have escaped from the dungeon! You lucky dog!
+You have escaped from the dungeonmodel! You lucky dog!
 Final player description:
 Player info:
 Misses: 2

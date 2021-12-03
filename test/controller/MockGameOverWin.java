@@ -2,7 +2,7 @@ package controller;
 
 import static dungeongeneral.ShotResult.MISS;
 
-import dungeon.Game;
+import dungeonmodel.Game;
 import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.ReadOnlyPlayer;
 import dungeongeneral.Direction;

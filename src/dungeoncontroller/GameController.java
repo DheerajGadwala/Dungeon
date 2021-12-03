@@ -1,6 +1,6 @@
 package dungeoncontroller;
 
-import dungeon.Game;
+import dungeonmodel.Game;
 
 /**
  * This the controller for the text based game.

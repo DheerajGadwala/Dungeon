@@ -5,9 +5,9 @@ import static dungeongeneral.ShotResult.KILL;
 import static dungeongeneral.ShotResult.MISS;
 import static junit.framework.Assert.assertEquals;
 
-import dungeon.DungeonGame;
-import dungeon.Game;
-import dungeoncontroller.DungeonGameController;
+import dungeonmodel.DungeonGame;
+import dungeonmodel.Game;
+import dungeoncontroller.DungeonControllerTextBasedGame;
 import dungeoncontroller.GameController;
 import dungeongeneral.ShotResult;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class ControllerTests {
     Game m = new DungeonGame(5, 5, 50, 3, false, 3);
     StringReader input = new StringReader("");
     Appendable controllerLog = new FailingAppendable();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
   }
   
@@ -62,7 +62,7 @@ public class ControllerTests {
     Game m = new MockGameOverWin(modelLog, uniqueCode);
     Readable input = new StringReader("");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals("", modelLog.toString());
     assertEquals(
@@ -87,7 +87,7 @@ public class ControllerTests {
     Game m = new MockGameOverLost(modelLog, uniqueCode);
     Readable input = new StringReader("");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals("", modelLog.toString());
     assertEquals(
@@ -112,7 +112,7 @@ public class ControllerTests {
     Game m = new MockGameLogger(modelLog, uniqueCode);
     Readable input = new StringReader("m\ns\nm\nn");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals("S\nN\n", modelLog.toString());
     assertEquals(
@@ -153,7 +153,7 @@ public class ControllerTests {
     Game m = new MockGameIllegalArgs(modelLog, uniqueCode);
     Readable input = new StringReader("m\ns\nn\nw\ne");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals("S\nN\nW\nE\n", modelLog.toString());
     assertEquals(
@@ -192,7 +192,7 @@ public class ControllerTests {
     Game m = new MockGameIllegalArgs(modelLog, uniqueCode);
     Readable input = new StringReader("s\nn\n1\nw\n5");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "N\n1\nW\n5\n", modelLog.toString()
@@ -230,7 +230,7 @@ public class ControllerTests {
     Game m = new MockGameIllegalArgs(modelLog, uniqueCode);
     Readable input = new StringReader("t\nr\nd\ns");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "ruby\ndiamond\nsapphire\n", modelLog.toString()
@@ -268,7 +268,7 @@ public class ControllerTests {
     Game m = new MockGameIllegalArgs(modelLog, uniqueCode);
     Readable input = new StringReader("i\na\np\na");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "crooked arrow\npotion\ncrooked arrow\n",
@@ -306,7 +306,7 @@ public class ControllerTests {
     Game m = new MockGameIllegalState(modelLog, uniqueCode);
     Readable input = new StringReader("i\na\nt\nd\nm\nn\ns\ne\n1");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "crooked arrow\ndiamond\nN\nE\n1\n",
@@ -365,7 +365,7 @@ public class ControllerTests {
         "eresi\nt\nt\nr\n123\ni\n1cas\na\n\ns\ns\nqwd\nxq\n2\nm\n\n3\ne"
     );
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "ruby\ncrooked arrow\nS\n2\nE\n",
@@ -434,7 +434,7 @@ public class ControllerTests {
     Game m = new MockGameShotResult(modelLog, uniqueCode, shotResult, hasArrow);
     Readable input = new StringReader("s\ne\n1");
     Appendable controllerLog = new StringWriter();
-    GameController c = new DungeonGameController(input, controllerLog);
+    GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
     c.playGame(m);
     assertEquals(
         "E\n1\n",
@@ -474,7 +474,7 @@ public class ControllerTests {
             + "\nm\nn\ns\ns\n1\ns\nw\n3\ni\na\ni\na\nm\nw\nm\nw\nm\nw\ns\nn\n1\ns\nn\n1\nm\nn"
     );
     Appendable controllerLog = new StringWriter();
-    GameController controller = new DungeonGameController(input, controllerLog);
+    GameController controller = new DungeonControllerTextBasedGame(input, controllerLog);
     controller.playGame(game);
     assertEquals(
             "This is a cave\n"
@@ -858,7 +858,7 @@ public class ControllerTests {
             "s\ne\n2\nm\ne\ns\ne\n3\ns\ne\n1\nm\ne\nm\nn"
     );
     Appendable controllerLog = new StringWriter();
-    GameController controller = new DungeonGameController(input, controllerLog);
+    GameController controller = new DungeonControllerTextBasedGame(input, controllerLog);
     controller.playGame(game);
     assertEquals(
             "This is a cave\n"
@@ -953,7 +953,7 @@ public class ControllerTests {
                     + "\ns\nr\ni\na\ni\np\nm\nn\ni\np\na\nm\ns\nm\nw"
     );
     Appendable controllerLog = new StringWriter();
-    GameController controller = new DungeonGameController(input, controllerLog);
+    GameController controller = new DungeonControllerTextBasedGame(input, controllerLog);
     controller.playGame(game);
     assertEquals(
             "This is a cave\n"

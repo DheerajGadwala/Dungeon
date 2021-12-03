@@ -8,8 +8,8 @@ import static dungeongeneral.Item.CROOKED_ARROW;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-import dungeon.DungeonGame;
-import dungeon.Game;
+import dungeonmodel.DungeonGame;
+import dungeonmodel.Game;
 import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.Coordinate;
 import org.junit.Test;

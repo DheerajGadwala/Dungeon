@@ -5,12 +5,6 @@ package dungeongeneral;
  */
 public interface ReadOnlyGame {
 
-   /**
-   * Returns the odour at player location.
-   * @return odour as perceived by the player.
-   */
-  Odour smell();
-
   /**
    * Returns description of the player, which
    * includes: game stats, player's treasure and

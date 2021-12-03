@@ -1,6 +1,6 @@
 package dungeoncontroller;
 
-import dungeon.Game;
+import dungeonmodel.Game;
 
 /**
  * Represents a command that can be executed on a model.

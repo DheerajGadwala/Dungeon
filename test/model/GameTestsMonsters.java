@@ -15,8 +15,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 
-import dungeon.DungeonGame;
-import dungeon.Game;
+import dungeonmodel.DungeonGame;
+import dungeonmodel.Game;
 import dungeongeneral.ReadOnlyLocation;
 import dungeongeneral.Odour;
 import dungeongeneral.ShotResult;
