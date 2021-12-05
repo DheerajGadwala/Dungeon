@@ -61,6 +61,8 @@ interface LocationNode extends ReadOnlyLocation {
    */
   void addTreasure(Map<Treasure, Integer> treasure) throws IllegalStateException;
 
+  List<Direction> getPossibleRoutesHelper();
+
   /**
    * return true if this location node has that as a neighbour.
    * Returns false if this is a empty node.

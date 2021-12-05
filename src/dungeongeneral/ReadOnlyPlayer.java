@@ -27,7 +27,7 @@ public interface ReadOnlyPlayer {
    * Get position of the entity on the matrix.
    * @return a matrix position object representing the entity's location.
    */
-  Coordinate getPosition();
+  Coordinate getCoordinates();
 
   /**
    * get neighbouring location directions from entity's current location.
@@ -76,4 +76,10 @@ public interface ReadOnlyPlayer {
    * @return location description as a string.
    */
   ReadOnlyLocation getLocationDescription();
+
+  /**
+   * Returns health of the player.
+   * @return health of the player.
+   */
+  int getHealth();
 }

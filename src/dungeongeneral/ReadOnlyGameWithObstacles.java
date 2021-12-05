@@ -51,4 +51,16 @@ public interface ReadOnlyGameWithObstacles extends ReadOnlyGame{
    */
   int getInterconnectivity();
 
+  /**
+   * Returns true if thief is at player location.
+   * @return true if thief at player location else false.
+   */
+  boolean thiefAtPlayerLocation();
+
+  /**
+   * Returns true if moving monster is at player location.
+   * @return true if moving monster at player location else false.
+   */
+  boolean movingMonsterAtPlayerLocation();
+
 }

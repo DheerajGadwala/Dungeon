@@ -105,6 +105,11 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
+  public List<Direction> getPossibleRoutesHelper() {
+    return new ArrayList<>();
+  }
+
+  @Override
   public Coordinate getCoordinates()
       throws IllegalStateException {
     throw new IllegalStateException("Empty nodes do not have a position!");

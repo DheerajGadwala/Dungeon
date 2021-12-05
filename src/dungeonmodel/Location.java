@@ -235,7 +235,8 @@ class Location implements LocationNode {
     return getPossibleRoutesHelper();
   }
 
-  private List<Direction> getPossibleRoutesHelper() {
+  @Override
+  public List<Direction> getPossibleRoutesHelper() {
     List<Direction> possibilities = new ArrayList<>();
     for (Direction d: Direction.values()) {
       if (!this.hasEmptyNodeAt(d)) {

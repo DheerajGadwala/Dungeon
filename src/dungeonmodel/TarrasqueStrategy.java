@@ -30,7 +30,7 @@ class TarrasqueStrategy implements EntityStrategy {
 
   @Override
   public void nextAction() {
-    if (player.getPosition().equals(tarrasque.getPosition())) {
+    if (player.getCoordinates().equals(tarrasque.getCoordinates())) {
       hasMetPlayer = true;
       tarrasque.harm(player);
     }
@@ -43,6 +43,9 @@ class TarrasqueStrategy implements EntityStrategy {
       int random = randomizer.getIntBetween(0, possibleMoves.size());
       if (random != possibleMoves.size()) {
         tarrasque.move(possibleMoves.get(random));
+      }
+      if (player.getCoordinates().equals(tarrasque.getCoordinates())) {
+        hasMetPlayer = true;
       }
     }
   }

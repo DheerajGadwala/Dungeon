@@ -1,5 +1,9 @@
 package dungeoncontroller;
 
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.Treasure;
+
 public interface GameFeatures {
 
   /**
@@ -18,4 +22,15 @@ public interface GameFeatures {
           int interconnectivity) throws IllegalArgumentException;
 
 
+  void move(Direction direction);
+
+  void shoot(Direction direction, int distance);
+
+  void pickTreasure(Treasure treasure);
+
+  void pickItem(Item item);
+
+  void attack();
+
+  void playGame();
 }

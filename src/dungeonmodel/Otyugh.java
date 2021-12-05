@@ -61,7 +61,7 @@ class Otyugh implements Entity {
       throw new IllegalStateException("Otyugh is dead.");
     }
     else if (this.health == 2 || randomizer.getIntBetween(1, 2) == 1) {
-      player.die();
+      //player.die();
     }
   }
 
@@ -79,7 +79,7 @@ class Otyugh implements Entity {
    * @throws IllegalStateException Since this is an otyugh, we throw an exception.
    */
   @Override
-  public Coordinate getPosition() throws IllegalStateException {
+  public Coordinate getCoordinates() throws IllegalStateException {
     throw new IllegalStateException("Otyughs have no clue about their position.");
   }
 

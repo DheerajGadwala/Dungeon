@@ -26,7 +26,7 @@ class PlayerDescTestImpl implements ReadOnlyPlayer {
   }
 
   @Override
-  public Coordinate getPosition() {
+  public Coordinate getCoordinates() {
     return null;
   }
 
@@ -68,6 +68,11 @@ class PlayerDescTestImpl implements ReadOnlyPlayer {
   @Override
   public ReadOnlyLocation getLocationDescription() {
     return null;
+  }
+
+  @Override
+  public int getHealth() {
+    return 0;
   }
 
   @Override

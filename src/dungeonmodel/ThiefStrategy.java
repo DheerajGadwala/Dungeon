@@ -28,7 +28,7 @@ class ThiefStrategy implements EntityStrategy {
 
   @Override
   public void nextAction() {
-    if (thief.getPosition().equals(player.getPosition())) {
+    if (thief.getCoordinates().equals(player.getCoordinates())) {
       thief.harm(player);
     }
     else {

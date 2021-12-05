@@ -75,6 +75,11 @@ class DungeonPlayer implements Player {
   }
 
   @Override
+  public int getHealth() {
+    return health;
+  }
+
+  @Override
   public List<Direction> getPossibleRoutes() {
     return location.getPossibleRoutes();
   }
@@ -92,7 +97,7 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public Coordinate getPosition() {
+  public Coordinate getCoordinates() {
     return location.getCoordinates();
   }
 
@@ -103,15 +108,15 @@ class DungeonPlayer implements Player {
 
   @Override
   public Treasure getRobbed() {
-    List<Treasure> hasTreasure = new ArrayList<>();
+    List<Treasure> treasure = new ArrayList<>();
     for(Treasure t: treasures.keySet()) {
-      if (treasures.get(t) == 0) {
-        hasTreasure.add(t);
+      if (treasures.get(t) != 0) {
+        treasure.add(t);
       }
     }
-    if(hasTreasure.size() != 0) {
-      Treasure removed = hasTreasure.remove(
-              randomizer.getIntBetween(0, hasTreasure.size() - 1)
+    if(treasure.size() != 0) {
+      Treasure removed = treasure.remove(
+              randomizer.getIntBetween(0, treasure.size() - 1)
       );
       treasures.put(removed, treasures.get(removed) - 1);
       return removed;

@@ -5,12 +5,7 @@ import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import static dungeongeneral.Direction.*;
 
 /**
  * This is a dungeon game with additional obstacles.
@@ -126,14 +121,15 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   @Override
   public void attack() {
     validateGameOver();
-    if (player.getPosition() == tarrasque.getPosition()) {
+    if (player.getCoordinates() == tarrasque.getCoordinates()) {
       player.attack(tarrasque);
+      tarrasqueStrategy.nextAction();
+      thiefStrategy.nextAction();
+      updateGameOverStatus();
     }
     else {
       throw new IllegalStateException("Tarrasque not at player location.");
     }
-    tarrasqueStrategy.nextAction();
-    thiefStrategy.nextAction();
   }
 
   @Override
@@ -142,15 +138,17 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
     super.move(direction);
     tarrasqueStrategy.nextAction();
     thiefStrategy.nextAction();
+    updateGameOverStatus();
   }
 
   @Override
   public ShotResult shoot(Direction direction, int distance)
           throws IllegalArgumentException, IllegalStateException {
-    ShotResult result = super.shoot(direction, distance);
+    ShotResult res = super.shoot(direction, distance);
     tarrasqueStrategy.nextAction();
     thiefStrategy.nextAction();
-    return result;
+    updateGameOverStatus();
+    return res;
   }
 
   @Override
@@ -159,6 +157,7 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
     super.cedeTreasure(treasure);
     tarrasqueStrategy.nextAction();
     thiefStrategy.nextAction();
+    updateGameOverStatus();
   }
 
   @Override
@@ -167,6 +166,7 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
     super.cedeItem(item);
     tarrasqueStrategy.nextAction();
     thiefStrategy.nextAction();
+    updateGameOverStatus();
   }
 
   @Override
@@ -202,6 +202,16 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   @Override
   public int getInterconnectivity() {
     return interconnectivity;
+  }
+
+  @Override
+  public boolean thiefAtPlayerLocation() {
+    return thief.getCoordinates().equals(player.getCoordinates());
+  }
+
+  @Override
+  public boolean movingMonsterAtPlayerLocation() {
+    return tarrasque.getCoordinates().equals(player.getCoordinates());
   }
 
   @Override

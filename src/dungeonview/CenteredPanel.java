@@ -5,10 +5,10 @@ import java.awt.*;
 
 public class CenteredPanel extends JPanel {
 
-  private final JPanel top;
-  private final JPanel left;
-  private final JPanel bottom;
-  private final JPanel right;
+  protected final JPanel top;
+  protected final JPanel left;
+  protected final JPanel bottom;
+  protected final JPanel right;
   protected final JPanel center;
 
   CenteredPanel() {

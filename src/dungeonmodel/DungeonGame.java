@@ -34,6 +34,7 @@ public class DungeonGame implements Game {
   protected final Player player;
   private boolean gameOver;
   private static final int MIN_SE_DISTANCE = 5;
+  private static final int PIT_DAMAGE = 2;
 
   protected DungeonGame(
       int row, int column, int percentage, int difficulty,
@@ -141,24 +142,24 @@ public class DungeonGame implements Game {
     );
   }
 
+  protected void updateGameOverStatus() {
+    if (!player.isAlive() || getPlayerPosition().equals(getEndPosition())) {
+      gameOver = true;
+    }
+  }
+
   @Override
   public void move(Direction direction)
           throws IllegalStateException, IllegalArgumentException {
     validateGameOver();
     player.move(direction);
+    boolean isDiscovered = getPlayerLocation().isDiscovered();
     player.getLocation().discover();
     if (getPlayerLocation().hasAliveMonster()) {
-      try {
         getPlayerLocation().getMonster().harm(player);
-      }
-      catch (IllegalStateException ignored) {
-      }
-      if (!player.isAlive()) {
-        gameOver = true;
-      }
     }
-    else if (getPlayerPosition().equals(getEndPosition())) {
-      gameOver = true;
+    if (!isDiscovered && getPlayerLocation().hasPit()) {
+      player.decreaseHealth(PIT_DAMAGE);
     }
   }
 
@@ -263,7 +264,7 @@ public class DungeonGame implements Game {
    * @return current matrix position of player.
    */
   private Coordinate getPlayerPosition() {
-    return player.getPosition();
+    return player.getCoordinates();
   }
 
   @Override
@@ -310,8 +311,8 @@ public class DungeonGame implements Game {
 
   String dump() {
     StringBuilder ret = new StringBuilder();
-    int playerI = player.getPosition().getRow();
-    int playerJ = player.getPosition().getColumn();
+    int playerI = player.getCoordinates().getRow();
+    int playerJ = player.getCoordinates().getColumn();
     int startI = start.getCoordinates().getRow();
     int startJ = start.getCoordinates().getColumn();
     int endI = end.getCoordinates().getRow();

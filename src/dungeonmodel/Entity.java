@@ -49,7 +49,7 @@ interface Entity {
    * @return position of this entity.
    * @throws IllegalStateException when entity does not have a position. [Otyugh]
    */
-  Coordinate getPosition() throws IllegalStateException;
+  Coordinate getCoordinates() throws IllegalStateException;
 
   /**
    * The entity moves in the given direction.

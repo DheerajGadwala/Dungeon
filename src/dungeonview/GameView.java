@@ -1,7 +1,6 @@
 package dungeonview;
 
 import dungeoncontroller.GameFeatures;
-import dungeongeneral.ReadOnlyGame;
 import dungeongeneral.ReadOnlyGameWithObstacles;
 
 public interface GameView {
@@ -12,11 +11,13 @@ public interface GameView {
 
   void showGame();
 
-  void setModel(ReadOnlyGameWithObstacles readOnlyGame);
+  void setModel(GameFeatures controller, ReadOnlyGameWithObstacles readOnlyGame);
 
   void refresh();
 
   void setFeatures(GameFeatures controller);
 
   void showMessage(String message);
+
+  void makeVisible();
 }

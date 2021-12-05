@@ -56,7 +56,7 @@ class Thief implements Entity {
   }
 
   @Override
-  public Coordinate getPosition() {
+  public Coordinate getCoordinates() {
     return location.getCoordinates();
   }
 
@@ -78,6 +78,7 @@ class Thief implements Entity {
 
   @Override
   public List<Direction> getPossibleRoutes() {
-    return location.getPossibleRoutes();
+    return location.getPossibleRoutesHelper();
   }
+
 }
