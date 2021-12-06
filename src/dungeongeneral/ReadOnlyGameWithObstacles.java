@@ -1,7 +1,5 @@
 package dungeongeneral;
 
-import java.util.List;
-
 /**
  * ReadOnlyGame for a game wit the newly added obstacles.
  */
@@ -14,6 +12,16 @@ public interface ReadOnlyGameWithObstacles extends ReadOnlyGame{
    * @throws IllegalArgumentException when coordinates do not exist in the dungeon.
    */
   ReadOnlyLocation getLocation(Coordinate coordinate) throws IllegalArgumentException;
+
+  /**
+   * Moves player to the given location.
+   * @param location location to which the player is to be moved.
+   * @throws IllegalArgumentException if the given location is null or it
+   *                                is not possible to move to that location.
+   * @throws IllegalStateException If the game is over.
+   */
+  void moveToLocation(ReadOnlyLocation location)
+          throws IllegalArgumentException, IllegalStateException;
 
   /**
    * returns the number of rows in the dungeon.
@@ -58,9 +66,9 @@ public interface ReadOnlyGameWithObstacles extends ReadOnlyGame{
   boolean thiefAtPlayerLocation();
 
   /**
-   * Returns true if moving monster is at player location.
-   * @return true if moving monster at player location else false.
+   * Returns true if an alive moving monster is at player location.
+   * @return true if an alive moving monster at player location else false.
    */
-  boolean movingMonsterAtPlayerLocation();
+  boolean movingMonsterAliveAtPlayerLocation();
 
 }

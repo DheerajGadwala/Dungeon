@@ -1,10 +1,7 @@
 package dungeoncontroller;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 import dungeonmodel.DungeonGameWithObstacles;
-import dungeonmodel.Game;
 import dungeonmodel.GameWithObstacles;
 import dungeonview.DungeonGameView;
 import dungeonview.GameView;
@@ -28,8 +25,7 @@ public class DungeonControllerForGUI implements GameFeatures {
               rows, columns, percentage,
               difficulty, enableWrap,
               interconnectivity);
-      view.setModel(this, model);
-      view.showGame();
+      view.startNewGame(this, model);
     }
     catch (IllegalArgumentException iae) {
       view.showMessage(iae.getMessage());
@@ -42,13 +38,25 @@ public class DungeonControllerForGUI implements GameFeatures {
       model.move(direction);
       view.refresh();
     }
-    catch(IllegalArgumentException | IllegalStateException ignored) {}
+    catch(IllegalArgumentException | IllegalStateException ignored) {
+    }
+  }
+
+  @Override
+  public void moveToLocation(ReadOnlyLocation location) {
+    try {
+      model.moveToLocation(location);
+      view.refresh();
+    }
+    catch(IllegalArgumentException | IllegalStateException ignored) {
+    }
   }
 
   @Override
   public void shoot(Direction direction, int distance) {
     try {
-      model.shoot(direction, distance);
+      ShotResult res = model.shoot(direction, distance);
+      view.showShotResult(res);
       view.refresh();
     }
     catch(IllegalArgumentException | IllegalStateException ignored) {
@@ -77,7 +85,12 @@ public class DungeonControllerForGUI implements GameFeatures {
 
   @Override
   public void attack() {
-
+    try {
+      model.attack();
+      view.refresh();
+    }
+    catch(IllegalArgumentException | IllegalStateException ignored) {
+    }
   }
 
   @Override

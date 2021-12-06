@@ -21,12 +21,12 @@ class Tarrasque implements Entity {
     }
     this.location = location;
     this.randomizer = randomizer;
-    this.health = 20;
+    this.health = 15;
   }
 
   @Override
   public boolean isAlive() {
-    return this.health >= 0;
+    return this.health > 0;
   }
 
   @Override
@@ -39,13 +39,21 @@ class Tarrasque implements Entity {
     return this.health;
   }
 
+
+  private void validateHealth() {
+    if (health <= 0) {
+      throw new IllegalStateException("Can not perform action because this entity is dead.");
+    }
+  }
   /**
    * Harms the payer by decreasing his health.
    * @param player player this entity will try to harm.
+   * @throws IllegalStateException when this is dead.
    */
   @Override
-  public void harm(Player player) {
-    int damage = 5 + randomizer.getIntBetween(-2, 2);
+  public void harm(Player player) throws IllegalStateException {
+    validateHealth();
+    int damage = 4 + randomizer.getIntBetween(-2, 2);
     player.decreaseHealth(damage);
   }
 
@@ -59,8 +67,13 @@ class Tarrasque implements Entity {
     return location.getCoordinates();
   }
 
+  /**
+   * moves this entity.
+   * @throws IllegalStateException when this is dead.
+   */
   @Override
-  public void move(Direction direction) throws IllegalArgumentException {
+  public void move(Direction direction) throws IllegalArgumentException, IllegalStateException {
+    validateHealth();
     if (direction == null) {
       throw new IllegalArgumentException("Direction can not be null.");
     }

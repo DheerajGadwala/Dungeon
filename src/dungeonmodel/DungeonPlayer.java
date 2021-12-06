@@ -51,7 +51,7 @@ class DungeonPlayer implements Player {
     weapons.add(SWORD);
     this.randomizer = randomizer;
     this.location = location;
-    this.health = 20;
+    this.health = 30;
     this.missCount = 0;
     this.hitCount = 0;
     this.killCount = 0;
@@ -136,10 +136,14 @@ class DungeonPlayer implements Player {
 
   @Override
   public void attack(Entity monster) {
+    int damage;
     if(weapons.contains(AXE)) {
-      int damage = AXE.getDamage() + randomizer.getIntBetween(-2, 2);
-      monster.decreaseHealth(damage);
+      damage = AXE.getDamage() + randomizer.getIntBetween(-2, 2);
     }
+    else {
+      damage = SWORD.getDamage() + randomizer.getIntBetween(-2, 2);
+    }
+    monster.decreaseHealth(damage);
   }
 
   @Override

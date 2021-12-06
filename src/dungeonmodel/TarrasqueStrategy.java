@@ -30,23 +30,29 @@ class TarrasqueStrategy implements EntityStrategy {
 
   @Override
   public void nextAction() {
-    if (player.getCoordinates().equals(tarrasque.getCoordinates())) {
-      hasMetPlayer = true;
-      tarrasque.harm(player);
-    }
-    else if (hasMetPlayer) {
-      Direction direction = tarrasque.getLocation().getNeighbourDirection(player.getLocation());
-      tarrasque.move(direction);
-    }
-    else {
-      List<Direction> possibleMoves = tarrasque.getPossibleRoutes();
-      int random = randomizer.getIntBetween(0, possibleMoves.size());
-      if (random != possibleMoves.size()) {
-        tarrasque.move(possibleMoves.get(random));
-      }
+    try {
       if (player.getCoordinates().equals(tarrasque.getCoordinates())) {
         hasMetPlayer = true;
+        tarrasque.harm(player);
       }
+      else if (hasMetPlayer) {
+        Direction direction = tarrasque.getLocation().getNeighbourDirection(player.getLocation());
+        tarrasque.move(direction);
+      }
+      else {
+        List<Direction> possibleMoves = tarrasque.getPossibleRoutes();
+        int random = randomizer.getIntBetween(0, possibleMoves.size());
+        if (random != possibleMoves.size()) {
+          tarrasque.move(possibleMoves.get(random));
+        }
+        if (player.getCoordinates().equals(tarrasque.getCoordinates())) {
+          hasMetPlayer = true;
+        }
+      }
+    }
+    catch (IllegalStateException | IllegalArgumentException ignored) {
+      // Is thrown when Tarrasque/ Moving monster is dead.
+      // So we just ignore it.
     }
   }
 }

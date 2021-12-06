@@ -2,6 +2,7 @@ package dungeonview;
 
 import dungeoncontroller.GameFeatures;
 import dungeongeneral.ReadOnlyGameWithObstacles;
+import dungeongeneral.ShotResult;
 
 public interface GameView {
 
@@ -11,7 +12,7 @@ public interface GameView {
 
   void showGame();
 
-  void setModel(GameFeatures controller, ReadOnlyGameWithObstacles readOnlyGame);
+  void startNewGame(GameFeatures controller, ReadOnlyGameWithObstacles readOnlyGame);
 
   void refresh();
 
@@ -20,4 +21,6 @@ public interface GameView {
   void showMessage(String message);
 
   void makeVisible();
+
+  void showShotResult(ShotResult res);
 }

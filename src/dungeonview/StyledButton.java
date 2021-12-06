@@ -2,16 +2,18 @@ package dungeonview;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
 
 class StyledButton extends JButton {
 
   public StyledButton(String text) {
     super(text);
     setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    setBackground(Color.BLACK);
+    setBackground(Color.DARK_GRAY);
     setForeground(Color.LIGHT_GRAY);
     setAlignmentX(0.5f);
     setFont(new Font("Rockwell", Font.BOLD, 15));
@@ -20,20 +22,21 @@ class StyledButton extends JButton {
 
       @Override
       public void mouseEntered(MouseEvent evt) {
-        setBackground(new Color(163, 23, 23));
+        setBackground(new Color(77, 145, 109));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
       }
 
       @Override
       public void mouseExited(MouseEvent evt) {
-        setBackground(Color.BLACK);
+        setBackground(Color.DARK_GRAY);
+
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       }
 
       @Override
       public void mouseReleased(MouseEvent evt) {
         setContentAreaFilled(true);
-        setBackground(Color.BLACK);
+        setBackground(Color.DARK_GRAY);
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       }
 
@@ -41,7 +44,7 @@ class StyledButton extends JButton {
       public void mousePressed(MouseEvent evt) {
         setContentAreaFilled(false);
         setOpaque(true);
-        setBackground(new Color(120, 2, 2));
+        setBackground(new Color(7, 148, 73));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
       }
     });

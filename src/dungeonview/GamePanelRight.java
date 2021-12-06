@@ -1,18 +1,11 @@
 package dungeonview;
 
-import dungeongeneral.Item;
 import dungeongeneral.ReadOnlyGameWithObstacles;
 import dungeongeneral.ReadOnlyPlayer;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.TextAttribute;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static dungeongeneral.Item.CROOKED_ARROW;
 import static dungeongeneral.Treasure.*;
@@ -38,7 +31,7 @@ class GamePanelRight extends JPanel {
     zoomSettings.setFeatures(gameView);
   }
 
-  private class PlayerDescriptionPanel extends JPanel {
+  private static class PlayerDescriptionPanel extends JPanel {
 
     private final ReadOnlyPlayer player;
 
@@ -63,12 +56,12 @@ class GamePanelRight extends JPanel {
         g.drawString(String.valueOf(player.getHealth()), 120, 40);
         g.drawImage(ImageFetcher.getItem(CROOKED_ARROW), 35, 60, 30, 30, null);
         g.drawString(String.valueOf(player.getItems().get(CROOKED_ARROW)), 120, 80);
-        g.drawImage(ImageFetcher.getTreasure(RUBY), 35, 100, 30, 30, null);
-        g.drawString(String.valueOf(player.getTreasure().get(RUBY)), 120, 120);
-        g.drawImage(ImageFetcher.getTreasure(SAPPHIRE), 35, 140, 30, 30, null);
-        g.drawString(String.valueOf(player.getTreasure().get(SAPPHIRE)), 120, 160);
-        g.drawImage(ImageFetcher.getTreasure(DIAMOND), 35, 180, 30, 30, null);
-        g.drawString(String.valueOf(player.getTreasure().get(DIAMOND)), 120, 200);
+        g.drawImage(ImageFetcher.getTreasure(RUBY), 35, 110, 30, 30, null);
+        g.drawString(String.valueOf(player.getTreasure().get(RUBY)), 120, 130);
+        g.drawImage(ImageFetcher.getTreasure(SAPPHIRE), 35, 160, 30, 30, null);
+        g.drawString(String.valueOf(player.getTreasure().get(SAPPHIRE)), 120, 180);
+        g.drawImage(ImageFetcher.getTreasure(DIAMOND), 35, 210, 30, 30, null);
+        g.drawString(String.valueOf(player.getTreasure().get(DIAMOND)), 120, 230);
       } catch (IOException ignored) {
       }
     }
@@ -90,6 +83,7 @@ class GamePanelRight extends JPanel {
                       new Dimension(20, 100)
               )
       );
+      setBackground(Color.BLACK);
       add(zoomOut);
     }
 

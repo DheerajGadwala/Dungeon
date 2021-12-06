@@ -37,6 +37,9 @@ class ThiefStrategy implements EntityStrategy {
       if (random != possibleMoves.size()) {
         thief.move(possibleMoves.get(random));
       }
+      if (thief.getCoordinates().equals(player.getCoordinates())) {
+        thief.harm(player);
+      }
     }
   }
 }

@@ -118,4 +118,11 @@ public interface ReadOnlyLocation {
    * @return returns true if location is discovered by a player, else false.
    */
   boolean isDiscovered();
+//
+//  /**
+//   * Check if given read only location is a neighbour.
+//   * @param neighbour location to be checked.
+//   * @return true if neighbour else false.
+//   */
+//  boolean hasNeighbour(ReadOnlyLocation neighbour);
 }

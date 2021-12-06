@@ -22,7 +22,6 @@ public class CenteredPanel extends JPanel {
     right = new JPanel();
     right.setPreferredSize(new Dimension(50, 50));
     center = new JPanel();
-    //center.setPreferredSize(new Dimension(500, 400));
     center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
     add(top, BorderLayout.NORTH);
     add(left, BorderLayout.WEST);
@@ -51,4 +50,8 @@ public class CenteredPanel extends JPanel {
     right.add(component);
   }
 
+  void refresh() {
+    revalidate();
+    repaint();
+  }
 }

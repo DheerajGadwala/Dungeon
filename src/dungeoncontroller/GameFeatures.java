@@ -1,8 +1,6 @@
 package dungeoncontroller;
 
-import dungeongeneral.Direction;
-import dungeongeneral.Item;
-import dungeongeneral.Treasure;
+import dungeongeneral.*;
 
 public interface GameFeatures {
 
@@ -23,6 +21,8 @@ public interface GameFeatures {
 
 
   void move(Direction direction);
+
+  void moveToLocation(ReadOnlyLocation location);
 
   void shoot(Direction direction, int distance);
 

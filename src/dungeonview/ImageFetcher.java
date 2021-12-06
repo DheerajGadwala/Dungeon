@@ -6,6 +6,7 @@ import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -83,4 +84,19 @@ class ImageFetcher {
     return ImageIO.read(new File("img\\movingMonster.png"));
   }
 
+  public static BufferedImage getGrey() throws IOException {
+    return ImageIO.read(new File("img\\grey.png"));
+  }
+
+  public static BufferedImage getBrown() throws IOException {
+    return ImageIO.read(new File("img\\brown.png"));
+  }
+
+  public static BufferedImage getPointer() throws IOException {
+    return ImageIO.read(new File("img\\pointer.png"));
+  }
+
+  public static BufferedImage getSound() throws IOException {
+    return ImageIO.read(new File("img\\sound.png"));
+  }
 }

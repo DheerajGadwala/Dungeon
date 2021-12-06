@@ -1,8 +1,11 @@
 package dungeonview;
 
+import dungeoncontroller.GameFeatures;
 import dungeongeneral.*;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +21,10 @@ class Cell extends JPanel {
   private final ReadOnlyLocation location;
   private final ReadOnlyPlayer player;
   private final MutableInteger cellSize;
+  private boolean discoveryEstablished;
+  private double yOffset;
+  private double xOffset;
+  private BufferedImage currentImage;
 
   public Cell(Coordinate coordinate, ReadOnlyGameWithObstacles game, MutableInteger cellSize) {
     this.game = game;
@@ -35,25 +42,9 @@ class Cell extends JPanel {
     try {
       BufferedImage finalImage;
       if (location.isDiscovered()) {
-      //if (true) {
-        double yOffset;
-        double xOffset;
-        if (location.isTunnel()) {
-          List<Direction> directions = location.getPossibleRoutes();
-          yOffset =  - (
-                  directions.contains(NORTH) && directions.contains(SOUTH) ? 0
-                  : directions.contains(NORTH) ? 0.15 : directions.contains(SOUTH) ? -0.15
-                  : 0
-          );
-          xOffset =  - (
-                  directions.contains(EAST) && directions.contains(WEST) ? 0
-                  : directions.contains(EAST) ? -0.15 : directions.contains(WEST) ? 0.15
-                  : 0
-          );
-        }
-        else {
-          yOffset = 0;
-          xOffset = 0;
+        if (!discoveryEstablished) {
+          discoveryEstablished = true;
+          setOffset();
         }
         finalImage = ImageFetcher.getLocation(location.getPossibleRoutes());
         finalImage = overlay(
@@ -89,7 +80,7 @@ class Cell extends JPanel {
                     (int) (cellSize.getValue() * 0.3)
             );
           }
-          if (game.movingMonsterAtPlayerLocation()) {
+          if (game.movingMonsterAliveAtPlayerLocation()) {
             finalImage = overlay(
                     finalImage, ImageFetcher.getMovingMonster(),
                     (int) (cellSize.getValue() * (0.4 + xOffset)),
@@ -167,6 +158,7 @@ class Cell extends JPanel {
       else {
         finalImage = ImageFetcher.getBlack();
       }
+      this.currentImage = finalImage;
       g.drawImage(
               finalImage, 0, 0,
               cellSize.getValue(),
@@ -196,4 +188,122 @@ class Cell extends JPanel {
     return combined;
   }
 
+  private void setOffset() {
+    List<Direction> directions = location.getPossibleRoutes();
+    if (location.isTunnel()) {
+      this.yOffset =  - (
+              directions.contains(NORTH) && directions.contains(SOUTH) ? 0
+                      : directions.contains(NORTH) ? 0.15 : directions.contains(SOUTH) ? -0.15
+                      : 0
+      );
+      this.xOffset =  - (
+              directions.contains(EAST) && directions.contains(WEST) ? 0
+                      : directions.contains(EAST) ? -0.15 : directions.contains(WEST) ? 0.15
+                      : 0
+      );
+    }
+    else {
+      yOffset = 0;
+      xOffset = 0;
+    }
+  }
+
+  void setFeatures(GameFeatures controller, GamePanel board) {
+    MouseAdapter modelAction = new MouseAdapter() {
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        controller.moveToLocation(location);
+      }
+    };
+    MouseAdapter noModelAction = new MouseAdapter() {
+
+      private boolean mouseInside = false;
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
+        this.mouseInside = true;
+        try {
+          if (!location.isDiscovered()) {
+            getGraphics().drawImage(
+                    ImageFetcher.getGrey(), 0, 0,
+                    cellSize.getValue(),
+                    cellSize.getValue(),
+                    null
+            );
+          }
+          else if (!player.getCoordinates().equals(location.getCoordinates())){
+            getGraphics().drawImage(
+                    overlay(
+                            currentImage,
+                            ImageFetcher.getPointer(),
+                            (int) (cellSize.getValue() * (0.4 + xOffset)),
+                            (int) (cellSize.getValue() * (0.4 + yOffset)),
+                            (int) (cellSize.getValue() * 0.2),
+                            (int) (cellSize.getValue() * 0.2)
+                    ),
+                    0, 0,
+                    cellSize.getValue(),
+                    cellSize.getValue(),
+                    null
+            );
+          }
+        } catch (IOException ignored) {
+        }
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
+        if (!location.isDiscovered()) {
+          try {
+            getGraphics().drawImage(
+                    ImageFetcher.getBrown(), 0, 0,
+                    cellSize.getValue(),
+                    cellSize.getValue(),
+                    null);
+          } catch (IOException ignored) {
+          }
+        }
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        this.mouseInside = false;
+        revalidate();
+        repaint();
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        setCursor(
+                mouseInside
+                        ? new Cursor(Cursor.HAND_CURSOR)
+                        : new Cursor(Cursor.DEFAULT_CURSOR)
+        );
+        if (!location.isDiscovered()) {
+          try {
+            getGraphics().drawImage(
+                    mouseInside
+                            ? ImageFetcher.getGrey()
+                            : ImageFetcher.getBlack()
+                    , 0, 0,
+                    cellSize.getValue(),
+                    cellSize.getValue(),
+                    null);
+          } catch (IOException ignored) {
+          }
+        }
+        board.requestFocus();
+      }
+    };
+    addMouseListener(modelAction);
+    addMouseListener(noModelAction);
+  }
+
+  void showSound(ShotResult shotResult) {
+
+  }
 }

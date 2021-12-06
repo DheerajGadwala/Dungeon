@@ -4,12 +4,14 @@ package dungeongeneral;
  * Represents all directions.
  */
 public enum Direction {
-  NORTH("N"), EAST("E"), SOUTH("S"), WEST("W");
+  NORTH("N", "North"), EAST("E", "East"), SOUTH("S", "South"), WEST("W", "West");
 
   private final String shortForm;
+  private final String fullForm;
 
-  Direction(String shortForm) {
+  Direction(String shortForm, String fullForm) {
     this.shortForm = shortForm;
+    this.fullForm = fullForm;
   }
 
   /**
@@ -29,6 +31,14 @@ public enum Direction {
     else {
       return EAST;
     }
+  }
+
+  public String getShortForm() {
+    return shortForm;
+  }
+
+  public String getFullForm() {
+    return fullForm;
   }
 
   @Override

@@ -35,8 +35,9 @@ interface Entity {
   /**
    * This entity tries to harm the player.
    * @param player player this entity will try to harm.
+   * @throws IllegalStateException when entity is dead. [Tarrasque]
    */
-  void harm(Player player);
+  void harm(Player player) throws IllegalStateException;
 
   /**
    * decreases this entity's health by given damage.
@@ -54,6 +55,7 @@ interface Entity {
   /**
    * The entity moves in the given direction.
    * @throws IllegalStateException when entity can not move. [Otyugh]
+   *                              when entity is dead. [Tarrasque]
    * @throws IllegalArgumentException when move in the given direction is not possible.
    */
   void move(Direction direction) throws IllegalStateException;

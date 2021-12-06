@@ -2,14 +2,10 @@ package dungeonview;
 
 import dungeoncontroller.GameFeatures;
 import dungeongeneral.ReadOnlyGameWithObstacles;
+import dungeongeneral.ShotResult;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
-import static dungeongeneral.Direction.*;
-import static dungeongeneral.Direction.SOUTH;
 
 /**
  * View of the dungeon game.
@@ -28,8 +24,7 @@ public class DungeonGameView extends JFrame implements GameView {
     this.settings = new Settings();
     this.home = new Home();
     showHome();
-    setMinimumSize(new Dimension(750, 650));
-    //setResizable(false);
+    setMinimumSize(new Dimension(850, 900));
   }
 
   private void removeAllPanels() {
@@ -72,12 +67,12 @@ public class DungeonGameView extends JFrame implements GameView {
   }
 
   @Override
-  public void setModel(GameFeatures controller, ReadOnlyGameWithObstacles readOnlyGame) {
+  public void startNewGame(GameFeatures controller, ReadOnlyGameWithObstacles readOnlyGame) {
     this.readOnlyGame = readOnlyGame;
     this.gamepanel = new GamePanel(readOnlyGame);
-    this.gamepanel.setFeatures(this, controller);
     this.gamepanel.refresh();
-    refresh();
+    this.showGame();
+    this.gamepanel.setFeatures(this, controller);
   }
 
   @Override
@@ -100,5 +95,10 @@ public class DungeonGameView extends JFrame implements GameView {
   @Override
   public void makeVisible() {
     setVisible(true);
+  }
+
+  @Override
+  public void showShotResult(ShotResult shotResult) {
+    gamepanel.showShotResult(shotResult);
   }
 }

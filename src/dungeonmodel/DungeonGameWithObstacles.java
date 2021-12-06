@@ -175,6 +175,21 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
+  public void moveToLocation(ReadOnlyLocation location) throws IllegalArgumentException, IllegalStateException {
+    if (location == null) {
+      throw new IllegalArgumentException("Location can not be null");
+    }
+    LocationNode thatLocation = (LocationNode) location;
+    if (player.getLocation().hasNeighbour(thatLocation)) {
+      Direction direction = player.getLocation().getNeighbourDirection(thatLocation);
+      move(direction);
+    }
+    else {
+      throw new IllegalArgumentException("Location is not a neighbour.");
+    }
+  }
+
+  @Override
   public int getRowCount() {
     return row;
   }
@@ -210,8 +225,8 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
-  public boolean movingMonsterAtPlayerLocation() {
-    return tarrasque.getCoordinates().equals(player.getCoordinates());
+  public boolean movingMonsterAliveAtPlayerLocation() {
+    return tarrasque.getCoordinates().equals(player.getCoordinates()) && tarrasque.isAlive();
   }
 
   @Override
