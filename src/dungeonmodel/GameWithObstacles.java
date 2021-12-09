@@ -1,6 +1,9 @@
 package dungeonmodel;
 
 import dungeongeneral.ReadOnlyGameWithObstacles;
+import dungeongeneral.ReadOnlyLocation;
+
+import java.util.List;
 
 /**
  * This is a game with additional obstacles.
@@ -10,6 +13,11 @@ import dungeongeneral.ReadOnlyGameWithObstacles;
  * The locations might have pits.
  */
 public interface GameWithObstacles extends Game, ReadOnlyGameWithObstacles {
+  /**
+   * Returns the sequence required to re generate this dungeon at its start state.
+   * @return list of integers required to regenerate this dungeon.
+   */
+  List<Integer> getGenerationSequence();
 
   /**
    * Attack a Tarrasque in the same location.
@@ -17,8 +25,12 @@ public interface GameWithObstacles extends Game, ReadOnlyGameWithObstacles {
   void attack();
 
   /**
-   * Returns a new game that has same state as this at the start of this game.
-   * @return a new game object.
+   * Moves player to the given location.
+   * @param location location to which the player is to be moved.
+   * @throws IllegalArgumentException if the given location is null or it
+   *                                is not possible to move to that location.
+   * @throws IllegalStateException If the game is over.
    */
-  GameWithObstacles restart();
+  void moveToLocation(ReadOnlyLocation location)
+          throws IllegalArgumentException, IllegalStateException;
 }

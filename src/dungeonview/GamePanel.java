@@ -1,16 +1,44 @@
 package dungeonview;
 
-import dungeoncontroller.GameFeatures;
-import dungeongeneral.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
-import static dungeongeneral.Direction.*;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
 import static dungeongeneral.Item.CROOKED_ARROW;
-import static dungeongeneral.Treasure.*;
+import static dungeongeneral.Treasure.DIAMOND;
+import static dungeongeneral.Treasure.RUBY;
+import static dungeongeneral.Treasure.SAPPHIRE;
+
+import dungeoncontroller.GameFeatures;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.ReadOnlyGameWithObstacles;
+import dungeongeneral.Treasure;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 class GamePanel extends CenteredPanel {
 
@@ -19,12 +47,13 @@ class GamePanel extends CenteredPanel {
   private JScrollPane scroller;
   private JPanel grid;
   private JPanel gridContainer;
-  private final MutableInteger CELL_SIZE;
+  private final MutableInteger cellSize;
   private final GamePanelRight rightPanel;
-  private final TextInputForBoard shootDistance;
-  private final DirectionRadios shootDirection;
   private final Cell[][] cells;
   private boolean shootNext;
+  private Component leftPadding;
+  private Component rightPadding;
+  private JLabel finalMessage;
 
   GamePanel(ReadOnlyGameWithObstacles game) {
     JLabel title = new JLabel("Game", SwingConstants.CENTER);
@@ -32,7 +61,7 @@ class GamePanel extends CenteredPanel {
     title.setFont(new Font("Rockwell", Font.BOLD, 16));
     title.setBorder(new EmptyBorder(15, 0, 15, 0));
     title.setForeground(Color.WHITE);
-    this.CELL_SIZE = new MutableInteger(80);
+    this.cellSize = new MutableInteger(80);
     homeButton = new StyledButton("Home");
     homeButton.setAlignmentY(Component.CENTER_ALIGNMENT);
     addTop(title);
@@ -41,12 +70,8 @@ class GamePanel extends CenteredPanel {
     left.setPreferredSize(new Dimension(100, 200));
     this.game = game;
     right.setPreferredSize(new Dimension(250, 50));
-    this.rightPanel = new GamePanelRight(game, CELL_SIZE);
+    this.rightPanel = new GamePanelRight(game, cellSize);
     right.add(this.rightPanel);
-    bottom.setPreferredSize(new Dimension(50, 150));
-    bottom.setLayout(new BorderLayout());
-    GamePanelBottom bottomPanel = new GamePanelBottom(game, this);
-    bottom.add(bottomPanel, BorderLayout.CENTER);
     this.cells = new Cell[game.getRowCount()][game.getColumnCount()];
     buildGrid();
     center.setBackground(Color.BLACK);
@@ -61,8 +86,26 @@ class GamePanel extends CenteredPanel {
         requestFocus();
       }
     });
-    shootDistance = new TextInputForBoard("Direction", "1", this);
-    shootDirection = new DirectionRadios(this);
+    displayGameOver();
+  }
+
+  private void displayGameOver() {
+    finalMessage = new JLabel("");
+    finalMessage.setFont(new Font("Rockwell", Font.BOLD, 20));
+    bottom.setPreferredSize(new Dimension(50, 100));
+    bottom.setLayout(new BoxLayout(bottom, BoxLayout.X_AXIS));
+    finalMessage.setForeground(Color.WHITE);
+    finalMessage.setAlignmentX(0.5f);
+    leftPadding =  Box.createRigidArea(new Dimension(30, 0));
+    bottom.add(leftPadding);
+    bottom.add(finalMessage);
+    bottom.add(
+            Box.createRigidArea(
+                    new Dimension(30, 0)
+            )
+    );
+    rightPadding = Box.createRigidArea(new Dimension(30, 0));
+    bottom.add(rightPadding);
   }
 
   void setFeatures(GameView gameView, GameFeatures controller) {
@@ -94,7 +137,14 @@ class GamePanel extends CenteredPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
           if (shootNext) {
-            controller.shoot(direction, shootDistance.getValue());
+            try {
+              int distance = Integer.parseInt(JOptionPane.showInputDialog("Enter Distance"));
+              controller.shoot(direction, distance);
+            }
+            catch (NumberFormatException nfe) {
+              gameView.showMessage("Invalid Distance", "Error");
+            }
+            //controller.shoot(direction, shootDistance.getValue());
           }
           else {
             controller.move(direction);
@@ -153,8 +203,8 @@ class GamePanel extends CenteredPanel {
     gridContainer = new JPanel();
     gridContainer.setLayout(new BorderLayout());
     gridContainer.setPreferredSize(new Dimension(
-            game.getColumnCount() * CELL_SIZE.getValue(),
-            game.getRowCount() * CELL_SIZE.getValue()
+            game.getColumnCount() * cellSize.getValue(),
+            game.getRowCount() * cellSize.getValue()
     ));
     gridContainer.setBackground(Color.BLACK);
     JPanel grid = new JPanel();
@@ -165,7 +215,7 @@ class GamePanel extends CenteredPanel {
     ));
     for (int i = 0; i < game.getRowCount(); i++) {
       for (int j = 0; j < game.getColumnCount(); j++) {
-        Cell cell = new Cell(new Coordinate(i, j), game, CELL_SIZE);
+        Cell cell = new Cell(new Coordinate(i, j), game, cellSize);
         grid.add(cell);
         cells[i][j] = cell;
       }
@@ -179,41 +229,41 @@ class GamePanel extends CenteredPanel {
   }
 
   private void dynamicAdjust() {
-    int OFFSET_2 = -10;
-    int OFFSET_1 = 0;
-    if (game.getRowCount() * CELL_SIZE.getValue() + OFFSET_1
-        > grid.getHeight() + OFFSET_2 && game.getColumnCount()
-        * CELL_SIZE.getValue() + OFFSET_1 > grid.getWidth() + OFFSET_2) {
+    int offset_1 = 0;
+    int offset_2 = -10;
+    if (game.getRowCount() * cellSize.getValue() + offset_1
+        > grid.getHeight() + offset_2 && game.getColumnCount()
+        * cellSize.getValue() + offset_1 > grid.getWidth() + offset_2) {
       scroller.setPreferredSize(
               new Dimension(
-                      grid.getWidth() + OFFSET_2,
-                      grid.getHeight() + OFFSET_2
+                      grid.getWidth() + offset_2,
+                      grid.getHeight() + offset_2
               )
       );
     }
-    else if (game.getRowCount() * CELL_SIZE.getValue()
-            + OFFSET_1 > grid.getHeight() + OFFSET_2) {
+    else if (game.getRowCount() * cellSize.getValue()
+            + offset_1 > grid.getHeight() + offset_2) {
       scroller.setPreferredSize(
               new Dimension(
-                      game.getColumnCount() * CELL_SIZE.getValue() + OFFSET_1,
-                      grid.getHeight() + OFFSET_2
+                      game.getColumnCount() * cellSize.getValue() + offset_1,
+                      grid.getHeight() + offset_2
               )
       );
     }
-    else if (game.getColumnCount() * CELL_SIZE.getValue()
-            + OFFSET_1 > grid.getWidth() + OFFSET_2) {
+    else if (game.getColumnCount() * cellSize.getValue()
+            + offset_1 > grid.getWidth() + offset_2) {
       scroller.setPreferredSize(
               new Dimension(
-                      grid.getWidth() + OFFSET_2,
-                      game.getRowCount() * CELL_SIZE.getValue() + OFFSET_1
+                      grid.getWidth() + offset_2,
+                      game.getRowCount() * cellSize.getValue() + offset_1
               )
       );
     }
     else {
       scroller.setPreferredSize(
               new Dimension(
-                      game.getColumnCount() * CELL_SIZE.getValue() + OFFSET_1,
-                      game.getRowCount() * CELL_SIZE.getValue() + OFFSET_1
+                      game.getColumnCount() * cellSize.getValue() + offset_1,
+                      game.getRowCount() * cellSize.getValue() + offset_1
               )
       );
     }
@@ -229,16 +279,23 @@ class GamePanel extends CenteredPanel {
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     gridContainer.setPreferredSize(new Dimension(
-            game.getColumnCount() * CELL_SIZE.getValue(),
-            game.getRowCount() * CELL_SIZE.getValue()
+            game.getColumnCount() * cellSize.getValue(),
+            game.getRowCount() * cellSize.getValue()
     ));
     dynamicAdjust();
-  }
-
-  void showShotResult(ShotResult shotResult) {
-    ReadOnlyPlayer player = game.getPlayerDesc();
-    Coordinate coordinate = player.getCoordinates();
-    Cell cell = cells[coordinate.getRow()][coordinate.getColumn()];
-    cell.showSound(shotResult);
+    leftPadding.setPreferredSize(new Dimension((int) (bottom.getWidth() * 0.45), 0));
+    leftPadding.revalidate();
+    leftPadding.repaint();
+    rightPadding.setPreferredSize(new Dimension((int) (bottom.getWidth() * 0.55), 0));
+    rightPadding.revalidate();
+    rightPadding.repaint();
+    if (game.isGameOver()) {
+      if (game.hasPlayerWon()) {
+        finalMessage.setText("Game Over! You have escaped the dungeon!");
+      }
+      else {
+        finalMessage.setText("Game Over! You are dead!");
+      }
+    }
   }
 }

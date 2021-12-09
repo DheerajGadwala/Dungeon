@@ -1,9 +1,15 @@
 package dungeonview;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.GridLayout;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.*;
 
 class StyledScrollPane extends JScrollPane {
 
@@ -28,10 +34,12 @@ class StyledScrollPane extends JScrollPane {
       thumbHighlightColor = Color.LIGHT_GRAY;
       trackColor = Color.BLACK;
     }
+
     @Override
     protected JButton createDecreaseButton(int orientation) {
       return getButton(orientation);
     }
+
     @Override
     protected JButton createIncreaseButton(int orientation) {
       return getButton(orientation);

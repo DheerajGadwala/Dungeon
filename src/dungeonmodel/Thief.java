@@ -1,12 +1,13 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import randomizer.Randomizer;
 
 import java.util.List;
 
 /**
- * Thief has no health.
+ * Thief can not die.
  * Thief can rob the player's treasure.
  */
 class Thief implements Entity {
@@ -14,7 +15,7 @@ class Thief implements Entity {
   private LocationNode location;
 
   /**
-   *
+   * Creates a thief object.
    * @param location location of the thief.
    * @throws IllegalArgumentException when location or randomizer are null.
    */
@@ -79,6 +80,11 @@ class Thief implements Entity {
   @Override
   public List<Direction> getPossibleRoutes() {
     return location.getPossibleRoutesHelper();
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    throw new IllegalStateException("Thief has no randomizer");
   }
 
 }

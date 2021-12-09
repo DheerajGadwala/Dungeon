@@ -1,9 +1,12 @@
 package dungeonview;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
-public class CenteredPanel extends JPanel {
+abstract class CenteredPanel extends JPanel {
 
   protected final JPanel top;
   protected final JPanel left;

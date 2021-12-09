@@ -2,12 +2,18 @@ package dungeonview;
 
 import dungeoncontroller.GameFeatures;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 /**
  * This is the Settings panel.
@@ -27,40 +33,41 @@ class Settings extends CenteredPanel {
     title.setAlignmentX(0.5f);
     title.setFont(new Font("Rockwell", Font.BOLD, 16));
     title.setBorder(new EmptyBorder(15, 0, 15, 0));
+    Predicate<String> matcher = (input) -> input.matches("[-]?[1-9][0-9]*") || input.matches("[0]");
     textInputs = new ArrayList<>();
     textInputs.add(
             new TextInput(
                     "Rows",
                     "5",
-                    (S)->S.matches("[-]?[1-9][0-9]*") || S.matches("[0]")
+                    matcher
             )
     );
     textInputs.add(
             new TextInput(
                     "Columns",
                     "5",
-                    (S)->S.matches("[-]?[1-9][0-9]*") || S.matches("[0]")
+                    matcher
             )
     );
     textInputs.add(
             new TextInput(
                     "Percentage",
                     "50",
-                    (S)->S.matches("[-]?[1-9][0-9]*") || S.matches("[0]")
+                    matcher
             )
     );
     textInputs.add(
             new TextInput(
                     "Difficulty",
                     "3",
-                    (S)->S.matches("[-]?[1-9][0-9]*") || S.matches("[0]")
+                    matcher
             )
     );
     textInputs.add(
             new TextInput(
                     "Interconnectivity",
                     "2",
-                    (S)->S.matches("[-]?[1-9][0-9]*") || S.matches("[0]")
+                    matcher
             )
     );
     wrap = new RadioInput(
@@ -80,7 +87,7 @@ class Settings extends CenteredPanel {
             )
     );
     JPanel buttons = new JPanel();
-    back = new StyledButton("Back");
+    back = new StyledButton("Home");
     buttons.add(back);
     buttons.add(
             Box.createRigidArea(
@@ -123,7 +130,7 @@ class Settings extends CenteredPanel {
         int difficulty = Integer.parseInt(textInputs.get(3).getInput());
         boolean enableWrap = wrap.getSelection().equals("Yes");
         int interconnectivity = Integer.parseInt(textInputs.get(4).getInput());
-        controller.generateDungeon(
+        controller.startNewGame(
                 rows, columns, percentage,
                 difficulty, enableWrap,
                 interconnectivity);

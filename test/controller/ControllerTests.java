@@ -1,15 +1,15 @@
 package controller;
 
-import static dungeongeneral.ShotResult.HIT;
-import static dungeongeneral.ShotResult.KILL;
-import static dungeongeneral.ShotResult.MISS;
+import static dungeongeneral.Sound.DYING_HOWL;
+import static dungeongeneral.Sound.HISS;
+import static dungeongeneral.Sound.HOWL;
 import static junit.framework.Assert.assertEquals;
 
-import dungeonmodel.DungeonGame;
-import dungeonmodel.Game;
 import dungeoncontroller.DungeonControllerTextBasedGame;
 import dungeoncontroller.GameController;
-import dungeongeneral.ShotResult;
+import dungeongeneral.Sound;
+import dungeonmodel.DungeonGame;
+import dungeonmodel.Game;
 import org.junit.Before;
 import org.junit.Test;
 import randomizer.ActualRandomizer;
@@ -427,11 +427,10 @@ public class ControllerTests {
   @Test
   public void testShotResult() {
     int n = randomizer.getIntBetween(1, 3);
-    ShotResult shotResult = n == 1 ? MISS : n == 2 ? HIT : KILL;
-    boolean hasArrow = randomizer.getIntBetween(1, 2) == 1;
+    Sound sound = n == 1 ? HISS : n == 2 ? HOWL : DYING_HOWL;
     Appendable modelLog = new StringBuilder();
     String uniqueCode = "191\n";
-    Game m = new MockGameShotResult(modelLog, uniqueCode, shotResult, hasArrow);
+    Game m = new MockGameShotResult(modelLog, uniqueCode, sound);
     Readable input = new StringReader("s\ne\n1");
     Appendable controllerLog = new StringWriter();
     GameController c = new DungeonControllerTextBasedGame(input, controllerLog);
@@ -446,8 +445,7 @@ public class ControllerTests {
             + "Move, Shoot, Pick up Item, Pick up Treasure. [M-S-I-T]\n"
             + "Direction? [N E S W]\n"
             + "Distance?\n"
-            + shotResult.getImplication() + "\n"
-            + (hasArrow ? "" : "You are out of arrows!\n")
+            + sound.getImplication() + "\n"
             + "##################################################################\n"
             + uniqueCode
             + "What do you do?\n"

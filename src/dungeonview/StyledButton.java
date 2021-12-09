@@ -1,12 +1,12 @@
 package dungeonview;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.text.NumberFormatter;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.NumberFormat;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 
 class StyledButton extends JButton {
 

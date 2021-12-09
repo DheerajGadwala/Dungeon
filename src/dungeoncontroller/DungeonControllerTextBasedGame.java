@@ -10,10 +10,10 @@ import static dungeongeneral.Treasure.DIAMOND;
 import static dungeongeneral.Treasure.RUBY;
 import static dungeongeneral.Treasure.SAPPHIRE;
 
-import dungeonmodel.Game;
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.Treasure;
+import dungeonmodel.Game;
 
 import java.io.IOException;
 import java.util.HashMap;

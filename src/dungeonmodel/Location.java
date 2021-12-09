@@ -8,7 +8,15 @@ import static dungeongeneral.Odour.LESS_PUNGENT;
 import static dungeongeneral.Odour.MORE_PUNGENT;
 import static dungeongeneral.Odour.ODOURLESS;
 
-import dungeongeneral.*;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ItemList;
+import dungeongeneral.Odour;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.Treasure;
+import dungeongeneral.TreasureList;
+import randomizer.Randomizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,7 +87,7 @@ class Location implements LocationNode {
 
   private void validateDiscovery() {
     if (! isDiscovered) {
-      throw new IllegalStateException (
+      throw new IllegalStateException(
               "Can not get information about location before discovering it."
       );
     }
@@ -381,18 +389,37 @@ class Location implements LocationNode {
   }
 
   @Override
+  public boolean hasSignsOfNearbyPit() {
+    return getRequiredNodes(
+            (d) -> d == 1, LocationNode::hasPit
+    ).size() > 0;
+  }
+
+  @Override
   public boolean isDiscovered() {
     return isDiscovered;
   }
 
   @Override
-  public Entity getMonsterAtEnd(Direction direction, int distance)
+  public Entity getMonsterAtEnd(Direction direction, int distance, boolean isStart)
       throws IllegalArgumentException, IllegalStateException {
     if (distance < 0 || direction == null) {
       throw new IllegalArgumentException("Invalid Distance/ Direction.");
     }
     if (distance == 0) {
       return this.monster;
+    }
+    else if (isStart) {
+      LocationNode neighbour = neighbours.get(direction);
+      if (neighbour.isCave()) {
+        return neighbour.getMonsterAtEnd(direction, distance - 1, false);
+      }
+      else if (neighbour.isTunnel()) {
+        return neighbour.getMonsterAtEnd(direction, distance, false);
+      }
+      else {
+        return null;
+      }
     }
     else if (isTunnel()) {
       for (Direction d: Direction.values()) {
@@ -401,26 +428,27 @@ class Location implements LocationNode {
           continue;
         }
         if (neighbour.isCave()) {
-          return neighbour.getMonsterAtEnd(d, distance - 1);
+          return neighbour.getMonsterAtEnd(d, distance - 1, false);
         }
         else if (neighbour.isTunnel()) {
-          return neighbour.getMonsterAtEnd(d, distance);
+          return neighbour.getMonsterAtEnd(d, distance, false);
         }
       }
       throw new IllegalStateException("Invalid tunnel");
     }
-    else {
+    else if (isCave()) {
       LocationNode neighbour = neighbours.get(direction);
       if (neighbour.isEmptyNode()) {
         return null;
       }
       else if (neighbour.isCave()) {
-        return neighbour.getMonsterAtEnd(direction, distance - 1);
+        return neighbour.getMonsterAtEnd(direction, distance - 1, false);
       }
       else {
-        return neighbour.getMonsterAtEnd(direction, distance);
+        return neighbour.getMonsterAtEnd(direction, distance, false);
       }
     }
+    return null;
   }
 
   @Override
@@ -520,6 +548,13 @@ class Location implements LocationNode {
   @Override
   public  boolean hasHealthyMonsterHelper() {
     return hasMonsterHelper() && monster.getHealth() == 2;
+  }
+
+  @Override
+  public void setOtyughRandomizer(Randomizer randomizer) {
+    if (monster != null) {
+      monster.setRandomizer(randomizer);
+    }
   }
 
   @Override

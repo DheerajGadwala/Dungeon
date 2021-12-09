@@ -1,6 +1,10 @@
 package dungeonmodel;
 
-import dungeongeneral.*;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyGame;
+import dungeongeneral.Sound;
+import dungeongeneral.Treasure;
 
 /**
  * This acts as a control over the dungeon graph and the player.
@@ -12,7 +16,7 @@ import dungeongeneral.*;
  * in its locations. The number of otyughs is equal to the given difficulty.
  * The player can move, pick up treasure and items and shoot arrows.
  */
-public interface Game extends ReadOnlyGame{
+public interface Game extends ReadOnlyGame {
 
   /**
    * Moves player in the given direction if possible.
@@ -53,6 +57,6 @@ public interface Game extends ReadOnlyGame{
    * @throws IllegalArgumentException if direction or distance are invalid.
    * @throws IllegalStateException when game is over.
    */
-  ShotResult shoot(Direction direction, int distance)
+  Sound shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException;
 }

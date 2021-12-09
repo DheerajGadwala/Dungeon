@@ -1,9 +1,15 @@
 package dungeonview;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.SwingConstants;
 
 class RadioInput extends JPanel {
 
@@ -25,7 +31,7 @@ class RadioInput extends JPanel {
     add(label);
     radioButtons = new ArrayList<>();
     ButtonGroup bg = new ButtonGroup();
-    for(String k: options) {
+    for (String k: options) {
       JRadioButton t = new JRadioButton(k);
       t.setPreferredSize(new Dimension((int) (width * 0.5), (int) (height * 0.66)));
       t.setHorizontalAlignment(SwingConstants.CENTER);
@@ -46,7 +52,7 @@ class RadioInput extends JPanel {
    * @return null if nothing is selected else returns selected button's text.
    */
   String getSelection() {
-    for(JRadioButton r: radioButtons) {
+    for (JRadioButton r: radioButtons) {
       if (r.isSelected()) {
         return r.getText();
       }

@@ -6,7 +6,13 @@ import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
 import static dungeongeneral.Item.CROOKED_ARROW;
 
-import dungeongeneral.*;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyPlayer;
+import dungeongeneral.Sound;
+import dungeongeneral.Treasure;
 import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
@@ -32,7 +38,7 @@ public class DungeonGame implements Game {
   protected LocationNode start;
   protected LocationNode end;
   protected final Player player;
-  private boolean gameOver;
+  protected boolean gameOver;
   private static final int MIN_SE_DISTANCE = 5;
   private static final int PIT_DAMAGE = 2;
 
@@ -142,7 +148,7 @@ public class DungeonGame implements Game {
     );
   }
 
-  protected void updateGameOverStatus() {
+  void updateGameOverStatus() {
     if (!player.isAlive() || getPlayerPosition().equals(getEndPosition())) {
       gameOver = true;
     }
@@ -156,15 +162,16 @@ public class DungeonGame implements Game {
     boolean isDiscovered = getPlayerLocation().isDiscovered();
     player.getLocation().discover();
     if (getPlayerLocation().hasAliveMonster()) {
-        getPlayerLocation().getMonster().harm(player);
+      getPlayerLocation().getMonster().harm(player);
     }
     if (!isDiscovered && getPlayerLocation().hasPit()) {
       player.decreaseHealth(PIT_DAMAGE);
     }
+    updateGameOverStatus();
   }
 
   @Override
-  public ShotResult shoot(Direction direction, int distance)
+  public Sound shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     validateGameOver();
     return player.shoot(direction, distance);
@@ -244,7 +251,7 @@ public class DungeonGame implements Game {
     return ret;
   }
 
-  private LocationNode getPlayerLocation() {
+  protected LocationNode getPlayerLocation() {
     return player.getLocation();
   }
 
@@ -263,20 +270,15 @@ public class DungeonGame implements Game {
    * Get current position of player.
    * @return current matrix position of player.
    */
-  private Coordinate getPlayerPosition() {
+  protected Coordinate getPlayerPosition() {
     return player.getCoordinates();
-  }
-
-  @Override
-  public boolean hasArrow() {
-    return player.hasArrow();
   }
 
   /**
    * Get end position.
    * @return matrix position of end location.
    */
-  private Coordinate getEndPosition() {
+  protected Coordinate getEndPosition() {
     return end.getCoordinates();
   }
 

@@ -1,7 +1,8 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import randomizer.Randomizer;
 
 import java.util.List;
 
@@ -80,5 +81,11 @@ interface LocationGraph {
    * @return list of all locations that are caves.
    */
   List<LocationNode> getCaves();
+
+  /**
+   * Set the randomizer object for this location graph.
+   * @param randomizer randomizer object.
+   */
+  void setRandomizer(Randomizer randomizer);
 }
 

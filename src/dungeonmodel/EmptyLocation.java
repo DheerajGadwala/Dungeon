@@ -2,7 +2,13 @@ package dungeonmodel;
 
 import static dungeongeneral.Odour.ODOURLESS;
 
-import dungeongeneral.*;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.Odour;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.Treasure;
+import randomizer.Randomizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -206,6 +212,11 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
+  public boolean hasSignsOfNearbyPit() {
+    return false;
+  }
+
+  @Override
   public boolean isDiscovered() {
     return false;
   }
@@ -216,8 +227,8 @@ class EmptyLocation implements LocationNode {
   }
 
   @Override
-  public Entity getMonsterAtEnd(Direction direction, int distance)
-      throws IllegalArgumentException, IllegalStateException {
+  public Entity getMonsterAtEnd(Direction direction, int distance, boolean isStart)
+          throws IllegalArgumentException, IllegalStateException {
     return null;
   }
 
@@ -249,6 +260,11 @@ class EmptyLocation implements LocationNode {
   @Override
   public boolean hasHealthyMonsterHelper() {
     return false;
+  }
+
+  @Override
+  public void setOtyughRandomizer(Randomizer randomizer) {
+    throw new IllegalStateException("No otyughs here.");
   }
 
   @Override

@@ -3,7 +3,7 @@ package dungeongeneral;
 /**
  * ReadOnlyGame for a game wit the newly added obstacles.
  */
-public interface ReadOnlyGameWithObstacles extends ReadOnlyGame{
+public interface ReadOnlyGameWithObstacles extends ReadOnlyGame {
 
   /**
    * Get Readonly location object at that coordinate.
@@ -12,16 +12,6 @@ public interface ReadOnlyGameWithObstacles extends ReadOnlyGame{
    * @throws IllegalArgumentException when coordinates do not exist in the dungeon.
    */
   ReadOnlyLocation getLocation(Coordinate coordinate) throws IllegalArgumentException;
-
-  /**
-   * Moves player to the given location.
-   * @param location location to which the player is to be moved.
-   * @throws IllegalArgumentException if the given location is null or it
-   *                                is not possible to move to that location.
-   * @throws IllegalStateException If the game is over.
-   */
-  void moveToLocation(ReadOnlyLocation location)
-          throws IllegalArgumentException, IllegalStateException;
 
   /**
    * returns the number of rows in the dungeon.

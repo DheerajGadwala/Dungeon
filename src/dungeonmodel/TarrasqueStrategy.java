@@ -9,7 +9,7 @@ class TarrasqueStrategy implements EntityStrategy {
 
   private final Entity tarrasque;
   private final Player player;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
   private boolean hasMetPlayer;
 
   TarrasqueStrategy(Entity tarrasque, Player player, Randomizer randomizer) {
@@ -54,5 +54,13 @@ class TarrasqueStrategy implements EntityStrategy {
       // Is thrown when Tarrasque/ Moving monster is dead.
       // So we just ignore it.
     }
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
   }
 }

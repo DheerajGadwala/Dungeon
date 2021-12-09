@@ -1,7 +1,7 @@
 package dungeoncontroller;
 
-import dungeonmodel.Game;
 import dungeongeneral.Treasure;
+import dungeonmodel.Game;
 
 import java.io.IOException;
 

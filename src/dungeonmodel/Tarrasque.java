@@ -1,7 +1,7 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
 import randomizer.Randomizer;
 
 import java.util.List;
@@ -10,7 +10,7 @@ class Tarrasque implements Entity {
 
   private LocationNode location;
   private int health;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
 
   Tarrasque(LocationNode location, Randomizer randomizer) {
     if (location == null || location.isEmptyNode()) {
@@ -45,6 +45,7 @@ class Tarrasque implements Entity {
       throw new IllegalStateException("Can not perform action because this entity is dead.");
     }
   }
+
   /**
    * Harms the payer by decreasing his health.
    * @param player player this entity will try to harm.
@@ -91,6 +92,14 @@ class Tarrasque implements Entity {
   @Override
   public List<Direction> getPossibleRoutes() {
     return location.getPossibleRoutesHelper();
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
   }
 
 }

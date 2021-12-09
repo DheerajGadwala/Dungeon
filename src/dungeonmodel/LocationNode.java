@@ -1,6 +1,10 @@
 package dungeonmodel;
 
-import dungeongeneral.*;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.Treasure;
+import randomizer.Randomizer;
 
 import java.util.List;
 import java.util.Map;
@@ -183,7 +187,7 @@ interface LocationNode extends ReadOnlyLocation {
    *                                exists at the end of the path or if the monster
    *                                at the end is already dead.
    */
-  Entity getMonsterAtEnd(Direction direction, int distance)
+  Entity getMonsterAtEnd(Direction direction, int distance, boolean isStart)
       throws IllegalArgumentException, IllegalStateException;
 
   /**
@@ -199,4 +203,6 @@ interface LocationNode extends ReadOnlyLocation {
   boolean hasInjuredMonsterHelper();
 
   boolean hasHealthyMonsterHelper();
+
+  void setOtyughRandomizer(Randomizer randomizer);
 }

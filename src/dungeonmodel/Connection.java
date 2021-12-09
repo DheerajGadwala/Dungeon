@@ -1,7 +1,7 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
 
 /**
  * Represents an edge in the Location graph.

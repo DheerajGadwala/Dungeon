@@ -12,6 +12,9 @@ public class ActualRandomizer implements Randomizer {
   private final Random rand = new Random();
   private final List<Integer> history;
 
+  /**
+   * Creates a randomizer object.
+   */
   public ActualRandomizer() {
     this.history = new ArrayList<>();
   }
@@ -28,10 +31,6 @@ public class ActualRandomizer implements Randomizer {
 
   @Override
   public List<Integer> getHistory() {
-    List<Integer> copy = new ArrayList<>();
-    for (int k: history) {
-      copy.add(k);
-    }
-    return copy;
+    return new ArrayList<>(history);
   }
 }

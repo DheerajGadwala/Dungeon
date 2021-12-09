@@ -5,8 +5,8 @@ import static dungeongeneral.Direction.NORTH;
 import static dungeongeneral.Direction.SOUTH;
 import static dungeongeneral.Direction.WEST;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
 import randomizer.Randomizer;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ class DungeonGraph implements LocationGraph {
 
   private final List<LocationNode> locationNodes;
   private final List<Connection> connections;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
   private final int m;
   private final int n;
 
@@ -438,6 +438,17 @@ class DungeonGraph implements LocationGraph {
       }
     }
     return caves;
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
+    for (LocationNode node: locationNodes) {
+      node.setOtyughRandomizer(randomizer);
+    }
   }
 
   @Override

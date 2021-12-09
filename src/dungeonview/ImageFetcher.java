@@ -1,102 +1,163 @@
 package dungeonview;
 
+import static javax.imageio.ImageIO.read;
+
 import dungeongeneral.Direction;
 import dungeongeneral.Item;
 import dungeongeneral.Odour;
 import dungeongeneral.Treasure;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 class ImageFetcher {
 
-  static BufferedImage getPlayer() throws IOException {
-    return ImageIO.read(new File("img\\player.png"));
+  BufferedImage getPlayer() {
+    try {
+      return read(getClass().getResource("/player.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  static BufferedImage getTreasure(Treasure treasure) {
+  BufferedImage getTreasure(Treasure treasure) {
     if (treasure != null) {
       try {
-        return ImageIO.read(new File("img\\" + treasure.toString() +".png"));
-      } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+        return read(getClass().getResource("/" + treasure.toString() + ".png"));
+      } catch (IOException ignored) {
       }
     }
-    else {
-      return null;
-    }
+    return null;
   }
 
-  static BufferedImage getItem(Item item) throws IOException {
+  BufferedImage getItem(Item item) {
     if (item != null) {
-      return ImageIO.read(new File("img\\" + item.toString() +".png"));
+      try {
+        return read(getClass().getResource("/" + item.toString() + ".png"));
+      } catch (IOException ignored) {
+      }
     }
-    else {
-      return null;
-    }
+    return null;
   }
 
-  static BufferedImage getOtyugh() throws IOException {
-    return ImageIO.read(new File("img\\otyugh.png"));
+  BufferedImage getOtyugh() {
+    try {
+      return read(getClass().getResource("/otyugh.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  static BufferedImage getOdour(Odour odour) throws IOException {
+  BufferedImage getOdour(Odour odour) {
     if (odour != null) {
-      return ImageIO.read(new File("img\\" + odour.toString() +".png"));
+      try {
+        return read(getClass().getResource("/" + odour.toString() + ".png"));
+      } catch (IOException ignored) {
+      }
     }
-    else {
-      return null;
-    }
+    return null;
   }
 
-  static BufferedImage getLocation(List<Direction> directions) throws IOException {
+  BufferedImage getLocation(List<Direction> directions) {
     String str = "";
     Collections.sort(directions);
     for (Direction k: directions) {
       str += (k.toString());
     }
-    return ImageIO.read(new File("img\\" + str + ".png"));
+    try {
+      return read(getClass().getResource("/" + str + ".png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  static BufferedImage getBlack() throws IOException {
-    return ImageIO.read(new File("img\\black.png"));
+  BufferedImage getBlack() {
+    try {
+      return read(getClass().getResource("/black.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  static BufferedImage getPit() throws IOException {
-    return ImageIO.read(new File("img\\pit.png"));
+  BufferedImage getPit() {
+    try {
+      return read(getClass().getResource("/pit.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getHealth() throws IOException {
-    return ImageIO.read(new File("img\\health.png"));
+  public BufferedImage getHealth() {
+    try {
+      return read(getClass().getResource("/health.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getThief() throws IOException {
-    return ImageIO.read(new File("img\\thief.png"));
+  public BufferedImage getThief() {
+    try {
+      return read(getClass().getResource("/thief.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getMovingMonster() throws IOException {
-    return ImageIO.read(new File("img\\movingMonster.png"));
+  public BufferedImage getMovingMonster() {
+    try {
+      return read(getClass().getResource("/movingMonster.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getGrey() throws IOException {
-    return ImageIO.read(new File("img\\grey.png"));
+  public BufferedImage getGrey() {
+    try {
+      return read(getClass().getResource("/grey.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getBrown() throws IOException {
-    return ImageIO.read(new File("img\\brown.png"));
+  public BufferedImage getBrown() {
+    try {
+      return read(getClass().getResource("/brown.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getPointer() throws IOException {
-    return ImageIO.read(new File("img\\pointer.png"));
+  public BufferedImage getPointer() {
+    try {
+      return read(getClass().getResource("/pointer.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 
-  public static BufferedImage getSound() throws IOException {
-    return ImageIO.read(new File("img\\sound.png"));
+  public BufferedImage getKillSound() {
+    try {
+      return read(getClass().getResource("/kill.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
+  }
+
+  public BufferedImage getHitSound() {
+    try {
+      return read(getClass().getResource("/hit.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
+  }
+
+  public BufferedImage getSignsOfPit() {
+    try {
+      return read(getClass().getResource("/mud.png"));
+    } catch (IOException ignored) {
+    }
+    return null;
   }
 }

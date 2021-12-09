@@ -1,8 +1,8 @@
 package dungeoncontroller;
 
-import dungeonmodel.Game;
 import dungeongeneral.Direction;
-import dungeongeneral.ShotResult;
+import dungeongeneral.Sound;
+import dungeonmodel.Game;
 
 import java.io.IOException;
 
@@ -29,11 +29,11 @@ class Shoot extends AbstractCommand {
 
   @Override
   public void execute(Game game) throws IllegalArgumentException, IllegalStateException {
-    ShotResult sr = game.shoot(direction, distance);
+    Sound sr = game.shoot(direction, distance);
     try {
       out.append(sr.getImplication());
       out.append("\n");
-      if (!game.hasArrow()) {
+      if (!game.getPlayerDesc().hasArrow()) {
         out.append("You are out of arrows!\n");
       }
     } catch (IOException ignored) {

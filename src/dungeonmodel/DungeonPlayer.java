@@ -2,15 +2,30 @@ package dungeonmodel;
 
 import static dungeongeneral.Item.CROOKED_ARROW;
 import static dungeongeneral.Item.POTION;
-import static dungeongeneral.ShotResult.HIT;
-import static dungeongeneral.ShotResult.KILL;
-import static dungeongeneral.ShotResult.MISS;
-import static dungeongeneral.Weapon.*;
+import static dungeongeneral.Sound.DYING_HOWL;
+import static dungeongeneral.Sound.HISS;
+import static dungeongeneral.Sound.HOWL;
+import static dungeongeneral.Weapon.AXE;
+import static dungeongeneral.Weapon.BOW;
+import static dungeongeneral.Weapon.SWORD;
 
-import dungeongeneral.*;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ItemList;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyPlayer;
+import dungeongeneral.Sound;
+import dungeongeneral.Treasure;
+import dungeongeneral.TreasureList;
+import dungeongeneral.Weapon;
 import randomizer.Randomizer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Represents a player at location inside the dungeon.
@@ -22,17 +37,19 @@ class DungeonPlayer implements Player {
   private int health;
   private final Map<Item, Integer> items;
   private final List<Weapon> weapons;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
   private int missCount;
   private int hitCount;
   private int killCount;
+  private Sound previousSound;
 
   /**
    * Creates an instance of the dungeon player.
    * @param location initial location of this player
    * @throws IllegalArgumentException when name or location are null or empty.
    */
-  public DungeonPlayer(LocationNode location, Randomizer randomizer) throws IllegalArgumentException {
+  public DungeonPlayer(LocationNode location, Randomizer randomizer)
+          throws IllegalArgumentException {
     if (location == null || location.isEmptyNode()) {
       throw new IllegalArgumentException("Location can not be null or empty node.");
     }
@@ -61,12 +78,14 @@ class DungeonPlayer implements Player {
   public void collectTreasure(Treasure treasure) {
     location.decreaseTreasureCount(treasure);
     treasures.replace(treasure, treasures.get(treasure) + 1);
+    previousSound = null;
   }
 
   @Override
   public void pickItem(Item item) {
     location.decreaseItemCount(item);
     items.replace(item, items.get(item) + 1);
+    previousSound = null;
   }
 
   @Override
@@ -77,6 +96,16 @@ class DungeonPlayer implements Player {
   @Override
   public int getHealth() {
     return health;
+  }
+
+  @Override
+  public Sound getPreviousShotResult() {
+    return previousSound;
+  }
+
+  @Override
+  public boolean isAt(ReadOnlyLocation location) {
+    return getCoordinates().equals(location.getCoordinates());
   }
 
   @Override
@@ -93,6 +122,7 @@ class DungeonPlayer implements Player {
     if (location.hasEmptyNodeAt(direction)) {
       throw new IllegalArgumentException("No path in the given direction.");
     }
+    previousSound = null;
     location = location.getLocationAt(direction);
   }
 
@@ -107,21 +137,19 @@ class DungeonPlayer implements Player {
   }
 
   @Override
-  public Treasure getRobbed() {
+  public void getRobbed() {
     List<Treasure> treasure = new ArrayList<>();
-    for(Treasure t: treasures.keySet()) {
+    for (Treasure t: treasures.keySet()) {
       if (treasures.get(t) != 0) {
         treasure.add(t);
       }
     }
-    if(treasure.size() != 0) {
+    if (treasure.size() != 0) {
       Treasure removed = treasure.remove(
               randomizer.getIntBetween(0, treasure.size() - 1)
       );
       treasures.put(removed, treasures.get(removed) - 1);
-      return removed;
     }
-    return null;
   }
 
   @Override
@@ -137,17 +165,18 @@ class DungeonPlayer implements Player {
   @Override
   public void attack(Entity monster) {
     int damage;
-    if(weapons.contains(AXE)) {
+    if (weapons.contains(AXE)) {
       damage = AXE.getDamage() + randomizer.getIntBetween(-2, 2);
     }
     else {
       damage = SWORD.getDamage() + randomizer.getIntBetween(-2, 2);
     }
+    previousSound = null;
     monster.decreaseHealth(damage);
   }
 
   @Override
-  public ShotResult shoot(Direction direction, int distance)
+  public Sound shoot(Direction direction, int distance)
       throws IllegalArgumentException, IllegalStateException {
     if (direction == null) {
       throw new IllegalArgumentException("Direction can not be null.");
@@ -160,21 +189,24 @@ class DungeonPlayer implements Player {
     }
     items.replace(CROOKED_ARROW, items.get(CROOKED_ARROW) - 1);
     Entity monster;
-    monster = location.getMonsterAtEnd(direction, distance);
+    monster = location.getMonsterAtEnd(direction, distance, true);
     if (monster == null || !monster.isAlive()) {
       missCount++;
-      return MISS;
+      previousSound = HISS;
+      return HISS;
     }
     else {
       monster.decreaseHealth(BOW.getDamage());
       if (monster.isAlive()) {
         hitCount++;
-        return HIT;
+        previousSound = HOWL;
+        return HOWL;
       }
       else {
         hitCount++;
         killCount++;
-        return KILL;
+        previousSound = DYING_HOWL;
+        return DYING_HOWL;
       }
     }
   }
@@ -182,6 +214,14 @@ class DungeonPlayer implements Player {
   @Override
   public LocationNode getLocation() {
     return location;
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
   }
 
   @Override

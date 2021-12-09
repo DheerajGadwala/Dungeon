@@ -1,7 +1,8 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import randomizer.Randomizer;
 
 import java.util.List;
 
@@ -71,4 +72,10 @@ interface Entity {
    * @return list of directions.
    */
   List<Direction> getPossibleRoutes();
+
+  /**
+   * Sets a new randomizer object for this entity.
+   * @param randomizer randomizer object.
+   */
+  void setRandomizer(Randomizer randomizer);
 }

@@ -1,5 +1,8 @@
 package dungeongeneral;
 
+/**
+ * This represents all possible weapons in the dungeon.
+ */
 public enum Weapon {
   BOW("bow", "bows"),
   SWORD("sword", "swords"),
@@ -29,6 +32,10 @@ public enum Weapon {
     return plural;
   }
 
+  /**
+   * Damage that this weapon causes.
+   * @return damage that this weapon causes.
+   */
   public int getDamage() {
     if (this == BOW) {
       return 1;

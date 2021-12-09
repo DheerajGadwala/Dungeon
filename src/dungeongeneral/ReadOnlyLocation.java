@@ -114,15 +114,14 @@ public interface ReadOnlyLocation {
   boolean hasPit() throws IllegalStateException;
 
   /**
+   * Returns true if there is a pit in a neighbouring location.
+   * @return true if neighbour has a pit.
+   */
+  boolean hasSignsOfNearbyPit();
+
+  /**
    * Returns true if discovered.
    * @return returns true if location is discovered by a player, else false.
    */
   boolean isDiscovered();
-//
-//  /**
-//   * Check if given read only location is a neighbour.
-//   * @param neighbour location to be checked.
-//   * @return true if neighbour else false.
-//   */
-//  boolean hasNeighbour(ReadOnlyLocation neighbour);
 }

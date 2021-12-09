@@ -13,9 +13,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
 
+import dungeongeneral.ReadOnlyLocation;
 import dungeonmodel.DungeonGame;
 import dungeonmodel.Game;
-import dungeongeneral.ReadOnlyLocation;
 import org.junit.Before;
 import org.junit.Test;
 

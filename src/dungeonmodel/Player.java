@@ -1,6 +1,11 @@
 package dungeonmodel;
 
-import dungeongeneral.*;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyPlayer;
+import dungeongeneral.Sound;
+import dungeongeneral.Treasure;
+import randomizer.Randomizer;
 
 /**
  * This is A Player.
@@ -37,9 +42,8 @@ interface Player extends ReadOnlyPlayer {
 
   /**
    * Player is mugged of a random treasure.
-   * @return treasure lost by the player.
    */
-  Treasure getRobbed();
+  void getRobbed();
 
   /**
    * Decreases the player's health.
@@ -59,7 +63,7 @@ interface Player extends ReadOnlyPlayer {
    * @return Returns result of the shot.
    * @throws IllegalArgumentException when direction is null or distance is not positive.
    */
-  ShotResult shoot(Direction direction, int distance)
+  Sound shoot(Direction direction, int distance)
       throws IllegalArgumentException;
 
   /**
@@ -67,4 +71,10 @@ interface Player extends ReadOnlyPlayer {
    * @return location of the player.
    */
   LocationNode getLocation();
+
+  /**
+   * Sets a new randomizer object for the player.
+   * @param randomizer randomizer object.
+   */
+  void setRandomizer(Randomizer randomizer);
 }

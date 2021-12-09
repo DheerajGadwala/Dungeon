@@ -7,19 +7,19 @@ import static dungeongeneral.Direction.WEST;
 import static dungeongeneral.Odour.LESS_PUNGENT;
 import static dungeongeneral.Odour.MORE_PUNGENT;
 import static dungeongeneral.Odour.ODOURLESS;
-import static dungeongeneral.ShotResult.HIT;
-import static dungeongeneral.ShotResult.KILL;
-import static dungeongeneral.ShotResult.MISS;
+import static dungeongeneral.Sound.DYING_HOWL;
+import static dungeongeneral.Sound.HISS;
+import static dungeongeneral.Sound.HOWL;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 
+import dungeongeneral.Odour;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.Sound;
 import dungeonmodel.DungeonGame;
 import dungeonmodel.Game;
-import dungeongeneral.ReadOnlyLocation;
-import dungeongeneral.Odour;
-import dungeongeneral.ShotResult;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -145,12 +145,12 @@ public class GameTestsMonsters {
         3,31,13,21,19,7,21,0,6,6,7,5,15,5,7,12,11,9,1,5,2,3,3,3,1,2,1,2,8,2,2,2,10,1,3,3,2,
         1,2,3,1,3,1,2,4,2,2,1,5,3,16,3,15,1,16,4,13,3,6,5,3,3,3,4,6,3,11,4,9,2,13,4,8,7,7,6
     );
-    ShotResult res1 = game.shoot(EAST, 2);
-    assertEquals(HIT, res1);
-    ShotResult res2 = game.shoot(EAST, 2);
-    assertEquals(KILL, res2);
-    ShotResult res3 = game.shoot(EAST, 2);
-    assertEquals(MISS, res3);
+    Sound res1 = game.shoot(EAST, 2);
+    assertEquals(HOWL, res1);
+    Sound res2 = game.shoot(EAST, 2);
+    assertEquals(DYING_HOWL, res2);
+    Sound res3 = game.shoot(EAST, 2);
+    assertEquals(HISS, res3);
     assertEquals(
         "Player info:\n"
                 + "Misses: 1\n"
@@ -211,8 +211,8 @@ public class GameTestsMonsters {
   public void shotMissLongDistanceNonWrapping() {
     Game game = new DungeonGame(5, 5, 50, 5, false, 3);
     // Very long distanced shot stops in some cave, hence misses. [in non wrapping dungeon]
-    ShotResult res = game.shoot(NORTH, 200);
-    assertEquals(MISS, res);
+    Sound res = game.shoot(NORTH, 200);
+    assertEquals(HISS, res);
   }
 
   /**
@@ -227,8 +227,8 @@ public class GameTestsMonsters {
         2,8,2,3,1,5,2,1,1,7,3,2,3,5,4,7,1,2,3,0,2,11,3,14,4,9,4,6,3,14,2,4,3,0,1,12,2,2,3,7,4
     );
     // no monster at distance 1 to the south. [arrow distance]
-    ShotResult res = game.shoot(SOUTH, 1);
-    assertEquals(MISS, res);
+    Sound res = game.shoot(SOUTH, 1);
+    assertEquals(HISS, res);
     // lets go there and check if there is any monster.
     // d = 1
     assertTrue(game.getLocationDesc().hasNoMonster());
@@ -275,8 +275,8 @@ public class GameTestsMonsters {
         2,8,2,3,1,5,2,1,1,7,3,2,3,5,4,7,1,2,3,0,2,11,3,14,4,9,4,6,3,14,2,4,3,0,1,12,2,2,3,7,5,2
     );
     // monster at distance 1 to the south. [arrow distance]
-    ShotResult res = game.shoot(SOUTH, 1);
-    assertEquals(HIT, res);
+    Sound res = game.shoot(SOUTH, 1);
+    assertEquals(HOWL, res);
     // lets go there and check if there is an injured monster.
     // d = 1
     assertEquals(
@@ -325,8 +325,8 @@ public class GameTestsMonsters {
     // monster at distance 1 to the south. [arrow distance]
     assertSame(game.getLocationDesc().getOdour(), LESS_PUNGENT);
     game.shoot(SOUTH, 1);
-    ShotResult res = game.shoot(SOUTH, 1);
-    assertEquals(KILL, res);
+    Sound res = game.shoot(SOUTH, 1);
+    assertEquals(DYING_HOWL, res);
     game.move(SOUTH);
     // This is a tunnel
     // d = 1
@@ -376,8 +376,8 @@ public class GameTestsMonsters {
     // This pseudo random dungeon has a loop in the east west direction here.
     // Very long distanced shot in a wrapping dungeon
     // hits if monster exists at arrow's destination.
-    ShotResult res = game.shoot(WEST, 52);
-    assertEquals(HIT, res);
+    Sound res = game.shoot(WEST, 52);
+    assertEquals(HOWL, res);
     // Since it is a hit, we can the player in the arrows expected path,
     // and check if the final destination contains a dead monster.
     // Player will not die because of the injured monster because the pseudo random
@@ -416,8 +416,8 @@ public class GameTestsMonsters {
     // This pseudo random dungeon has a loop in the east west direction here.
     // Very long distanced shot in a wrapping dungeon
     // hits if monster exists at arrow's destination.
-    ShotResult res = game.shoot(WEST, 52);
-    assertEquals(MISS, res);
+    Sound res = game.shoot(WEST, 52);
+    assertEquals(HISS, res);
     // monster does not exists at that location.
     // lets go there and check.
     int d = 52;
@@ -450,10 +450,10 @@ public class GameTestsMonsters {
     // Very long distanced shot in a wrapping dungeon
     // hits if monster exists at arrow's destination.
     // same monster can be hit with different input distances.
-    ShotResult res1 = game.shoot(WEST, 52);
-    ShotResult res2 = game.shoot(WEST, 37);
-    assertEquals(HIT, res1);
-    assertEquals(KILL, res2);
+    Sound res1 = game.shoot(WEST, 52);
+    Sound res2 = game.shoot(WEST, 37);
+    assertEquals(HOWL, res1);
+    assertEquals(DYING_HOWL, res2);
     int d = 52;
     while (d != 0) {
       game.move(WEST);
@@ -658,8 +658,8 @@ public class GameTestsMonsters {
             sampleGame.getLocationDesc().toString()
     );
     // Since we came from the west, there's one monster in the north and one in the south.
-    assertSame(HIT, sampleGame.shoot(NORTH, 1));
-    assertSame(HIT, sampleGame.shoot(SOUTH, 1));
+    assertSame(HOWL, sampleGame.shoot(NORTH, 1));
+    assertSame(HOWL, sampleGame.shoot(SOUTH, 1));
     sampleGame.move(NORTH);
     ReadOnlyLocation des = sampleGame.getLocationDesc();
     assertTrue(des.hasInjuredMonster());

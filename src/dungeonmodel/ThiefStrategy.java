@@ -9,7 +9,7 @@ class ThiefStrategy implements EntityStrategy {
 
   private final Entity thief;
   private final Player player;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
 
   ThiefStrategy(Entity thief, Player player, Randomizer randomizer) {
     if (thief == null) {
@@ -41,5 +41,13 @@ class ThiefStrategy implements EntityStrategy {
         thief.harm(player);
       }
     }
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
   }
 }

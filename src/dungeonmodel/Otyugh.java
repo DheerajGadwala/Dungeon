@@ -1,7 +1,7 @@
 package dungeonmodel;
 
-import dungeongeneral.Direction;
 import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
 import randomizer.Randomizer;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 class Otyugh implements Entity {
 
   private int health;
-  private final Randomizer randomizer;
+  private Randomizer randomizer;
   private static final int DEFAULT_HEALTH = 2;
 
   /**
@@ -106,5 +106,13 @@ class Otyugh implements Entity {
   @Override
   public List<Direction> getPossibleRoutes() {
     return new ArrayList<>();
+  }
+
+  @Override
+  public void setRandomizer(Randomizer randomizer) {
+    if (randomizer == null) {
+      throw new IllegalArgumentException("randomizer can not be null");
+    }
+    this.randomizer = randomizer;
   }
 }

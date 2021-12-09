@@ -1,10 +1,16 @@
 package dungeonmodel;
 
-import dungeongeneral.*;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.Sound;
+import dungeongeneral.Treasure;
 import randomizer.ActualRandomizer;
 import randomizer.PseudoRandomizer;
 import randomizer.Randomizer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +24,8 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
 
   private final Entity tarrasque;
   private final Entity thief;
-  private final TarrasqueStrategy tarrasqueStrategy;
-  private final ThiefStrategy thiefStrategy;
+  private final EntityStrategy tarrasqueStrategy;
+  private final EntityStrategy thiefStrategy;
   private final List<Integer> history;
   private final int percentage;
   private final int difficulty;
@@ -45,15 +51,23 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   /**
-   * This is the restart constructor.
+   * Constructor for game reset.
    */
-  private DungeonGameWithObstacles(int rowCount, int columnCount, int percentage, int difficulty, boolean enableWrap, int interconnectivity, List<Integer> history) {
+  public DungeonGameWithObstacles(
+          int rowCount, int columnCount, int percentage,
+          int difficulty, boolean enableWrap, int interconnectivity,
+          List<Integer> history) throws IllegalArgumentException {
     this(
             rowCount, columnCount, percentage,
             difficulty, enableWrap, interconnectivity,
-            history.stream().mapToInt(i->i).toArray()
+            history.stream().mapToInt(i -> i).toArray()
     );
     this.randomizer = new ActualRandomizer();
+    dungeon.setRandomizer(randomizer);
+    player.setRandomizer(randomizer);
+    tarrasque.setRandomizer(randomizer);
+    tarrasqueStrategy.setRandomizer(randomizer);
+    thiefStrategy.setRandomizer(randomizer);
   }
 
   private LocationNode pickRandomLocation() {
@@ -61,7 +75,7 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
     allPositions.remove(start.getCoordinates());
     return dungeon.getLocation(
             allPositions.get(
-                    randomizer.getIntBetween(0, allPositions.size()-1)
+                    randomizer.getIntBetween(0, allPositions.size() - 1)
             )
     );
   }
@@ -69,6 +83,7 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   private void generatePits(int difficulty) {
     difficulty = difficulty / 2;
     List<Coordinate> allPositions = getAllPositions();
+    allPositions.remove(start.getCoordinates());
     while (difficulty > 0) {
       int x = randomizer.getIntBetween(0, allPositions.size() - 1);
       dungeon.getLocation(allPositions.remove(x)).createPit();
@@ -119,6 +134,11 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
+  public List<Integer> getGenerationSequence() {
+    return new ArrayList<Integer>(history);
+  }
+
+  @Override
   public void attack() {
     validateGameOver();
     if (player.getCoordinates() == tarrasque.getCoordinates()) {
@@ -142,9 +162,9 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
-  public ShotResult shoot(Direction direction, int distance)
+  public Sound shoot(Direction direction, int distance)
           throws IllegalArgumentException, IllegalStateException {
-    ShotResult res = super.shoot(direction, distance);
+    final Sound res = super.shoot(direction, distance);
     tarrasqueStrategy.nextAction();
     thiefStrategy.nextAction();
     updateGameOverStatus();
@@ -170,12 +190,15 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
-  public ReadOnlyLocation getLocation(Coordinate coordinate) throws IllegalArgumentException {
+  public ReadOnlyLocation getLocation(Coordinate coordinate)
+          throws IllegalArgumentException {
     return dungeon.getLocation(coordinate);
   }
 
   @Override
-  public void moveToLocation(ReadOnlyLocation location) throws IllegalArgumentException, IllegalStateException {
+  public void moveToLocation(ReadOnlyLocation location)
+          throws IllegalArgumentException, IllegalStateException {
+    validateGameOver();
     if (location == null) {
       throw new IllegalArgumentException("Location can not be null");
     }
@@ -230,11 +253,12 @@ public class DungeonGameWithObstacles extends DungeonGame implements GameWithObs
   }
 
   @Override
-  public GameWithObstacles restart() {
-    return new DungeonGameWithObstacles(
-            getRowCount(), getColumnCount(),
-            getPercentage(), getDifficulty(),
-            getEnableWrap(), getInterconnectivity(),
-            history);
+  public String toString() {
+    return  "Rows: " + getRowCount()
+            + "\nColumns: " + getColumnCount()
+            + "\nPercentage: " + getPercentage()
+            + "\nDifficulty: " + getDifficulty()
+            + "\nWrap: " + getEnableWrap()
+            + "\nInterconnectivity: " + getInterconnectivity();
   }
 }

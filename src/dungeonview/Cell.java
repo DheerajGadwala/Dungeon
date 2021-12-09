@@ -1,19 +1,32 @@
 package dungeonview;
 
-import dungeoncontroller.GameFeatures;
-import dungeongeneral.*;
+import static dungeongeneral.Direction.EAST;
+import static dungeongeneral.Direction.NORTH;
+import static dungeongeneral.Direction.SOUTH;
+import static dungeongeneral.Direction.WEST;
+import static dungeongeneral.Item.CROOKED_ARROW;
+import static dungeongeneral.Sound.DYING_HOWL;
+import static dungeongeneral.Sound.HOWL;
 
-import java.awt.*;
+import dungeoncontroller.GameFeatures;
+import dungeongeneral.Coordinate;
+import dungeongeneral.Direction;
+import dungeongeneral.Item;
+import dungeongeneral.ReadOnlyGameWithObstacles;
+import dungeongeneral.ReadOnlyLocation;
+import dungeongeneral.ReadOnlyPlayer;
+import dungeongeneral.Treasure;
+
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
-
-import static dungeongeneral.Direction.*;
-import static dungeongeneral.Item.CROOKED_ARROW;
+import javax.swing.JPanel;
 
 class Cell extends JPanel {
 
@@ -25,12 +38,14 @@ class Cell extends JPanel {
   private double yOffset;
   private double xOffset;
   private BufferedImage currentImage;
+  private final ImageFetcher imageFetcher;
 
   public Cell(Coordinate coordinate, ReadOnlyGameWithObstacles game, MutableInteger cellSize) {
     this.game = game;
     this.location = game.getLocation(coordinate);
     this.player = game.getPlayerDesc();
     this.cellSize = cellSize;
+    this.imageFetcher = new ImageFetcher();
   }
 
   @Override
@@ -39,134 +54,159 @@ class Cell extends JPanel {
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-    try {
-      BufferedImage finalImage;
-      if (location.isDiscovered()) {
-        if (!discoveryEstablished) {
-          discoveryEstablished = true;
-          setOffset();
-        }
-        finalImage = ImageFetcher.getLocation(location.getPossibleRoutes());
+    BufferedImage finalImage;
+    if (location.isDiscovered()) {
+      if (!discoveryEstablished) {
+        discoveryEstablished = true;
+        setOffset();
+      }
+      finalImage = imageFetcher.getLocation(location.getPossibleRoutes());
+      finalImage = overlay(
+              finalImage, imageFetcher.getOdour(location.getOdour()),
+              (int) (cellSize.getValue() * (0.25 + xOffset)),
+              (int) (cellSize.getValue() * (0.25 + yOffset)),
+              (int) (cellSize.getValue() * 0.5),
+              (int) (cellSize.getValue() * 0.5)
+      );
+      if (location.hasPit()) {
         finalImage = overlay(
-                finalImage, ImageFetcher.getOdour(location.getOdour()),
-                (int) (cellSize.getValue() * (0.25 + xOffset)),
-                (int) (cellSize.getValue() * (0.25 + yOffset)),
-                (int) (cellSize.getValue() * 0.5),
-                (int) (cellSize.getValue() * 0.5)
+                finalImage, imageFetcher.getPit(),
+                (int) (cellSize.getValue() * (0.325 + xOffset)),
+                (int) (cellSize.getValue() * (0.375 + yOffset)),
+                (int) (cellSize.getValue() * 0.35),
+                (int) (cellSize.getValue() * 0.35)
         );
-        if (location.hasPit()) {
+      }
+      if (location.hasSignsOfNearbyPit()) {
+        finalImage = overlay(
+                finalImage, imageFetcher.getSignsOfPit(),
+                (int) (cellSize.getValue() * (0.375 + xOffset)),
+                (int) (cellSize.getValue() * (0.4 + yOffset)),
+                (int) (cellSize.getValue() * 0.15),
+                (int) (cellSize.getValue() * 0.15)
+        );
+      }
+      if (player.isAt(location)) {
+
+        finalImage = overlay(
+                finalImage, imageFetcher.getPlayer(),
+                (int) (cellSize.getValue() * (0.35 + xOffset)),
+                (int) (cellSize.getValue() * (0.35 + yOffset)),
+                (int) (cellSize.getValue() * 0.4),
+                (int) (cellSize.getValue() * 0.4)
+        );
+        if (game.thiefAtPlayerLocation()) {
           finalImage = overlay(
-                  finalImage, ImageFetcher.getPit(),
-                  (int) (cellSize.getValue() * (0.325 + xOffset)),
-                  (int) (cellSize.getValue() * (0.375 + yOffset)),
-                  (int) (cellSize.getValue() * 0.35),
-                  (int) (cellSize.getValue() * 0.35)
+                  finalImage, imageFetcher.getThief(),
+                  (int) (cellSize.getValue() * (0.25 + xOffset)),
+                  (int) (cellSize.getValue() * (0.15 + yOffset)),
+                  (int) (cellSize.getValue() * 0.3),
+                  (int) (cellSize.getValue() * 0.3)
           );
         }
-        if (player.getCoordinates().equals(location.getCoordinates())) {
+        if (game.movingMonsterAliveAtPlayerLocation()) {
           finalImage = overlay(
-                  finalImage, ImageFetcher.getPlayer(),
-                  (int) (cellSize.getValue() * (0.35 + xOffset)),
-                  (int) (cellSize.getValue() * (0.35 + yOffset)),
-                  (int) (cellSize.getValue() * 0.4),
-                  (int) (cellSize.getValue() * 0.4)
+                  finalImage, imageFetcher.getMovingMonster(),
+                  (int) (cellSize.getValue() * (0.4 + xOffset)),
+                  (int) (cellSize.getValue() * (0.65 + yOffset)),
+                  (int) (cellSize.getValue() * 0.3),
+                  (int) (cellSize.getValue() * 0.3)
           );
-          if (game.thiefAtPlayerLocation()) {
+        }
+        if (player.getPreviousShotResult() == DYING_HOWL) {
+          finalImage = overlay(
+                  finalImage, imageFetcher.getKillSound(),
+                  (int) (cellSize.getValue() * (0.6 + xOffset)),
+                  (int) (cellSize.getValue() * (0.7 + yOffset)),
+                  (int) (cellSize.getValue() * 0.2),
+                  (int) (cellSize.getValue() * 0.2)
+          );
+        }
+        else if (player.getPreviousShotResult() == HOWL) {
+          finalImage = overlay(
+                  finalImage, imageFetcher.getHitSound(),
+                  (int) (cellSize.getValue() * (0.6 + xOffset)),
+                  (int) (cellSize.getValue() * (0.7 + yOffset)),
+                  (int) (cellSize.getValue() * 0.2),
+                  (int) (cellSize.getValue() * 0.2)
+          );
+        }
+      }
+      if (location.hasMonster()) {
+        finalImage = overlay(
+                finalImage, imageFetcher.getOtyugh(),
+                (int) (cellSize.getValue() * 0.2),
+                (int) (cellSize.getValue() * 0.5),
+                (int) (cellSize.getValue() * 0.27),
+                (int) (cellSize.getValue() * 0.27)
+        );
+        if (location.hasInjuredMonster()) {
+          finalImage = overlay(
+                  finalImage, imageFetcher.getItem(CROOKED_ARROW),
+                  (int) (cellSize.getValue() * 0.2),
+                  (int) (cellSize.getValue() * 0.6),
+                  (int) (cellSize.getValue() * 0.3),
+                  (int) (cellSize.getValue() * 0.3)
+          );
+        }
+        if (location.hasDeadMonster()) {
+          finalImage = overlay(
+                  finalImage, imageFetcher.getItem(CROOKED_ARROW),
+                  (int) (cellSize.getValue() * 0.2),
+                  (int) (cellSize.getValue() * 0.6),
+                  (int) (cellSize.getValue() * 0.3),
+                  (int) (cellSize.getValue() * 0.3)
+          );
+          finalImage = overlay(
+                  finalImage, imageFetcher.getItem(CROOKED_ARROW),
+                  (int) (cellSize.getValue() * 0.1),
+                  (int) (cellSize.getValue() * 0.6),
+                  (int) (cellSize.getValue() * 0.3),
+                  (int) (cellSize.getValue() * 0.3)
+          );
+        }
+      }
+      if (location.hasTreasure()) {
+        Map<Treasure, Integer> treasures = location.getTreasure();
+        double increment = 0.1;
+        for (Treasure treasure: Treasure.values()) {
+          if (treasures.get(treasure) != 0) {
             finalImage = overlay(
-                    finalImage, ImageFetcher.getThief(),
+                    finalImage, imageFetcher.getTreasure(treasure),
+                    (int) (cellSize.getValue() * (0.5 - increment)),
+                    (int) (cellSize.getValue() * (0.1 + increment)),
+                    (int) (cellSize.getValue() * 0.11),
+                    (int) (cellSize.getValue() * 0.11)
+            );
+            increment += 0.1;
+          }
+        }
+      }
+      if (location.hasItems()) {
+        Map<Item, Integer> items = location.getItems();
+        for (Item item: Item.values()) {
+          if (items.get(item) != 0) {
+            finalImage = overlay(
+                    finalImage, imageFetcher.getItem(item),
                     (int) (cellSize.getValue() * (0.3 + xOffset)),
                     (int) (cellSize.getValue() * (0.3 + yOffset)),
-                    (int) (cellSize.getValue() * 0.3),
-                    (int) (cellSize.getValue() * 0.3)
-            );
-          }
-          if (game.movingMonsterAliveAtPlayerLocation()) {
-            finalImage = overlay(
-                    finalImage, ImageFetcher.getMovingMonster(),
-                    (int) (cellSize.getValue() * (0.4 + xOffset)),
-                    (int) (cellSize.getValue() * (0.5 + yOffset)),
-                    (int) (cellSize.getValue() * 0.3),
-                    (int) (cellSize.getValue() * 0.3)
-            );
-          }
-        }
-        if (location.hasMonster()) {
-          finalImage = overlay(
-                  finalImage, ImageFetcher.getOtyugh(),
-                  (int) (cellSize.getValue() * 0.2),
-                  (int) (cellSize.getValue() * 0.5),
-                  (int) (cellSize.getValue() * 0.27),
-                  (int) (cellSize.getValue() * 0.27)
-          );
-          if (location.hasInjuredMonster()) {
-            finalImage = overlay(
-                    finalImage, ImageFetcher.getItem(CROOKED_ARROW),
                     (int) (cellSize.getValue() * 0.2),
-                    (int) (cellSize.getValue() * 0.6),
-                    (int) (cellSize.getValue() * 0.3),
-                    (int) (cellSize.getValue() * 0.3)
+                    (int) (cellSize.getValue() * 0.2)
             );
-          }
-          if (location.hasDeadMonster()) {
-            finalImage = overlay(
-                    finalImage, ImageFetcher.getItem(CROOKED_ARROW),
-                    (int) (cellSize.getValue() * 0.2),
-                    (int) (cellSize.getValue() * 0.6),
-                    (int) (cellSize.getValue() * 0.3),
-                    (int) (cellSize.getValue() * 0.3)
-            );
-            finalImage = overlay(
-                    finalImage, ImageFetcher.getItem(CROOKED_ARROW),
-                    (int) (cellSize.getValue() * 0.2),
-                    (int) (cellSize.getValue() * 0.6),
-                    (int) (cellSize.getValue() * 0.3),
-                    (int) (cellSize.getValue() * 0.3)
-            );
-          }
-        }
-        if (location.hasTreasure()) {
-          Map<Treasure, Integer> treasures = location.getTreasure();
-          double increment = 0.1;
-          for (Treasure treasure: Treasure.values()) {
-            if (treasures.get(treasure) != 0) {
-              finalImage = overlay(
-                      finalImage, ImageFetcher.getTreasure(treasure),
-                      (int) (cellSize.getValue() * (0.5 - increment)),
-                      (int) (cellSize.getValue() * (0.1 + increment)),
-                      (int) (cellSize.getValue() * 0.11),
-                      (int) (cellSize.getValue() * 0.11)
-              );
-              increment += 0.1;
-            }
-          }
-        }
-        if (location.hasItems()) {
-          Map<Item, Integer> items = location.getItems();
-          for (Item item: Item.values()) {
-            if (items.get(item) != 0) {
-              finalImage = overlay(
-                      finalImage, ImageFetcher.getItem(item),
-                      (int) (cellSize.getValue() * (0.3 + xOffset)),
-                      (int) (cellSize.getValue() * (0.3 + yOffset)),
-                      (int) (cellSize.getValue() * 0.2),
-                      (int) (cellSize.getValue() * 0.2)
-              );
-            }
           }
         }
       }
-      else {
-        finalImage = ImageFetcher.getBlack();
-      }
-      this.currentImage = finalImage;
-      g.drawImage(
-              finalImage, 0, 0,
-              cellSize.getValue(),
-              cellSize.getValue(),
-              null
-      );
-    } catch (IOException ignored) {
     }
+    else {
+      finalImage = imageFetcher.getBlack();
+    }
+    currentImage = finalImage;
+    g.drawImage(
+            finalImage, 0, 0,
+            cellSize.getValue(),
+            cellSize.getValue(),
+            null
+    );
   }
 
   private BufferedImage overlay(
@@ -174,8 +214,8 @@ class Cell extends JPanel {
           int offsetX, int offsetY, int height, int width
   ) {
     BufferedImage combined = new BufferedImage(
-            cellSize.getValue()*2,
-            cellSize.getValue()*2,
+            cellSize.getValue() * 2,
+            cellSize.getValue() * 2,
             BufferedImage.TYPE_INT_ARGB
     );
     Graphics2D g = (Graphics2D) combined.getGraphics();
@@ -193,14 +233,14 @@ class Cell extends JPanel {
     if (location.isTunnel()) {
       this.yOffset =  - (
               directions.contains(NORTH) && directions.contains(SOUTH) ? 0
-                      : directions.contains(NORTH) ? 0.15 : directions.contains(SOUTH) ? -0.15
-                      : 0
-      );
+                      : directions.contains(NORTH) ? 0.15
+                      : directions.contains(SOUTH) ? -0.15
+                      : 0);
       this.xOffset =  - (
               directions.contains(EAST) && directions.contains(WEST) ? 0
-                      : directions.contains(EAST) ? -0.15 : directions.contains(WEST) ? 0.15
-                      : 0
-      );
+                      : directions.contains(EAST) ? -0.15
+                      : directions.contains(WEST) ? 0.15
+                      : 0);
     }
     else {
       yOffset = 0;
@@ -224,32 +264,29 @@ class Cell extends JPanel {
       public void mouseEntered(MouseEvent e) {
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.mouseInside = true;
-        try {
-          if (!location.isDiscovered()) {
-            getGraphics().drawImage(
-                    ImageFetcher.getGrey(), 0, 0,
-                    cellSize.getValue(),
-                    cellSize.getValue(),
-                    null
-            );
-          }
-          else if (!player.getCoordinates().equals(location.getCoordinates())){
-            getGraphics().drawImage(
-                    overlay(
-                            currentImage,
-                            ImageFetcher.getPointer(),
-                            (int) (cellSize.getValue() * (0.4 + xOffset)),
-                            (int) (cellSize.getValue() * (0.4 + yOffset)),
-                            (int) (cellSize.getValue() * 0.2),
-                            (int) (cellSize.getValue() * 0.2)
-                    ),
-                    0, 0,
-                    cellSize.getValue(),
-                    cellSize.getValue(),
-                    null
-            );
-          }
-        } catch (IOException ignored) {
+        if (!location.isDiscovered()) {
+          getGraphics().drawImage(
+                  imageFetcher.getGrey(), 0, 0,
+                  cellSize.getValue(),
+                  cellSize.getValue(),
+                  null
+          );
+        }
+        else if (!player.getCoordinates().equals(location.getCoordinates())) {
+          getGraphics().drawImage(
+                  overlay(
+                          currentImage,
+                          imageFetcher.getPointer(),
+                          (int) (cellSize.getValue() * (0.4 + xOffset)),
+                          (int) (cellSize.getValue() * (0.4 + yOffset)),
+                          (int) (cellSize.getValue() * 0.2),
+                          (int) (cellSize.getValue() * 0.2)
+                  ),
+                  0, 0,
+                  cellSize.getValue(),
+                  cellSize.getValue(),
+                  null
+          );
         }
       }
 
@@ -257,14 +294,11 @@ class Cell extends JPanel {
       public void mousePressed(MouseEvent e) {
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         if (!location.isDiscovered()) {
-          try {
-            getGraphics().drawImage(
-                    ImageFetcher.getBrown(), 0, 0,
-                    cellSize.getValue(),
-                    cellSize.getValue(),
-                    null);
-          } catch (IOException ignored) {
-          }
+          getGraphics().drawImage(
+                  imageFetcher.getBrown(), 0, 0,
+                  cellSize.getValue(),
+                  cellSize.getValue(),
+                  null);
         }
       }
 
@@ -284,26 +318,20 @@ class Cell extends JPanel {
                         : new Cursor(Cursor.DEFAULT_CURSOR)
         );
         if (!location.isDiscovered()) {
-          try {
-            getGraphics().drawImage(
-                    mouseInside
-                            ? ImageFetcher.getGrey()
-                            : ImageFetcher.getBlack()
-                    , 0, 0,
-                    cellSize.getValue(),
-                    cellSize.getValue(),
-                    null);
-          } catch (IOException ignored) {
-          }
+          getGraphics().drawImage(
+                  mouseInside
+                          ? imageFetcher.getGrey()
+                          : imageFetcher.getBlack(),
+                  0, 0,
+                  cellSize.getValue(),
+                  cellSize.getValue(),
+                  null
+          );
         }
         board.requestFocus();
       }
     };
     addMouseListener(modelAction);
     addMouseListener(noModelAction);
-  }
-
-  void showSound(ShotResult shotResult) {
-
   }
 }

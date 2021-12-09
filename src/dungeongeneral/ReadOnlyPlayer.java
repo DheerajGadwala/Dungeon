@@ -82,4 +82,18 @@ public interface ReadOnlyPlayer {
    * @return health of the player.
    */
   int getHealth();
+
+  /**
+   * Return the result of the previous shot.
+   * Null if shoot was not the previous command.
+   * @return result of the previous shot.
+   */
+  Sound getPreviousShotResult();
+
+  /**
+   * Returns true if player is at given location.
+   * @param location location  to be checked.
+   * @return true if player is at location else false.
+   */
+  boolean isAt(ReadOnlyLocation location);
 }

@@ -23,12 +23,6 @@ public interface ReadOnlyGame {
   ReadOnlyLocation getLocationDesc();
 
   /**
-   * Returns true if the player has at least one arrow.
-   * @return true if player has at least one arrow else false.
-   */
-  boolean hasArrow();
-
-  /**
    * Returns true if player has reached end.
    * Disables further moves.
    * @return true is game is over.
