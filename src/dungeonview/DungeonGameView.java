@@ -35,6 +35,9 @@ public class DungeonGameView extends JFrame implements GameView {
 
   /**
    * Constructs a view.
+   * Has the following pages: home, settings, and game panel.
+   * Also has a JMenu with various options for settings and to
+   * show descriptions.
    */
   public DungeonGameView() {
     homePageMenuItem = new JMenuItem("Home");

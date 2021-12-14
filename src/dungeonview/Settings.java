@@ -28,7 +28,7 @@ class Settings extends CenteredPanel {
   /**
    * Constructor for the settings panel.
    */
-  public Settings() {
+  Settings() {
     JLabel title = new JLabel("GAME SETTINGS", SwingConstants.CENTER);
     title.setAlignmentX(0.5f);
     title.setFont(new Font("Rockwell", Font.BOLD, 16));

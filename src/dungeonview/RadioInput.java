@@ -16,11 +16,11 @@ class RadioInput extends JPanel {
   private final JLabel label;
   private final List<JRadioButton> radioButtons;
 
-  public RadioInput(String labelText, String... options) {
+  RadioInput(String labelText, String... options) {
     this(400, 30, labelText, options);
   }
 
-  public RadioInput(int width, int height, String labelText, String... options) {
+  RadioInput(int width, int height, String labelText, String... options) {
     JPanel child = new JPanel();
     child.setLayout(new BoxLayout(child, BoxLayout.PAGE_AXIS));
     setMaximumSize(new Dimension(width, height));

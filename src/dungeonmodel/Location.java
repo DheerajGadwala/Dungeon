@@ -353,15 +353,13 @@ class Location implements LocationNode {
     if (this.hasAliveMonsterHelper()) {
       return MORE_PUNGENT;
     }
-    int n = getRequiredNodes(
-            (distance) -> distance == 1,
+    int n = getRequiredNodes((distance) -> distance == 1,
             LocationNode::hasAliveMonsterHelper
     ).size();
     if (n > 0) {
       return MORE_PUNGENT;
     }
-    n = getRequiredNodes(
-            (distance) -> distance == 2,
+    n = getRequiredNodes((distance) -> distance == 2,
             LocationNode::hasAliveMonsterHelper
     ).size();
     if (n > 1) {
@@ -390,8 +388,8 @@ class Location implements LocationNode {
 
   @Override
   public boolean hasSignsOfNearbyPit() {
-    return getRequiredNodes(
-            (d) -> d == 1, LocationNode::hasPit
+    return getRequiredNodes((d) -> d == 1,
+            LocationNode::hasPit
     ).size() > 0;
   }
 

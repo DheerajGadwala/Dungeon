@@ -10,7 +10,7 @@ import javax.swing.JButton;
 
 class StyledButton extends JButton {
 
-  public StyledButton(String text) {
+  StyledButton(String text) {
     super(text);
     setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     setBackground(Color.DARK_GRAY);

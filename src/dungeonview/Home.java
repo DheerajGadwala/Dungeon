@@ -26,7 +26,7 @@ class Home extends CenteredPanel {
   /**
    * Home page constructor.
    */
-  public Home() {
+  Home() {
     JLabel title = new JLabel("Home", SwingConstants.CENTER);
     title.setAlignmentX(0.5f);
     title.setFont(new Font("Rockwell", Font.BOLD, 16));

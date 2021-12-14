@@ -40,7 +40,7 @@ class Cell extends JPanel {
   private BufferedImage currentImage;
   private final ImageFetcher imageFetcher;
 
-  public Cell(Coordinate coordinate, ReadOnlyGameWithObstacles game, MutableInteger cellSize) {
+  Cell(Coordinate coordinate, ReadOnlyGameWithObstacles game, MutableInteger cellSize) {
     this.game = game;
     this.location = game.getLocation(coordinate);
     this.player = game.getPlayerDesc();
