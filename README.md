@@ -19,17 +19,6 @@ adds a View which is built using Swing. A new Controller has also been added spe
 
 
 ### 2. List of features:
-####Text Based Game:
-##### 1. Generate a non-deterministic dungeon game on every run.
-##### 2. Generate random treasure and items in a given percentage of caves.
-##### 3. Create one player at the start.
-##### 4. Generate the given number of monsters.
-##### 5. Move Player in the dungeon using the controller.
-##### 6. Make player collect treasure and items on command.
-##### 7. Make the player shoot arrows at monsters. Kill the monsters.
-##### 8. Game ends when player reaches the end location.
-##### 9. Get player/ player location description used by the controller.
-##### 10. Play as a console logged text based game.
 ####GUI Game:
 ##### 1. Move the player in the game.
 ##### 2. Shoot arrows at otyughs and look for visual cues of sound.
@@ -43,6 +32,17 @@ adds a View which is built using Swing. A new Controller has also been added spe
 ##### 10. Restart the game with same dungeon attributes.
 ##### 11. Start a new game.
 ##### 12. Quit the GUI.
+####Text Based Game:
+##### 1. Generate a non-deterministic dungeon game on every run.
+##### 2. Generate random treasure and items in a given percentage of caves.
+##### 3. Create one player at the start.
+##### 4. Generate the given number of monsters.
+##### 5. Move Player in the dungeon using the controller.
+##### 6. Make player collect treasure and items on command.
+##### 7. Make the player shoot arrows at monsters. Kill the monsters.
+##### 8. Game ends when player reaches the end location.
+##### 9. Get player/ player location description used by the controller.
+##### 10. Play as a console logged text based game.
 
 ### 3. How to run:
   * Method one:
